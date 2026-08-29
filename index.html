@@ -15,7 +15,7 @@
   <meta property="og:url" content="https://bypyay.github.io/ytshortgen/">
 
   <!-- Stylesheets & Fonts -->
-  <link rel="stylesheet" href="assets/css/studio.css?v=4">
+  <link rel="stylesheet" href="assets/css/studio.css?v=5">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
   <!-- Structured Data JSON-LD (Schema.org) -->
@@ -542,6 +542,47 @@
     </div>
   </div>
 
+  <!-- Batch 12-Shorts Export Studio Modal -->
+  <div class="batch-modal-overlay" id="batchExportModalOverlay">
+    <div class="batch-modal-box">
+      <div class="batch-modal-header">
+        <div>
+          <h3 style="color:#fff; font-size:1.20rem; font-weight:900; display:flex; align-items:center; gap:8px;">
+            <i class="fa-solid fa-layer-group" style="color:#fbbf24;"></i> 12 राशियों का बैच एक्सपोर्ट स्टूडियो
+          </h3>
+          <p style="color:#94a3b8; font-size:0.82rem; margin-top:2px;">एक क्लिक में सभी 12 राशियों के 1080×1920 Shorts तैयार करें और डाउनलोड करें</p>
+        </div>
+        <button type="button" class="btn-close-batch" onclick="TemplateEngine.closeBatchModal()" aria-label="Close Batch Modal">&times;</button>
+      </div>
+
+      <!-- Batch Overall Progress Strip -->
+      <div class="batch-progress-strip">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+          <span id="batchOverallStatusText" style="font-size:0.86rem; font-weight:800; color:#fbbf24;">0 / 12 वीडियो तैयार (0%)</span>
+          <span style="font-size:0.75rem; color:#94a3b8;">60fps Full HD</span>
+        </div>
+        <div class="batch-progress-bar-wrap">
+          <div class="batch-progress-fill" id="batchOverallProgressFill"></div>
+        </div>
+      </div>
+
+      <!-- Batch Top Actions Bar -->
+      <div class="batch-actions-bar">
+        <button type="button" class="btn-batch-primary" id="btnStartBatchRender" onclick="TemplateEngine.generateAll12Shorts()">
+          <i class="fa-solid fa-play"></i> सभी 12 रेंडर शुरू करें
+        </button>
+        <button type="button" class="btn-batch-download-all disabled" id="btnDownloadAll12" onclick="TemplateEngine.downloadAllBatchVideos()" disabled>
+          <i class="fa-solid fa-cloud-arrow-down"></i> ⬇️ 1-क्लिक सभी 12 वीडियो डाउनलोड करें
+        </button>
+      </div>
+
+      <!-- 12 Zodiac Cards Grid -->
+      <div class="batch-signs-grid" id="batchSignsGrid">
+        <!-- Rendered dynamically by JS -->
+      </div>
+    </div>
+  </div>
+
   <!-- Studio Footer -->
   <footer style="background:#070a14; border-top:1px solid rgba(255,255,255,0.08); padding:24px 16px; margin-top:30px; text-align:center; color:#64748b; font-size:0.82rem;">
     <div style="max-width:1200px; margin:0 auto; display:flex; flex-wrap:wrap; justify-content:space-between; gap:16px; align-items:center;">
@@ -556,8 +597,8 @@
   </footer>
 
   <!-- Scripts -->
-  <script src="assets/js/content-scraper.js?v=4"></script>
-  <script src="assets/js/video-engine.js?v=4"></script>
-  <script src="assets/js/template-engine.js?v=4"></script>
+  <script src="assets/js/content-scraper.js?v=5"></script>
+  <script src="assets/js/video-engine.js?v=5"></script>
+  <script src="assets/js/template-engine.js?v=5"></script>
 </body>
 </html>

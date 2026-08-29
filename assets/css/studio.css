@@ -755,6 +755,208 @@ body {
   transition: width 0.15s ease;
 }
 
+/* ---------------- Batch 12-Shorts Modal Dialog ---------------- */
+.batch-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(7, 10, 20, 0.92);
+  backdrop-filter: blur(16px);
+  z-index: 2147483647;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.batch-modal-overlay.open {
+  display: flex !important;
+}
+
+.batch-modal-box {
+  background: #0b1120;
+  border: 1.5px solid rgba(245, 158, 11, 0.35);
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.95), 0 0 50px rgba(245, 158, 11, 0.15);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  max-width: 820px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.batch-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 12px;
+}
+
+.btn-close-batch {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.btn-close-batch:hover {
+  color: #fff;
+}
+
+.batch-progress-strip {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+}
+.batch-progress-bar-wrap {
+  width: 100%;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 5px;
+  overflow: hidden;
+}
+.batch-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #f59e0b, #10b981);
+  transition: width 0.2s ease;
+}
+
+.batch-actions-bar {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn-batch-primary {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  border: none;
+  color: #000;
+  font-size: 0.88rem;
+  font-weight: 900;
+  padding: 10px 18px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+}
+.btn-batch-primary:hover {
+  filter: brightness(1.15);
+  box-shadow: 0 0 16px rgba(245, 158, 11, 0.5);
+}
+
+.btn-batch-download-all {
+  background: linear-gradient(135deg, #10b981, #059669);
+  border: none;
+  color: #fff;
+  font-size: 0.88rem;
+  font-weight: 900;
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+}
+.btn-batch-download-all:hover:not(.disabled) {
+  filter: brightness(1.15);
+  box-shadow: 0 0 18px rgba(16, 185, 129, 0.6);
+}
+.btn-batch-download-all.disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  filter: grayscale(0.8);
+}
+
+.batch-signs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 10px;
+}
+
+.batch-sign-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.batch-card-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.batch-card-symbol {
+  font-size: 1.6rem;
+  line-height: 1;
+  color: #fbbf24;
+}
+
+.batch-card-title {
+  font-size: 0.84rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.batch-card-sub {
+  font-size: 0.72rem;
+  margin-top: 2px;
+}
+
+.batch-status.ready {
+  color: #10b981;
+  font-weight: 700;
+}
+.batch-status.pending {
+  color: #94a3b8;
+}
+.batch-status.rendering {
+  color: #f59e0b;
+  font-weight: 700;
+}
+.batch-status.error {
+  color: #ef4444;
+}
+
+.btn-batch-dl {
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: #34d399;
+  font-size: 0.74rem;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.btn-batch-dl:hover:not(.disabled) {
+  background: #10b981;
+  color: #fff;
+}
+.btn-batch-dl.disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #64748b;
+  background: rgba(255, 255, 255, 0.04);
+}
+
 /* ---------------- Media Queries for Responsive Design ---------------- */
 @media (max-width: 1280px) {
   .studio-grid {

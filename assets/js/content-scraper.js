@@ -50,23 +50,36 @@ const ContentScraper = (function() {
   const LUCKY_COLORS = ['लाल (Red)', 'पीला (Yellow)', 'सुनहरा (Gold)', 'हरा (Green)', 'सफेद (White)', 'नारंगी (Orange)', 'गुलाबी (Pink)', 'केसरिया (Saffron)', 'आसमानी (Sky Blue)'];
 
   // ══════════════════════════════════════════════════════════════════
-  // 1. High-Precision Web Page Fetcher (Bypasses Cloudflare)
+  // 1. High-Precision Web Page Fetcher (With Strict 4.5s Timeout)
   // ══════════════════════════════════════════════════════════════════
+  async function fetchWithTimeout(url, timeoutMs = 4500) {
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+      const response = await fetch(url, {
+        signal: controller.signal,
+        headers: { 'Accept': 'text/plain, text/html, application/json' }
+      });
+      clearTimeout(id);
+      return response;
+    } catch (e) {
+      clearTimeout(id);
+      throw e;
+    }
+  }
+
   async function fetchCleanContent(targetUrl) {
     if (!targetUrl || !targetUrl.startsWith('http')) return null;
 
     const proxyGateways = [
       `https://r.jina.ai/${targetUrl}`,
       `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
-      `https://cors-anywhere.herokuapp.com/${targetUrl}`,
       targetUrl
     ];
 
     for (const gateway of proxyGateways) {
       try {
-        const response = await fetch(gateway, {
-          headers: { 'Accept': 'text/plain, text/html, application/json' }
-        });
+        const response = await fetchWithTimeout(gateway, 4500);
         if (response.ok) {
           const text = await response.text();
           if (text && text.length > 150) {
@@ -74,7 +87,7 @@ const ContentScraper = (function() {
           }
         }
       } catch (e) {
-        console.warn('Scraper Gateway attempt failed:', gateway, e);
+        console.warn('Scraper Gateway attempt failed:', gateway);
       }
     }
     return null;
@@ -98,7 +111,7 @@ const ContentScraper = (function() {
         }
       } catch (e) {}
 
-      // Fallback
+      // Algorithmic Fallback if offline/timeout
       results[sign.id] = generateDailySignData(sign);
     });
 

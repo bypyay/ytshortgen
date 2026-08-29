@@ -141,20 +141,23 @@ const TemplateEngine = (function() {
       return;
     }
 
-    const originalBtnHtml = btnScrape.innerHTML;
+    const defaultBtnHtml = '<i class="fa-solid fa-bolt"></i> डेटा फेच करें';
     btnScrape.disabled = true;
-    btnScrape.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Scraping ' + urls.length + ' Sources...';
+    btnScrape.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> डेटा लोड हो रहा है...';
 
     try {
       const scrapedData = await ContentScraper.scrapeMultipleUrls(urls);
       currentSignsData = scrapedData;
       loadSignIntoStudio(selectedSignId);
-      alert('✅ ' + urls.length + ' वेबसाइट स्रोतों से 12 राशियों का कंटेंट सफलतापूर्वक लोड कर लिया गया है!');
+      btnScrape.innerHTML = '<i class="fa-solid fa-check"></i> डेटा लोड हो गया!';
+      setTimeout(() => {
+        btnScrape.disabled = false;
+        btnScrape.innerHTML = defaultBtnHtml;
+      }, 2000);
     } catch (err) {
       alert('⚠️ ' + err.message);
-    } finally {
       btnScrape.disabled = false;
-      btnScrape.innerHTML = originalBtnHtml;
+      btnScrape.innerHTML = defaultBtnHtml;
     }
   }
 
@@ -252,7 +255,7 @@ const TemplateEngine = (function() {
   }
 
   // ══════════════════════════════════════════════════════════════════
-  // 6. Export Video Trigger & Modal
+  // 6. Single Video Export Trigger & Modal
   // ══════════════════════════════════════════════════════════════════
   function startVideoExport() {
     const modal = document.getElementById('exportModalOverlay');
@@ -276,8 +279,10 @@ const TemplateEngine = (function() {
           downloadBtn.onclick = function() {
             const a = document.createElement('a');
             const sign = VideoEngine.getProjectData().sign;
+            const signName = sign.nameEn || sign.signNameEn || 'Aries';
+            const dateStr = targetDateObj ? targetDateObj.toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10);
             a.href = videoUrl;
-            a.download = `Rashifal_${sign.nameEn}_${new Date().toISOString().slice(0, 10)}.webm`;
+            a.download = `Rashifal_${signName}_${dateStr}.webm`;
             a.click();
           };
         }
@@ -294,18 +299,158 @@ const TemplateEngine = (function() {
   }
 
   // ══════════════════════════════════════════════════════════════════
-  // 7. Bulk 12-Signs Export Queue
+  // 7. Bulk 12-Signs Batch Export Studio Queue & Multi-Downloader
   // ══════════════════════════════════════════════════════════════════
-  async function generateAll12Shorts() {
-    const confirmGen = confirm('क्या आप सभी 12 राशियों के 12 अलग-अलग YouTube Shorts एक साथ तैयार करना चाहते हैं?');
-    if (!confirmGen) return;
+  const batchRenderedVideos = {};
+  let isBatchRunning = false;
 
-    alert('सभी 12 राशियों का बैच एक्सपोर्ट शुरू हो रहा है...');
-    for (const sign of ContentScraper.ZODIAC_SIGNS) {
-      loadSignIntoStudio(sign.id);
-      await new Promise(r => setTimeout(r, 600));
-      // Trigger individual export
+  function openBatchModal() {
+    const modal = document.getElementById('batchExportModalOverlay');
+    if (modal) modal.classList.add('open');
+    renderBatchGrid();
+  }
+
+  function closeBatchModal() {
+    const modal = document.getElementById('batchExportModalOverlay');
+    if (modal) modal.classList.remove('open');
+  }
+
+  function renderBatchGrid() {
+    const grid = document.getElementById('batchSignsGrid');
+    if (!grid) return;
+
+    grid.innerHTML = '';
+    ContentScraper.ZODIAC_SIGNS.forEach((sign, idx) => {
+      const card = document.createElement('div');
+      card.className = 'batch-sign-card';
+      card.id = `batchCard_${sign.id}`;
+
+      const rendered = batchRenderedVideos[sign.id];
+      const statusHtml = rendered
+        ? `<span class="batch-status ready"><i class="fa-solid fa-circle-check"></i> तैयार (${(rendered.blob.size / (1024 * 1024)).toFixed(1)} MB)</span>`
+        : `<span class="batch-status pending"><i class="fa-regular fa-clock"></i> प्रतीक्षारत</span>`;
+
+      const downloadBtnHtml = rendered
+        ? `<button type="button" class="btn-batch-dl" onclick="TemplateEngine.downloadSingleBatchVideo('${sign.id}')"><i class="fa-solid fa-download"></i> डाउनलोड</button>`
+        : `<button type="button" class="btn-batch-dl disabled" disabled><i class="fa-solid fa-download"></i> डाउनलोड</button>`;
+
+      card.innerHTML = `
+        <div class="batch-card-top">
+          <span class="batch-card-symbol">${sign.symbol}</span>
+          <div style="flex:1;">
+            <div class="batch-card-title">${idx + 1}. ${sign.nameHi} राशि (${sign.nameEn})</div>
+            <div class="batch-card-sub" id="batchSub_${sign.id}">${statusHtml}</div>
+          </div>
+          ${downloadBtnHtml}
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+
+    updateBatchHeaderProgress();
+  }
+
+  function updateBatchHeaderProgress() {
+    const total = ContentScraper.ZODIAC_SIGNS.length;
+    const readyCount = Object.keys(batchRenderedVideos).length;
+    const progressFill = document.getElementById('batchOverallProgressFill');
+    const statusText = document.getElementById('batchOverallStatusText');
+    const dlAllBtn = document.getElementById('btnDownloadAll12');
+
+    const pct = Math.round((readyCount / total) * 100);
+    if (progressFill) progressFill.style.width = pct + '%';
+    if (statusText) statusText.textContent = `${readyCount} / ${total} वीडियो तैयार (${pct}%)`;
+
+    if (dlAllBtn) {
+      if (readyCount > 0) {
+        dlAllBtn.classList.remove('disabled');
+        dlAllBtn.removeAttribute('disabled');
+      } else {
+        dlAllBtn.classList.add('disabled');
+        dlAllBtn.setAttribute('disabled', 'true');
+      }
     }
+  }
+
+  async function generateAll12Shorts() {
+    openBatchModal();
+    if (isBatchRunning) return;
+    isBatchRunning = true;
+
+    const startBtn = document.getElementById('btnStartBatchRender');
+    if (startBtn) {
+      startBtn.disabled = true;
+      startBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> रेंडरिंग जारी है...';
+    }
+
+    for (let i = 0; i < ContentScraper.ZODIAC_SIGNS.length; i++) {
+      const sign = ContentScraper.ZODIAC_SIGNS[i];
+      const signData = currentSignsData[sign.id] || ContentScraper.generateDailySignData(sign, targetDateObj);
+
+      // Highlight card in batch grid
+      const subEl = document.getElementById(`batchSub_${sign.id}`);
+      if (subEl) subEl.innerHTML = `<span class="batch-status rendering"><i class="fa-solid fa-spinner fa-spin"></i> 1080p रेंडरिंग...</span>`;
+
+      // Set sign into engine
+      VideoEngine.setSign(signData);
+
+      await new Promise((resolve) => {
+        VideoEngine.exportVideo(
+          function onProgress(pct) {
+            if (subEl) subEl.innerHTML = `<span class="batch-status rendering"><i class="fa-solid fa-spinner fa-spin"></i> ${pct}%</span>`;
+          },
+          function onComplete(videoUrl, blob) {
+            batchRenderedVideos[sign.id] = {
+              signId: sign.id,
+              nameHi: sign.nameHi,
+              nameEn: sign.nameEn,
+              url: videoUrl,
+              blob: blob
+            };
+            renderBatchGrid();
+            resolve();
+          },
+          function onError(err) {
+            if (subEl) subEl.innerHTML = `<span class="batch-status error">त्रुटि</span>`;
+            resolve();
+          }
+        );
+      });
+    }
+
+    isBatchRunning = false;
+    if (startBtn) {
+      startBtn.disabled = false;
+      startBtn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> पुनः सभी 12 रेंडर करें';
+    }
+    updateBatchHeaderProgress();
+  }
+
+  function downloadSingleBatchVideo(signId) {
+    const item = batchRenderedVideos[signId];
+    if (!item) return;
+
+    const a = document.createElement('a');
+    a.href = item.url;
+    const dateStr = targetDateObj ? targetDateObj.toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10);
+    a.download = `Rashifal_${item.nameEn}_${dateStr}.webm`;
+    a.click();
+  }
+
+  function downloadAllBatchVideos() {
+    const keys = Object.keys(batchRenderedVideos);
+    if (keys.length === 0) {
+      alert('कृपया पहले वीडियो रेंडर होने दें!');
+      return;
+    }
+
+    let delay = 0;
+    keys.forEach((key) => {
+      setTimeout(() => {
+        downloadSingleBatchVideo(key);
+      }, delay);
+      delay += 700; // 700ms stagger so browser allows multi-file download
+    });
   }
 
   // ══════════════════════════════════════════════════════════════════
@@ -489,7 +634,12 @@ const TemplateEngine = (function() {
     handlePasteText: handlePasteText,
     startVideoExport: startVideoExport,
     closeExportModal: closeExportModal,
-    generateAll12Shorts: generateAll12Shorts
+    openBatchModal: openBatchModal,
+    closeBatchModal: closeBatchModal,
+    generateAll12Shorts: generateAll12Shorts,
+    startBatch12Render: startBatch12Render,
+    downloadSingleBatchVideo: downloadSingleBatchVideo,
+    downloadAllBatchVideos: downloadAllBatchVideos
   };
 })();
 
