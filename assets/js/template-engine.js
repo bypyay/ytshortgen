@@ -25,7 +25,7 @@ const TemplateEngine = (function() {
     // 3. Render Zodiac Selector Grid & Popular Sources
     renderZodiacGrid();
     renderPopularSourceChips();
-    addSourceRow('https://www.aajtak.in/astrology/rashifal');
+    addSourceRow('https://www.astrosage.com/rashifal/kal-ka-rashifal.asp');
 
     // 4. Render Slide Timeline Thumbnails
     renderTimelineThumbs();
@@ -151,6 +151,20 @@ const TemplateEngine = (function() {
     } finally {
       btnScrape.disabled = false;
       btnScrape.innerHTML = originalBtnHtml;
+    }
+  }
+
+  function handlePasteText() {
+    const raw = prompt('यहाँ किसी भी वेबसाइट से कॉपी किया गया राशिफल या समाचार टेक्स्ट पेस्ट करें:');
+    if (!raw || raw.trim().length < 20) return;
+
+    try {
+      const parsedData = ContentScraper.parseAstrologyText(raw);
+      currentSignsData = parsedData;
+      loadSignIntoStudio(selectedSignId);
+      alert('✅ पेस्ट किए गए टेक्स्ट से 12 राशियों का कंटेंट सफलतापूर्वक लोड हो गया!');
+    } catch (e) {
+      alert('⚠️ टेक्स्ट प्रोसेस नहीं हो सका: ' + e.message);
     }
   }
 
@@ -404,6 +418,7 @@ const TemplateEngine = (function() {
     addSourceRow: addSourceRow,
     removeSourceRow: removeSourceRow,
     handleScrapeUrl: handleScrapeUrl,
+    handlePasteText: handlePasteText,
     startVideoExport: startVideoExport,
     closeExportModal: closeExportModal,
     generateAll12Shorts: generateAll12Shorts

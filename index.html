@@ -15,7 +15,7 @@
   <meta property="og:url" content="https://bypyay.github.io/ytshortgen/">
 
   <!-- Stylesheets & Fonts -->
-  <link rel="stylesheet" href="assets/css/studio.css?v=2">
+  <link rel="stylesheet" href="assets/css/studio.css?v=3">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
   <!-- Structured Data JSON-LD (Schema.org) -->
@@ -320,14 +320,17 @@
           </div>
 
           <div style="display:flex; gap:6px; margin-top:4px;">
-            <button type="button" class="btn-header" style="flex:1; justify-content:center; padding:6px 10px; font-size:0.78rem;" onclick="TemplateEngine.addSourceRow()">
+            <button type="button" class="btn-header" style="flex:1; justify-content:center; padding:6px 8px; font-size:0.75rem;" onclick="TemplateEngine.addSourceRow()">
               <i class="fa-solid fa-plus"></i> स्रोत जोड़ें
             </button>
-            <button type="button" class="btn-scrape" id="btnScrape" style="flex:1.4; justify-content:center; padding:6px 12px;" onclick="TemplateEngine.handleScrapeUrl()">
-              <i class="fa-solid fa-bolt"></i> सभी से डेटा लाएं
+            <button type="button" class="btn-header" style="flex:1; justify-content:center; padding:6px 8px; font-size:0.75rem; background:rgba(255,255,255,0.08);" onclick="TemplateEngine.handlePasteText()">
+              <i class="fa-solid fa-paste"></i> पेस्ट टेक्स्ट
+            </button>
+            <button type="button" class="btn-scrape" id="btnScrape" style="flex:1.4; justify-content:center; padding:6px 10px; font-size:0.78rem;" onclick="TemplateEngine.handleScrapeUrl()">
+              <i class="fa-solid fa-bolt"></i> डेटा फेच करें
             </button>
           </div>
-          <p style="font-size:0.70rem; color:#94a3b8; margin-top:2px;">एक या एक से अधिक वेबसाइट लिंक जोड़ें, टूल सभी स्रोतों से डेटा स्वचालित रूप से मर्ज कर लेगा।</p>
+          <p style="font-size:0.70rem; color:#94a3b8; margin-top:2px;">AstroSage, AajTak या किसी भी वेबसाइट का लिंक डालें या सीधा टेक्स्ट पेस्ट करें।</p>
         </div>
 
         <!-- 12 Zodiac Selector Grid -->
@@ -513,8 +516,8 @@
   </footer>
 
   <!-- Scripts -->
-  <script src="assets/js/content-scraper.js?v=2"></script>
-  <script src="assets/js/video-engine.js?v=2"></script>
-  <script src="assets/js/template-engine.js?v=2"></script>
+  <script src="assets/js/content-scraper.js?v=3"></script>
+  <script src="assets/js/video-engine.js?v=3"></script>
+  <script src="assets/js/template-engine.js?v=3"></script>
 </body>
 </html>

@@ -1,27 +1,39 @@
 /**
  * ══════════════════════════════════════════════════════════════════
- * AI YOUTUBE SHORTS STUDIO — CONTENT INGESTION & WEB SCRAPER ENGINE
- * Real-time URL scraping, Zodiac parser, and Daily Rashifal Engine
+ * AI YOUTUBE SHORTS STUDIO — ADVANCED CONTENT SCRAPER & ASTROSAGE BOT
+ * High-speed scraping via Jina AI Gateway & Cloudflare Bypasser
+ * Supports AstroSage, AajTak, Dainik Bhaskar, AmarUjala, Jagran, Webdunia
  * ══════════════════════════════════════════════════════════════════
  */
 
 const ContentScraper = (function() {
   'use strict';
 
-  // 12 Zodiac Signs Master Dictionary
+  // 12 Zodiac Signs Master Dictionary with all Sanskrit/Hindi synonyms
   const ZODIAC_SIGNS = [
-    { id: 'aries', nameHi: 'मेष', nameEn: 'Aries', symbol: '♈', lord: 'मंगल', element: 'अग्नि' },
-    { id: 'taurus', nameHi: 'वृषभ', nameEn: 'Taurus', symbol: '♉', lord: 'शुक्र', element: 'पृथ्वी' },
-    { id: 'gemini', nameHi: 'मिथुन', nameEn: 'Gemini', symbol: '♊', lord: 'बुध', element: 'वायु' },
-    { id: 'cancer', nameHi: 'कर्क', nameEn: 'Cancer', symbol: '♋', lord: 'चंद्रमा', element: 'जल' },
-    { id: 'leo', nameHi: 'सिंह', nameEn: 'Leo', symbol: '♌', lord: 'सूर्य', element: 'अग्नि' },
-    { id: 'virgo', nameHi: 'कन्या', nameEn: 'Virgo', symbol: '♍', lord: 'बुध', element: 'पृथ्वी' },
-    { id: 'libra', nameHi: 'तुला', nameEn: 'Libra', symbol: '♎', lord: 'शुक्र', element: 'वायु' },
-    { id: 'scorpio', nameHi: 'वृश्चिक', nameEn: 'Scorpio', symbol: '♏', lord: 'मंगल', element: 'जल' },
-    { id: 'sagittarius', nameHi: 'धनु', nameEn: 'Sagittarius', symbol: '♐', lord: 'बृहस्पति', element: 'अग्नि' },
-    { id: 'capricorn', nameHi: 'मकर', nameEn: 'Capricorn', symbol: '♑', lord: 'शनि', element: 'पृथ्वी' },
-    { id: 'aquarius', nameHi: 'कुंभ', nameEn: 'Aquarius', symbol: '♒', lord: 'शनि', element: 'वायु' },
-    { id: 'pisces', nameHi: 'मीन', nameEn: 'Pisces', symbol: '♓', lord: 'बृहस्पति', element: 'जल' }
+    { id: 'aries', nameHi: 'मेष', nameEn: 'Aries', symbol: '♈', lord: 'मंगल', element: 'अग्नि', astroSlug: 'mesh', patterns: ['मेष', 'Mesh', 'Aries'] },
+    { id: 'taurus', nameHi: 'वृषभ', nameEn: 'Taurus', symbol: '♉', lord: 'शुक्र', element: 'पृथ्वी', astroSlug: 'vrishabha', patterns: ['वृषभ', 'वृष', 'Vrishabh', 'Vrishabha', 'Taurus'] },
+    { id: 'gemini', nameHi: 'मिथुन', nameEn: 'Gemini', symbol: '♊', lord: 'बुध', element: 'वायु', astroSlug: 'mithun', patterns: ['मिथुन', 'Mithun', 'Gemini'] },
+    { id: 'cancer', nameHi: 'कर्क', nameEn: 'Cancer', symbol: '♋', lord: 'चंद्रमा', element: 'जल', astroSlug: 'karka', patterns: ['कर्क', 'Kark', 'Karka', 'Cancer'] },
+    { id: 'leo', nameHi: 'सिंह', nameEn: 'Leo', symbol: '♌', lord: 'सूर्य', element: 'अग्नि', astroSlug: 'simha', patterns: ['सिंह', 'सिंघ', 'Simha', 'Leo'] },
+    { id: 'virgo', nameHi: 'कन्या', nameEn: 'Virgo', symbol: '♍', lord: 'बुध', element: 'पृथ्वी', astroSlug: 'kanya', patterns: ['कन्या', 'Kanya', 'Virgo'] },
+    { id: 'libra', nameHi: 'तुला', nameEn: 'Libra', symbol: '♎', lord: 'शुक्र', element: 'वायु', astroSlug: 'tula', patterns: ['तुला', 'Tula', 'Libra'] },
+    { id: 'scorpio', nameHi: 'वृश्चिक', nameEn: 'Scorpio', symbol: '♏', lord: 'मंगल', element: 'जल', astroSlug: 'vrishchika', patterns: ['वृश्चिक', 'Vrishchik', 'Vrishchika', 'Scorpio'] },
+    { id: 'sagittarius', nameHi: 'धनु', nameEn: 'Sagittarius', symbol: '♐', lord: 'बृहस्पति', element: 'अग्नि', astroSlug: 'dhanu', patterns: ['धनु', 'Dhanu', 'Sagittarius'] },
+    { id: 'capricorn', nameHi: 'मकर', nameEn: 'Capricorn', symbol: '♑', lord: 'शनि', element: 'पृथ्वी', astroSlug: 'makara', patterns: ['मकर', 'Makar', 'Makara', 'Capricorn'] },
+    { id: 'aquarius', nameHi: 'कुंभ', nameEn: 'Aquarius', symbol: '♒', lord: 'शनि', element: 'वायु', astroSlug: 'kumbha', patterns: ['कुंभ', 'कुम्भ', 'Kumbh', 'Kumbha', 'Aquarius'] },
+    { id: 'pisces', nameHi: 'मीन', nameEn: 'Pisces', symbol: '♓', lord: 'बृहस्पति', element: 'जल', astroSlug: 'meena', patterns: ['मीन', 'Meen', 'Meena', 'Pisces'] }
+  ];
+
+  // Popular Pre-configured Sources
+  const POPULAR_SOURCES = [
+    { name: '🕉️ AstroSage (कल का राशिफल)', url: 'https://www.astrosage.com/rashifal/kal-ka-rashifal.asp' },
+    { name: '🌟 AstroSage (आज का राशिफल)', url: 'https://www.astrosage.com/rashifal/aaj-ka-rashifal.asp' },
+    { name: '🔴 Aaj Tak Rashifal', url: 'https://www.aajtak.in/astrology/rashifal' },
+    { name: '🟡 Amar Ujala', url: 'https://www.amarujala.com/astrology/rashifal' },
+    { name: '🔵 Live Hindustan', url: 'https://www.livehindustan.com/astrology/rashifal/' },
+    { name: '🟢 Webdunia Hindi', url: 'https://hindi.webdunia.com/astrology' },
+    { name: '🟣 Dainik Jagran', url: 'https://www.jagran.com/astrology/rashifal.html' }
   ];
 
   // Daily Astrological Remedial Bank (उपाय एवं मंत्र)
@@ -35,138 +47,100 @@ const ContentScraper = (function() {
     'गणेश जी को दूर्वा अर्पित करें, विघ्न-बाधाएं दूर होंगी।'
   ];
 
-  const LUCKY_COLORS = ['लाल (Red)', 'पीला (Yellow)', 'सुनहरा (Gold)', 'हरा (Green)', 'सफेद (White)', 'नारंगी (Orange)', 'गुलाबी (Pink)', 'केसरिया (Saffron)'];
-
-  // Popular Pre-configured Sources
-  const POPULAR_SOURCES = [
-    { name: 'Aaj Tak Rashifal', url: 'https://www.aajtak.in/astrology/rashifal' },
-    { name: 'Amar Ujala', url: 'https://www.amarujala.com/astrology/rashifal' },
-    { name: 'Live Hindustan', url: 'https://www.livehindustan.com/astrology/rashifal/' },
-    { name: 'Webdunia Hindi', url: 'https://hindi.webdunia.com/astrology' },
-    { name: 'Dainik Jagran', url: 'https://www.jagran.com/astrology/rashifal.html' }
-  ];
+  const LUCKY_COLORS = ['लाल (Red)', 'पीला (Yellow)', 'सुनहरा (Gold)', 'हरा (Green)', 'सफेद (White)', 'नारंगी (Orange)', 'गुलाबी (Pink)', 'केसरिया (Saffron)', 'आसमानी (Sky Blue)'];
 
   // ══════════════════════════════════════════════════════════════════
-  // 1. Fetch & Scrape Content from Single / Multiple URLs
+  // 1. High-Precision Web Page Fetcher (Bypasses Cloudflare)
   // ══════════════════════════════════════════════════════════════════
-  async function scrapeSingleUrl(targetUrl) {
-    if (!targetUrl || !targetUrl.startsWith('http')) {
-      return null;
-    }
+  async function fetchCleanContent(targetUrl) {
+    if (!targetUrl || !targetUrl.startsWith('http')) return null;
 
-    const proxies = [
-      `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`,
-      `https://api.codetab.org/v1/proxy?quest=${encodeURIComponent(targetUrl)}`,
+    const proxyGateways = [
+      `https://r.jina.ai/${targetUrl}`,
+      `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
+      `https://cors-anywhere.herokuapp.com/${targetUrl}`,
       targetUrl
     ];
 
-    let htmlText = '';
-    for (const proxy of proxies) {
+    for (const gateway of proxyGateways) {
       try {
-        const response = await fetch(proxy, { headers: { 'User-Agent': 'Mozilla/5.0' } });
+        const response = await fetch(gateway, {
+          headers: { 'Accept': 'text/plain, text/html, application/json' }
+        });
         if (response.ok) {
-          if (proxy.includes('allorigins')) {
-            const data = await response.json();
-            htmlText = data.contents;
-          } else {
-            htmlText = await response.text();
+          const text = await response.text();
+          if (text && text.length > 150) {
+            return text;
           }
-          if (htmlText && htmlText.length > 200) break;
+        }
+      } catch (e) {
+        console.warn('Scraper Gateway attempt failed:', gateway, e);
+      }
+    }
+    return null;
+  }
+
+  // ══════════════════════════════════════════════════════════════════
+  // 2. Dedicated AstroSage Multi-Sign Crawler
+  // ══════════════════════════════════════════════════════════════════
+  async function scrapeAstroSage(url) {
+    const isTomorrow = url.includes('kal-ka-rashifal') || url.includes('kal');
+    const prefix = isTomorrow ? 'kal-ka-rashifal.asp' : 'aaj-ka-rashifal.asp';
+
+    const results = {};
+    const fetchPromises = ZODIAC_SIGNS.map(async (sign) => {
+      const signUrl = `https://www.astrosage.com/rashifal/${sign.astroSlug}-${prefix}`;
+      try {
+        const content = await fetchCleanContent(signUrl);
+        if (content) {
+          results[sign.id] = parseAstroSageSignContent(content, sign);
+          return;
         }
       } catch (e) {}
-    }
 
-    if (!htmlText || htmlText.length < 200) return null;
-
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(htmlText, 'text/html');
-    const unwanted = doc.querySelectorAll('script, style, nav, footer, header, noscript, iframe, .ads');
-    unwanted.forEach(el => el.remove());
-
-    return doc.body.innerText || '';
-  }
-
-  // Scrape Multiple Sources & Merge Data
-  async function scrapeMultipleUrls(urlsArray) {
-    const validUrls = urlsArray.filter(u => u && u.trim().startsWith('http'));
-    if (validUrls.length === 0) {
-      throw new Error('कृपया कम से कम एक वैध वेबसाइट URL (http/https) दर्ज करें।');
-    }
-
-    let combinedRawText = '';
-    let successCount = 0;
-
-    for (const url of validUrls) {
-      const text = await scrapeSingleUrl(url.trim());
-      if (text) {
-        combinedRawText += '\n' + text;
-        successCount++;
-      }
-    }
-
-    if (successCount === 0 || combinedRawText.length < 200) {
-      throw new Error('दिए गए किसी भी लिंक से डेटा प्राप्त नहीं हो सका। कृपया लिंक जांचें या इन-बिल्ट डेली राशिफल का उपयोग करें।');
-    }
-
-    return parseAstrologyText(combinedRawText);
-  }
-
-  // ══════════════════════════════════════════════════════════════════
-  // 2. Intelligent Text & Zodiac Sign Parser
-  // ══════════════════════════════════════════════════════════════════
-  function parseAstrologyText(rawText) {
-    const results = {};
-    const lines = rawText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-    const fullText = lines.join(' ');
-
-    ZODIAC_SIGNS.forEach(sign => {
-      // Look for sign name in Hindi and English
-      const pattern = new RegExp(`(${sign.nameHi}|${sign.nameEn})[\\s\\S]{1,500}?(?=(मेष|वृषभ|मिथुन|कर्क|सिंह|कन्या|तुला|वृश्चिक|धनु|मकर|कुंभ|मीन|Aries|Taurus|Gemini|$))`, 'i');
-      const match = fullText.match(pattern);
-
-      if (match) {
-        const snippet = match[0].trim();
-        results[sign.id] = cleanZodiacSnippet(snippet, sign);
-      } else {
-        // Fallback: Generate algorithmic authentic daily prediction
-        results[sign.id] = generateDailySignData(sign);
-      }
+      // Fallback
+      results[sign.id] = generateDailySignData(sign);
     });
 
+    await Promise.allSettled(fetchPromises);
     return results;
   }
 
-  function cleanZodiacSnippet(snippet, sign) {
-    // Extract Lucky Color
-    let luckyColor = LUCKY_COLORS[Math.floor(Math.random() * LUCKY_COLORS.length)];
-    const colorMatch = snippet.match(/शुभ\s*रंग[:\s\-]*([^\,\.\n]+)/i);
-    if (colorMatch && colorMatch[1]) luckyColor = colorMatch[1].trim();
+  function parseAstroSageSignContent(text, sign) {
+    let prediction = '';
+    let upay = '';
 
-    // Extract Lucky Number
-    let luckyNumber = Math.floor(Math.random() * 9) + 1;
-    const numMatch = snippet.match(/शुभ\s*अंक[:\s\-]*(\d+)/i);
-    if (numMatch && numMatch[1]) luckyNumber = parseInt(numMatch[1], 10);
-
-    // Extract Bhagya %
-    let luckPercent = Math.floor(Math.random() * 26) + 70; // 70% - 95%
-    const luckMatch = snippet.match(/भाग्य[:\s\-]*(\d+)%/i);
-    if (luckMatch && luckMatch[1]) luckPercent = parseInt(luckMatch[1], 10);
-
-    // Clean Main Prediction
-    let prediction = snippet
-      .replace(new RegExp(`^.*${sign.nameHi}`, 'i'), '')
-      .replace(/शुभ\s*(रंग|अंक|समय|संख्या)[^.\n]*[.\n]?/gi, '')
-      .replace(/https?:\/\/\S+/g, '')
-      .trim();
-
-    if (prediction.length < 30) {
-      prediction = generateDailySignData(sign).prediction;
-    } else if (prediction.length > 220) {
-      prediction = prediction.substring(0, 215) + '...';
+    // Extract Upay
+    const upayMatch = text.match(/\*\*उपाय\s*:?[\-–]*\*\*\s*([^\n\r]+)/i) ||
+                      text.match(/उपाय\s*:?[\-–]+\s*([^\n\r]+)/i) ||
+                      text.match(/उपाय[:\s\-]+([^\n\r]+)/i);
+    if (upayMatch && upayMatch[1]) {
+      upay = upayMatch[1].replace(/[\*\_]/g, '').trim();
+    } else {
+      upay = UPAY_BANK[Math.floor(Math.random() * UPAY_BANK.length)];
     }
 
-    // Upay
-    const upay = UPAY_BANK[Math.floor(Math.random() * UPAY_BANK.length)];
+    // Extract Prediction
+    const dateMatch = text.match(/\*\*(Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday)[^\*]+\*\*\s*\n+([\s\S]+?)(?=(\*\*उपाय|##|\n\n\n|$))/i);
+    if (dateMatch && dateMatch[2]) {
+      prediction = dateMatch[2].replace(/[\*\_]/g, ' ').replace(/\n+/g, ' ').trim();
+    } else {
+      // Find sign section
+      const signMatch = text.match(new RegExp(`(${sign.nameHi}|${sign.nameEn})[\\s\\S]{1,600}?(?=(उपाय|##|\n\n\n|$))`, 'i'));
+      if (signMatch) {
+        prediction = signMatch[0].replace(/[\*\_]/g, ' ').replace(/\n+/g, ' ').trim();
+      }
+    }
+
+    if (!prediction || prediction.length < 30) {
+      prediction = generateDailySignData(sign).prediction;
+    } else if (prediction.length > 230) {
+      prediction = prediction.substring(0, 225) + '...';
+    }
+
+    const luckyColor = LUCKY_COLORS[Math.floor(Math.random() * LUCKY_COLORS.length)];
+    const luckyNumber = Math.floor(Math.random() * 9) + 1;
+    const luckPercent = Math.floor(Math.random() * 22) + 76; // 76% - 98%
 
     return {
       signId: sign.id,
@@ -184,7 +158,128 @@ const ContentScraper = (function() {
   }
 
   // ══════════════════════════════════════════════════════════════════
-  // 3. Built-In Algorithmic Daily Rashifal Generator (100% Offline)
+  // 3. Multi-Source Scraping Controller
+  // ══════════════════════════════════════════════════════════════════
+  async function scrapeMultipleUrls(urlsArray) {
+    const validUrls = urlsArray.filter(u => u && u.trim().startsWith('http'));
+    if (validUrls.length === 0) {
+      throw new Error('कृपया कम से कम एक वैध वेबसाइट लिंक (URL) दर्ज करें।');
+    }
+
+    // Check if any URL is AstroSage
+    const astroSageUrl = validUrls.find(u => u.includes('astrosage.com'));
+    if (astroSageUrl) {
+      try {
+        const astroData = await scrapeAstroSage(astroSageUrl);
+        if (Object.keys(astroData).length >= 12) {
+          return astroData;
+        }
+      } catch (e) {
+        console.warn('Direct AstroSage crawl error:', e);
+      }
+    }
+
+    // Generic Multi-Source Crawl
+    let combinedText = '';
+    for (const url of validUrls) {
+      const content = await fetchCleanContent(url.trim());
+      if (content) {
+        combinedText += '\n' + content;
+      }
+    }
+
+    if (!combinedText || combinedText.length < 100) {
+      throw new Error('दिए गए किसी भी लिंक से डेटा प्राप्त नहीं हो सका। कृपया लिंक जांचें या इन-बिल्ट डेली राशिफल का उपयोग करें।');
+    }
+
+    return parseAstrologyText(combinedText);
+  }
+
+  // ══════════════════════════════════════════════════════════════════
+  // 4. Intelligent Text & Zodiac Sign Parser
+  // ══════════════════════════════════════════════════════════════════
+  function parseAstrologyText(rawText) {
+    const results = {};
+    const fullText = rawText.replace(/[\*\_]/g, ' ').replace(/\s+/g, ' ');
+
+    ZODIAC_SIGNS.forEach(sign => {
+      let matchedSnippet = '';
+
+      for (const patternName of sign.patterns) {
+        const regex = new RegExp(`${patternName}[\\s\\S]{1,550}?(?=(मेष|वृषभ|वृष|मिथुन|कर्क|सिंह|कन्या|तुला|वृश्चिक|धनु|मकर|कुंभ|कुम्भ|मीन|Aries|Taurus|Gemini|##|$))`, 'i');
+        const match = fullText.match(regex);
+        if (match && match[0].length > 40) {
+          matchedSnippet = match[0].trim();
+          break;
+        }
+      }
+
+      if (matchedSnippet) {
+        results[sign.id] = cleanZodiacSnippet(matchedSnippet, sign);
+      } else {
+        results[sign.id] = generateDailySignData(sign);
+      }
+    });
+
+    return results;
+  }
+
+  function cleanZodiacSnippet(snippet, sign) {
+    // Extract Lucky Color
+    let luckyColor = LUCKY_COLORS[Math.floor(Math.random() * LUCKY_COLORS.length)];
+    const colorMatch = snippet.match(/शुभ\s*रंग[:\s\-]*([^\,\.\n]+)/i);
+    if (colorMatch && colorMatch[1]) luckyColor = colorMatch[1].trim();
+
+    // Extract Lucky Number
+    let luckyNumber = Math.floor(Math.random() * 9) + 1;
+    const numMatch = snippet.match(/शुभ\s*(अंक|संख्या)[:\s\-]*(\d+)/i);
+    if (numMatch && numMatch[2]) luckyNumber = parseInt(numMatch[2], 10);
+
+    // Extract Bhagya %
+    let luckPercent = Math.floor(Math.random() * 24) + 75; // 75% - 98%
+    const luckMatch = snippet.match(/भाग्य[:\s\-]*(\d+)%/i);
+    if (luckMatch && luckMatch[1]) luckPercent = parseInt(luckMatch[1], 10);
+
+    // Extract Upay
+    let upay = '';
+    const upayMatch = snippet.match(/उपाय[:\s\-]+([^\.\n]+)/i);
+    if (upayMatch && upayMatch[1] && upayMatch[1].length > 10) {
+      upay = upayMatch[1].trim();
+    } else {
+      upay = UPAY_BANK[Math.floor(Math.random() * UPAY_BANK.length)];
+    }
+
+    // Clean Prediction Text
+    let prediction = snippet
+      .replace(new RegExp(`^.*${sign.nameHi}`, 'i'), '')
+      .replace(/शुभ\s*(रंग|अंक|समय|संख्या)[^.\n]*[.\n]?/gi, '')
+      .replace(/उपाय[:\s\-]+[^\.\n]+[.\n]?/gi, '')
+      .replace(/https?:\/\/\S+/g, '')
+      .trim();
+
+    if (prediction.length < 30) {
+      prediction = generateDailySignData(sign).prediction;
+    } else if (prediction.length > 220) {
+      prediction = prediction.substring(0, 215) + '...';
+    }
+
+    return {
+      signId: sign.id,
+      signNameHi: sign.nameHi,
+      signNameEn: sign.nameEn,
+      symbol: sign.symbol,
+      lord: sign.lord,
+      element: sign.element,
+      luckyColor: luckyColor,
+      luckyNumber: luckyNumber,
+      luckPercent: luckPercent,
+      prediction: prediction,
+      upay: upay
+    };
+  }
+
+  // ══════════════════════════════════════════════════════════════════
+  // 5. Built-In Algorithmic Daily Rashifal Generator (100% Offline)
   // ══════════════════════════════════════════════════════════════════
   function generateDailySignData(sign, dateObj = new Date()) {
     const daySeed = dateObj.getFullYear() * 10000 + (dateObj.getMonth() + 1) * 100 + dateObj.getDate();
@@ -193,7 +288,7 @@ const ContentScraper = (function() {
 
     const luckyNumber = Math.floor(pseudoRandom * 9) + 1;
     const luckyColor = LUCKY_COLORS[Math.floor(pseudoRandom * LUCKY_COLORS.length)];
-    const luckPercent = 75 + Math.floor(pseudoRandom * 23); // 75% to 98%
+    const luckPercent = 75 + Math.floor(pseudoRandom * 23);
     const upay = UPAY_BANK[(daySeed + signIndex) % UPAY_BANK.length];
 
     const predictions = [
@@ -233,7 +328,8 @@ const ContentScraper = (function() {
   return {
     ZODIAC_SIGNS: ZODIAC_SIGNS,
     POPULAR_SOURCES: POPULAR_SOURCES,
-    scrapeSingleUrl: scrapeSingleUrl,
+    fetchCleanContent: fetchCleanContent,
+    scrapeAstroSage: scrapeAstroSage,
     scrapeMultipleUrls: scrapeMultipleUrls,
     parseAstrologyText: parseAstrologyText,
     generateDailySignData: generateDailySignData,
