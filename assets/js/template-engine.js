@@ -17,28 +17,33 @@ const TemplateEngine = (function() {
   // 1. Initialization
   // ══════════════════════════════════════════════════════════════════
   function init() {
-    // 1. Initialize 12 Daily Signs with authentic astrology for target date (Tomorrow by default)
-    currentSignsData = ContentScraper.generateAllDailySigns(targetDateObj);
+    try {
+      // 1. Initialize 12 Daily Signs with authentic astrology for target date (Tomorrow by default)
+      currentSignsData = ContentScraper.generateAllDailySigns(targetDateObj);
 
-    // 2. Initialize Video Engine Canvas
-    VideoEngine.init('studioVideoCanvas');
-    VideoEngine.setTargetDate(targetDateObj.toISOString().slice(0, 10));
-    loadSignIntoStudio(selectedSignId);
+      // 2. Initialize Video Engine Canvas
+      VideoEngine.init('studioVideoCanvas');
+      const isoDate = targetDateObj.toISOString().slice(0, 10);
+      VideoEngine.setTargetDate(isoDate);
+      loadSignIntoStudio(selectedSignId);
 
-    // 3. Render Zodiac Selector Grid & Popular Sources
-    renderZodiacGrid();
-    renderPopularSourceChips();
-    addSourceRow('https://www.astrosage.com/rashifal/kal-ka-rashifal.asp');
+      // 3. Render Zodiac Selector Grid & Popular Sources
+      renderZodiacGrid();
+      renderPopularSourceChips();
+      addSourceRow('https://www.astrosage.com/rashifal/kal-ka-rashifal.asp');
 
-    // 4. Render Slide Timeline Thumbnails
-    renderTimelineThumbs();
+      // 4. Render Slide Timeline Thumbnails
+      renderTimelineThumbs();
 
-    // 5. Setup Event Listeners & Date Switcher
-    setupEventListeners();
-    setupDateControls();
+      // 5. Setup Event Listeners & Date Switcher
+      setupEventListeners();
+      setupDateControls();
 
-    // 6. Load Saved Preset if any
-    loadSavedPreset();
+      // 6. Load Saved Preset if any
+      loadSavedPreset();
+    } catch (err) {
+      console.error('Studio init error:', err);
+    }
   }
 
   // ══════════════════════════════════════════════════════════════════
@@ -584,6 +589,16 @@ const TemplateEngine = (function() {
       if (r) r.addEventListener('change', updateDate);
     });
 
+    document.querySelectorAll('.date-radio-pill').forEach(pill => {
+      pill.addEventListener('click', () => {
+        const radio = pill.querySelector('input[type="radio"]');
+        if (radio) {
+          radio.checked = true;
+          updateDate();
+        }
+      });
+    });
+
     if (inpCustomDate) {
       inpCustomDate.value = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
       inpCustomDate.addEventListener('change', updateDate);
@@ -643,5 +658,18 @@ const TemplateEngine = (function() {
   };
 })();
 
-// Auto-boot on DOM ready
-document.addEventListener('DOMContentLoaded', TemplateEngine.init);
+// Attach globally
+if (typeof window !== 'undefined') {
+  window.TemplateEngine = TemplateEngine;
+}
+
+// Auto-boot on DOM ready or immediate if already interactive/complete
+if (typeof document !== 'undefined') {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      TemplateEngine.init();
+    });
+  } else {
+    TemplateEngine.init();
+  }
+}

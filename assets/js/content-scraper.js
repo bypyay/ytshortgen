@@ -358,3 +358,8 @@ const ContentScraper = (function() {
     generateAllDailySigns: generateAllDailySigns
   };
 })();
+
+// Attach globally
+if (typeof window !== 'undefined') {
+  window.ContentScraper = ContentScraper;
+}

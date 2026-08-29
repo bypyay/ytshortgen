@@ -369,10 +369,17 @@ body {
   font-weight: 700;
   color: #e2e8f0;
   transition: all 0.2s;
+  user-select: none;
 }
 .date-radio-pill:hover {
   background: rgba(245, 158, 11, 0.15);
   border-color: rgba(245, 158, 11, 0.4);
+}
+.date-radio-pill:has(input:checked) {
+  background: rgba(245, 158, 11, 0.22);
+  border-color: #fbbf24;
+  color: #fff;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
 }
 .date-radio-pill input[type="radio"] {
   accent-color: #f59e0b;

@@ -295,7 +295,7 @@ const VideoEngine = (function() {
     ctx.stroke();
 
     // Date & Day Text
-    const targetDate = projectData.targetDate ? new Date(projectData.targetDate) : new Date();
+    const targetDate = parseDateSafe(projectData.targetDate);
     const days = ['रविवार', 'सोमवार', 'मंगलवार', 'बुधवार', 'गुरुवार', 'शुक्रवार', 'शनिवार'];
     const months = ['जनवरी', 'फरवरी', 'मार्च', 'अप्रैल', 'मई', 'जून', 'जुलाई', 'अगस्त', 'सितंबर', 'अक्टूबर', 'नवंबर', 'दिसंबर'];
     const dateStr = `🕉️ ${days[targetDate.getDay()]}, ${targetDate.getDate()} ${months[targetDate.getMonth()]} ${targetDate.getFullYear()} 🪔`;
@@ -862,6 +862,18 @@ const VideoEngine = (function() {
     renderFrame(currentTime);
   }
 
+  function parseDateSafe(dateInput) {
+    if (!dateInput) return new Date();
+    if (dateInput instanceof Date) return dateInput;
+    if (typeof dateInput === 'string') {
+      const parts = dateInput.split('-');
+      if (parts.length === 3) {
+        return new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+      }
+    }
+    return new Date(dateInput);
+  }
+
   return {
     init: init,
     play: play,
@@ -879,3 +891,8 @@ const VideoEngine = (function() {
     getTotalDuration: () => totalDuration
   };
 })();
+
+// Attach globally
+if (typeof window !== 'undefined') {
+  window.VideoEngine = VideoEngine;
+}
