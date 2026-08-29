@@ -15,7 +15,7 @@
   <meta property="og:url" content="https://bypyay.github.io/ytshortgen/">
 
   <!-- Stylesheets & Fonts -->
-  <link rel="stylesheet" href="assets/css/studio.css?v=10">
+  <link rel="stylesheet" href="assets/css/studio.css?v=11">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
   <!-- Structured Data JSON-LD (Schema.org) -->
@@ -420,8 +420,8 @@
             <label for="predictionFontSizeSlider" style="font-size:0.72rem; color:#94a3b8; margin:0; display:flex; align-items:center; gap:4px;">
               <i class="fa-solid fa-text-height"></i> फ़ॉन्ट साइज़:
             </label>
-            <input type="range" class="seek-slider" id="predictionFontSizeSlider" min="34" max="52" value="42" style="flex:1; margin:0 8px; max-width:140px;">
-            <span id="predictionFontSizeDisplay" style="font-size:0.74rem; font-weight:800; color:#fbbf24;">42px</span>
+            <input type="range" class="seek-slider" id="predictionFontSizeSlider" min="18" max="52" value="28" style="flex:1; margin:0 8px; max-width:140px;">
+            <span id="predictionFontSizeDisplay" style="font-size:0.74rem; font-weight:800; color:#fbbf24;">28px</span>
           </div>
 
           <label class="input-label" for="txtUpay">
@@ -440,13 +440,20 @@
       <section class="stage-center-panel mobile-active" id="centerPanel">
 
         <!-- Layout Mode Switcher (Single Sign Video vs 12-in-1 Static Video & Poster) -->
-        <div style="display:flex; justify-content:center; gap:8px; margin-bottom:8px;">
+        <div style="display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:8px; margin-bottom:8px;">
           <button type="button" class="layout-mode-pill active" data-layout="single" id="btnLayoutSingle">
             <i class="fa-solid fa-film"></i> 🎬 4-Scene Short
           </button>
           <button type="button" class="layout-mode-pill" data-layout="poster" id="btnLayoutPoster">
             <i class="fa-solid fa-table-cells"></i> 📰 12-राशि ऑल-इन-वन पोस्टर (Image Mode)
           </button>
+        </div>
+
+        <!-- Poster Real-time Text Size Controller -->
+        <div id="posterTextSizeBar" style="display:none; align-items:center; justify-content:center; gap:10px; margin-bottom:8px; background:rgba(30,41,59,0.7); border:1px solid rgba(251,191,36,0.3); padding:6px 14px; border-radius:30px; max-width:440px; margin-left:auto; margin-right:auto;">
+          <span style="font-size:0.78rem; font-weight:800; color:#fbbf24; white-space:nowrap;"><i class="fa-solid fa-text-height"></i> टेक्स्ट साइज़:</span>
+          <input type="range" id="inpPosterLiveFontSize" min="18" max="38" value="26" style="flex:1; cursor:pointer;">
+          <span id="txtPosterLiveFontSizeVal" style="font-size:0.8rem; font-weight:800; color:#fff; min-width:36px; text-align:right;">26px</span>
         </div>
 
         <div class="video-canvas-stage">
@@ -658,8 +665,8 @@
   </footer>
 
   <!-- Scripts -->
-  <script src="assets/js/content-scraper.js?v=10"></script>
-  <script src="assets/js/video-engine.js?v=10"></script>
-  <script src="assets/js/template-engine.js?v=10"></script>
+  <script src="assets/js/content-scraper.js?v=11"></script>
+  <script src="assets/js/video-engine.js?v=11"></script>
+  <script src="assets/js/template-engine.js?v=11"></script>
 </body>
 </html>

@@ -265,7 +265,7 @@ const ContentScraper = (function() {
       upay = UPAY_BANK[Math.floor(Math.random() * UPAY_BANK.length)];
     }
 
-    // Clean Prediction Text
+    // Clean Prediction Text & Smart Complete Sentence Extraction
     let prediction = snippet
       .replace(new RegExp(`^.*${sign.nameHi}`, 'i'), '')
       .replace(/शुभ\s*(रंग|अंक|समय|संख्या)[^.\n]*[.\n]?/gi, '')
@@ -273,10 +273,25 @@ const ContentScraper = (function() {
       .replace(/https?:\/\/\S+/g, '')
       .trim();
 
-    if (prediction.length < 30) {
+    // Sentence-aware extraction (No broken sentences!)
+    const rawSentences = prediction.split(/(?<=[।\.!\?])/).map(s => s.trim()).filter(s => s.length > 5);
+    if (rawSentences.length > 0) {
+      let combined = '';
+      for (const sent of rawSentences) {
+        if ((combined + ' ' + sent).trim().length <= 165) {
+          combined = (combined + ' ' + sent).trim();
+        } else {
+          break;
+        }
+      }
+      if (combined.length > 25) {
+        if (!combined.endsWith('।') && !combined.endsWith('.')) combined += '।';
+        prediction = combined;
+      }
+    }
+
+    if (prediction.length < 25) {
       prediction = generateDailySignData(sign).prediction;
-    } else if (prediction.length > 220) {
-      prediction = prediction.substring(0, 215) + '...';
     }
 
     return {

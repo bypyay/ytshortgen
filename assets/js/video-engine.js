@@ -879,17 +879,16 @@ const VideoEngine = (function() {
       ctx.lineWidth = 1.5;
       ctx.stroke();
 
-      // Prediction Text with dynamic scaling and overflow clipping
+      // Prediction Text: Real-time slider adjustable font size & crisp high readability
       const predText = signData.prediction || 'आज का दिन शुभ रहेगा। सोचे हुए कार्य पूरे होंगे और लाभ मिलेगा।';
-      const textLen = predText.length;
-      const fontSize = textLen > 220 ? 19 : textLen > 130 ? 21 : 23;
-      const lineHeight = Math.round(fontSize * 1.45);
+      const fontSize = projectData.posterFontSize || projectData.predictionFontSize || 26;
+      const lineHeight = Math.round(fontSize * 1.48);
 
-      ctx.font = `600 ${fontSize}px "Noto Sans Devanagari", sans-serif`;
-      ctx.fillStyle = '#1e293b';
+      ctx.font = `700 ${fontSize}px "Noto Sans Devanagari", sans-serif`;
+      ctx.fillStyle = '#0f172a'; // Bold deep black-navy for maximum readability
       ctx.textAlign = 'left';
       ctx.textBaseline = 'top';
-      wrapTextClipped(ctx, predText, x + 14, y + 76, boxW - 28, lineHeight, y + boxH - 12);
+      wrapTextPoster(ctx, predText, x + 14, y + 76, boxW - 28, lineHeight, y + boxH - 10);
 
       ctx.restore();
     }
@@ -1178,7 +1177,7 @@ const VideoEngine = (function() {
     else c.fillText(line.trim(), x, curY);
   }
 
-  function wrapTextClipped(c, text, x, y, maxWidth, lineHeight, maxY) {
+  function wrapTextPoster(c, text, x, y, maxWidth, lineHeight, maxY) {
     const words = text.split(' ');
     let line = '';
     let curY = y;
@@ -1186,7 +1185,14 @@ const VideoEngine = (function() {
     for (let n = 0; n < words.length; n++) {
       if (curY + lineHeight > maxY) {
         if (line.trim().length > 0) {
-          c.fillText(line.trim() + '...', x, curY);
+          let lastStr = line.trim();
+          if (!lastStr.endsWith('।') && !lastStr.endsWith('.')) {
+            const lastDanda = lastStr.lastIndexOf('।');
+            if (lastDanda > 0) {
+              lastStr = lastStr.substring(0, lastDanda + 1);
+            }
+          }
+          c.fillText(lastStr, x, curY);
         }
         return;
       }
@@ -1243,7 +1249,16 @@ const VideoEngine = (function() {
   }
 
   function setPredictionFontSize(size) {
-    projectData.predictionFontSize = parseInt(size, 10) || 42;
+    const s = parseInt(size, 10) || 26;
+    projectData.predictionFontSize = s;
+    projectData.posterFontSize = s;
+    renderFrame(currentTime);
+  }
+
+  function setPosterFontSize(size) {
+    const s = parseInt(size, 10) || 26;
+    projectData.posterFontSize = s;
+    projectData.predictionFontSize = s;
     renderFrame(currentTime);
   }
 
@@ -1282,6 +1297,7 @@ const VideoEngine = (function() {
     setBgmVolume: setBgmVolume,
     setTargetDate: setTargetDate,
     setPredictionFontSize: setPredictionFontSize,
+    setPosterFontSize: setPosterFontSize,
     setLayoutMode: setLayoutMode,
     setAllSignsData: setAllSignsData,
     setCustomAudioFile: setCustomAudioFile,

@@ -593,12 +593,14 @@ const TemplateEngine = (function() {
     const btnLayoutPoster = document.getElementById('btnLayoutPoster');
     const btnDownloadPosterImg = document.getElementById('btnDownloadPosterImg');
     const bottomTimeline = document.getElementById('bottomTimeline');
+    const posterTextSizeBar = document.getElementById('posterTextSizeBar');
 
     if (btnLayoutSingle && btnLayoutPoster) {
       btnLayoutSingle.addEventListener('click', () => {
         btnLayoutSingle.classList.add('active');
         btnLayoutPoster.classList.remove('active');
         if (btnDownloadPosterImg) btnDownloadPosterImg.style.display = 'none';
+        if (posterTextSizeBar) posterTextSizeBar.style.display = 'none';
         if (bottomTimeline) bottomTimeline.style.display = 'block';
         VideoEngine.setLayoutMode('single');
       });
@@ -607,9 +609,25 @@ const TemplateEngine = (function() {
         btnLayoutPoster.classList.add('active');
         btnLayoutSingle.classList.remove('active');
         if (btnDownloadPosterImg) btnDownloadPosterImg.style.display = 'inline-flex';
+        if (posterTextSizeBar) posterTextSizeBar.style.display = 'flex';
         if (bottomTimeline) bottomTimeline.style.display = 'none';
         VideoEngine.setAllSignsData(currentSignsData);
         VideoEngine.setLayoutMode('poster');
+      });
+    }
+
+    // Poster Live Text Size Slider
+    const inpPosterLiveFontSize = document.getElementById('inpPosterLiveFontSize');
+    const txtPosterLiveFontSizeVal = document.getElementById('txtPosterLiveFontSizeVal');
+    if (inpPosterLiveFontSize) {
+      inpPosterLiveFontSize.addEventListener('input', (e) => {
+        const val = parseInt(e.target.value, 10);
+        if (txtPosterLiveFontSizeVal) txtPosterLiveFontSizeVal.textContent = val + 'px';
+        const leftSizeDisplay = document.getElementById('predictionFontSizeDisplay');
+        const leftSizeSlider = document.getElementById('predictionFontSizeSlider');
+        if (leftSizeDisplay) leftSizeDisplay.textContent = val + 'px';
+        if (leftSizeSlider) leftSizeSlider.value = val;
+        VideoEngine.setPosterFontSize(val);
       });
     }
 
@@ -702,6 +720,7 @@ const TemplateEngine = (function() {
         currentLengthMode = mode;
 
         currentSignsData = ContentScraper.generateAllDailySigns(targetDateObj, currentLengthMode);
+        VideoEngine.setAllSignsData(currentSignsData);
         loadSignIntoStudio(selectedSignId);
       });
     });
@@ -714,6 +733,7 @@ const TemplateEngine = (function() {
         const val = parseInt(e.target.value, 10);
         if (sizeDisplay) sizeDisplay.textContent = val + 'px';
         VideoEngine.setPredictionFontSize(val);
+        VideoEngine.setPosterFontSize(val);
       });
     }
   }
