@@ -298,9 +298,9 @@ const ContentScraper = (function() {
   }
 
   // ══════════════════════════════════════════════════════════════════
-  // 5. Built-In Algorithmic Daily Rashifal Generator (100% Offline)
+  // 5. Built-In Algorithmic Daily Rashifal Generator (Multi-Length)
   // ══════════════════════════════════════════════════════════════════
-  function generateDailySignData(sign, dateObj = new Date()) {
+  function generateDailySignData(sign, dateObj = new Date(), lengthMode = 'detailed') {
     const daySeed = dateObj.getFullYear() * 10000 + (dateObj.getMonth() + 1) * 100 + dateObj.getDate();
     const signIndex = ZODIAC_SIGNS.findIndex(s => s.id === sign.id);
     const pseudoRandom = Math.abs(Math.sin(daySeed + signIndex * 13.37));
@@ -310,15 +310,47 @@ const ContentScraper = (function() {
     const luckPercent = 75 + Math.floor(pseudoRandom * 23);
     const upay = UPAY_BANK[(daySeed + signIndex) % UPAY_BANK.length];
 
-    const predictions = [
-      `आज का दिन आपके लिए आर्थिक व पारिवारिक रूप से बेहद शुभ रहेगा। कार्यक्षेत्र में नए अवसर प्राप्त होंगे और रुके हुए कार्य पूरे होंगे।`,
-      `आज चंद्रमा की शुभ स्थिति से आत्मविश्वास में वृद्धि होगी। व्यापार में धन लाभ के योग हैं, मित्रों व सहकर्मियों का पूरा सहयोग मिलेगा।`,
-      `आज पद-प्रतिष्ठा में वृद्धि होगी। किसी महत्वपूर्ण योजना पर काम शुरू कर सकते हैं। परिवार में सुख-शांति का वातावरण बना रहेगा।`,
-      `आज का दिन मिलाजुला रहेगा। धैर्य और सूझबूझ से लिए गए फैसले लाभकारी साबित होंगे। स्वास्थ्य का विशेष ध्यान रखें।`,
-      `आज भाग्य का भरपूर साथ मिलेगा। सोचे हुए काम समय पर पूरे होंगे और धन आगमन के नए स्रोत बनेंगे। यात्रा सुखद रहेगी।`
+    // Career & Business Sentences
+    const careers = [
+      `कार्यक्षेत्र में आज आपके मान-सम्मान व प्रभाव में वृद्धि होगी। उच्च अधिकारियों व सहकर्मियों का पूर्ण सहयोग प्राप्त होगा।`,
+      `व्यापार और नौकरी में नए लाभदायक अवसर सामने आएंगे। सोची हुई योजनाओं को आज गति मिलेगी और सफलता सुनिश्चित होगी।`,
+      `नौकरीपेशा लोगों के लिए पदोन्नति अथवा वेतन वृद्धि के अच्छे संकेत हैं। व्यावसायिक यात्रा लाभकारी रहेगी।`,
+      `कार्यक्षेत्र में आपकी कार्यकुशलता और सूझबूझ की सराहना होगी। किसी बड़े प्रोजेक्ट की नई जिम्मेदारी मिल सकती है।`
     ];
 
-    const prediction = predictions[(daySeed + signIndex * 3) % predictions.length];
+    // Finance & Wealth Sentences
+    const finances = [
+      `आर्थिक दृष्टिकोण से दिन बेहद शुभ है। रुका हुआ धन वापस मिलेगा और आय के नए स्रोत विकसित होंगे।`,
+      `वित्तीय मामलों में अप्रत्याशित लाभ के योग बन रहे हैं। निवेश के लिए समय अनुकूल है और बचत में वृद्धि होगी।`,
+      `धन आगमन निरंतर बना रहेगा। किसी पुराने कर्ज या देनदारी से मुक्ति मिलने की प्रबल संभावना है।`
+    ];
+
+    // Family & Personal Sentences
+    const families = [
+      `पारिवारिक जीवन में सुख-शांति और आनंद का वातावरण बना रहेगा। जीवनसाथी के साथ संबंधों में मधुरता बढ़ेगी।`,
+      `घर-परिवार में किसी मांगलिक कार्य की योजना बन सकती है। मित्रों और संबंधियों से शुभ समाचार प्राप्त होगा।`,
+      `रिश्तों में आपसी विश्वास और प्रेम बढ़ेगा। परिवार के वरिष्ठ सदस्यों का आशीर्वाद आपके आत्मविश्वास को बढ़ाएगा।`
+    ];
+
+    // Health & Advice Sentences
+    const healths = [
+      `स्वास्थ्य उत्तम रहेगा। मानसिक शांति और सकारात्मक ऊर्जा बनी रहेगी, दिनभर स्फूर्ति का अनुभव करेंगे।`,
+      `सेहत अच्छी रहेगी, फिर भी खानपान और दिनचर्या में संतुलन बनाए रखें। योग-प्राणायाम करना लाभकारी रहेगा।`
+    ];
+
+    const c = careers[(daySeed + signIndex * 2) % careers.length];
+    const f = finances[(daySeed + signIndex * 3) % finances.length];
+    const fam = families[(daySeed + signIndex * 5) % families.length];
+    const h = healths[(daySeed + signIndex * 7) % healths.length];
+
+    let prediction = '';
+    if (lengthMode === 'short') {
+      prediction = `${c} ${f}`;
+    } else if (lengthMode === 'medium') {
+      prediction = `${c} ${f} ${fam}`;
+    } else { // 'detailed' / 'full' - Fills the video card richly
+      prediction = `${c} ${f} ${fam} ${h}`;
+    }
 
     return {
       id: sign.id,
@@ -338,11 +370,11 @@ const ContentScraper = (function() {
     };
   }
 
-  // Generate All 12 Signs for Today
-  function generateAllDailySigns(dateObj = new Date()) {
+  // Generate All 12 Signs for Given Date & Length Mode
+  function generateAllDailySigns(dateObj = new Date(), lengthMode = 'detailed') {
     const result = {};
     ZODIAC_SIGNS.forEach(sign => {
-      result[sign.id] = generateDailySignData(sign, dateObj);
+      result[sign.id] = generateDailySignData(sign, dateObj, lengthMode);
     });
     return result;
   }

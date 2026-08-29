@@ -15,7 +15,7 @@
   <meta property="og:url" content="https://bypyay.github.io/ytshortgen/">
 
   <!-- Stylesheets & Fonts -->
-  <link rel="stylesheet" href="assets/css/studio.css?v=7">
+  <link rel="stylesheet" href="assets/css/studio.css?v=8">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
   <!-- Structured Data JSON-LD (Schema.org) -->
@@ -391,10 +391,30 @@
             </div>
           </div>
 
-          <label class="input-label" for="txtPrediction">
-            <span>दैनिक भविष्यवाणी (Forecast)</span>
-          </label>
-          <textarea class="studio-textarea" id="txtPrediction" rows="3">आज का दिन आपके लिए आर्थिक व पारिवारिक रूप से बेहद शुभ रहेगा। कार्यक्षेत्र में नए अवसर प्राप्त होंगे।</textarea>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; margin-bottom:4px;">
+            <label class="input-label" for="txtPrediction" style="margin-bottom:0;">
+              <span>दैनिक भविष्यवाणी (Forecast)</span>
+            </label>
+            <span style="font-size:0.72rem; color:#fbbf24; font-weight:700;">लंबाई सेट करें</span>
+          </div>
+
+          <!-- Length Mode Switcher (Detailed / Medium / Short) -->
+          <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:4px; margin-bottom:6px;">
+            <button type="button" class="length-mode-pill active" data-length="detailed">📜 विस्तृत (Full)</button>
+            <button type="button" class="length-mode-pill" data-length="medium">📝 मध्यम</button>
+            <button type="button" class="length-mode-pill" data-length="short">⚡ संक्षिप्त</button>
+          </div>
+
+          <textarea class="studio-textarea" id="txtPrediction" rows="4" placeholder="राशिफल का टेक्स्ट दर्ज करें...">आज का दिन आपके लिए आर्थिक व पारिवारिक रूप से बेहद शुभ रहेगा। कार्यक्षेत्र में नए अवसर प्राप्त होंगे और सोचे हुए कार्य तेजी से पूरे होंगे।</textarea>
+
+          <!-- Font Size Slider -->
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px; margin-bottom:8px; background:rgba(255,255,255,0.03); padding:4px 8px; border-radius:6px;">
+            <label for="predictionFontSizeSlider" style="font-size:0.72rem; color:#94a3b8; margin:0; display:flex; align-items:center; gap:4px;">
+              <i class="fa-solid fa-text-height"></i> फ़ॉन्ट साइज़:
+            </label>
+            <input type="range" class="seek-slider" id="predictionFontSizeSlider" min="34" max="52" value="42" style="flex:1; margin:0 8px; max-width:140px;">
+            <span id="predictionFontSizeDisplay" style="font-size:0.74rem; font-weight:800; color:#fbbf24;">42px</span>
+          </div>
 
           <label class="input-label" for="txtUpay">
             <span>आज का उपाय (Remedy)</span>
@@ -597,8 +617,8 @@
   </footer>
 
   <!-- Scripts -->
-  <script src="assets/js/content-scraper.js?v=7"></script>
-  <script src="assets/js/video-engine.js?v=7"></script>
-  <script src="assets/js/template-engine.js?v=7"></script>
+  <script src="assets/js/content-scraper.js?v=8"></script>
+  <script src="assets/js/video-engine.js?v=8"></script>
+  <script src="assets/js/template-engine.js?v=8"></script>
 </body>
 </html>

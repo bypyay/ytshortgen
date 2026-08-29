@@ -534,31 +534,37 @@ const VideoEngine = (function() {
     ctx.globalAlpha = progress;
 
     // Prediction Card
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.65)';
-    roundRect(ctx, 80, 560, CANVAS_WIDTH - 160, 900, 36);
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.70)';
+    roundRect(ctx, 80, 560, CANVAS_WIDTH - 160, 920, 36);
     ctx.fill();
-    ctx.strokeStyle = 'rgba(245, 158, 11, 0.4)';
+    ctx.strokeStyle = 'rgba(245, 158, 11, 0.45)';
     ctx.lineWidth = 3;
     ctx.stroke();
 
     ctx.font = '900 48px "Noto Sans Devanagari", sans-serif';
     ctx.fillStyle = '#fbbf24';
     ctx.textAlign = 'center';
-    ctx.fillText('📖 दैनिक भविष्यफल (Prediction)', CANVAS_WIDTH / 2, 650);
+    ctx.fillText('📖 दैनिक भविष्यफल (Prediction)', CANVAS_WIDTH / 2, 645);
 
-    // Inner Text Box
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.04)';
-    roundRect(ctx, 120, 720, CANVAS_WIDTH - 240, 680, 24);
+    // Inner Text Box with subtle glass border
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+    roundRect(ctx, 120, 705, CANVAS_WIDTH - 240, 735, 24);
     ctx.fill();
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.10)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
 
-    // Devanagari Word-Wrapped Paragraph
+    // Devanagari Word-Wrapped Paragraph with dynamic sizing
     const text = sign.prediction || 'आज का दिन आपके लिए मंगलकारी रहेगा। बिगड़े कार्य पूरे होंगे और आर्थिक लाभ मिलेगा।';
-    ctx.font = '600 44px "Noto Sans Devanagari", sans-serif';
+    const fontSize = projectData.predictionFontSize || 42;
+    const lineHeight = Math.round(fontSize * 1.52);
+
+    ctx.font = `600 ${fontSize}px "Noto Sans Devanagari", sans-serif`;
     ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
 
-    wrapText(ctx, text, 160, 770, CANVAS_WIDTH - 320, 70);
+    wrapText(ctx, text, 160, 745, CANVAS_WIDTH - 320, lineHeight);
 
     ctx.restore();
   }
@@ -862,6 +868,11 @@ const VideoEngine = (function() {
     renderFrame(currentTime);
   }
 
+  function setPredictionFontSize(size) {
+    projectData.predictionFontSize = parseInt(size, 10) || 42;
+    renderFrame(currentTime);
+  }
+
   function parseDateSafe(dateInput) {
     if (!dateInput) return new Date();
     if (dateInput instanceof Date) return dateInput;
@@ -886,6 +897,7 @@ const VideoEngine = (function() {
     setBgmType: setBgmType,
     setBgmVolume: setBgmVolume,
     setTargetDate: setTargetDate,
+    setPredictionFontSize: setPredictionFontSize,
     exportVideo: exportVideo,
     getProjectData: () => projectData,
     getTotalDuration: () => totalDuration

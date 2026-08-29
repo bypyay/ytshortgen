@@ -12,6 +12,7 @@ const TemplateEngine = (function() {
   let selectedSignId = 'aries';
   let targetDateObj = new Date(Date.now() + 86400000); // Tomorrow by default
   let selectedDateMode = 'tomorrow';
+  let currentLengthMode = 'detailed';
 
   // ══════════════════════════════════════════════════════════════════
   // 1. Initialization
@@ -19,7 +20,7 @@ const TemplateEngine = (function() {
   function init() {
     try {
       // 1. Initialize 12 Daily Signs with authentic astrology for target date (Tomorrow by default)
-      currentSignsData = ContentScraper.generateAllDailySigns(targetDateObj);
+      currentSignsData = ContentScraper.generateAllDailySigns(targetDateObj, currentLengthMode);
 
       // 2. Initialize Video Engine Canvas
       VideoEngine.init('studioVideoCanvas');
@@ -35,9 +36,10 @@ const TemplateEngine = (function() {
       // 4. Render Slide Timeline Thumbnails
       renderTimelineThumbs();
 
-      // 5. Setup Event Listeners & Date Switcher
+      // 5. Setup Event Listeners & Date / Length Controls
       setupEventListeners();
       setupDateControls();
+      setupLengthAndFontControls();
 
       // 6. Load Saved Preset if any
       loadSavedPreset();
@@ -623,6 +625,32 @@ const TemplateEngine = (function() {
         const val = parseInt(e.target.value, 10);
         if (volDisplay) volDisplay.textContent = val + '%';
         VideoEngine.setBgmVolume(val / 100);
+      });
+    }
+  }
+
+  function setupLengthAndFontControls() {
+    // Length Mode Pills (Detailed / Medium / Short)
+    document.querySelectorAll('.length-mode-pill').forEach(pill => {
+      pill.addEventListener('click', () => {
+        document.querySelectorAll('.length-mode-pill').forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        const mode = pill.getAttribute('data-length');
+        currentLengthMode = mode;
+
+        currentSignsData = ContentScraper.generateAllDailySigns(targetDateObj, currentLengthMode);
+        loadSignIntoStudio(selectedSignId);
+      });
+    });
+
+    // Font Size Slider
+    const sizeSlider = document.getElementById('predictionFontSizeSlider');
+    const sizeDisplay = document.getElementById('predictionFontSizeDisplay');
+    if (sizeSlider) {
+      sizeSlider.addEventListener('input', (e) => {
+        const val = parseInt(e.target.value, 10);
+        if (sizeDisplay) sizeDisplay.textContent = val + 'px';
+        VideoEngine.setPredictionFontSize(val);
       });
     }
   }
