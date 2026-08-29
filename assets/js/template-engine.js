@@ -719,8 +719,11 @@ const TemplateEngine = (function() {
         const mode = pill.getAttribute('data-length');
         currentLengthMode = mode;
 
-        currentSignsData = ContentScraper.generateAllDailySigns(targetDateObj, currentLengthMode);
-        VideoEngine.setAllSignsData(currentSignsData);
+        const hasScraped = Object.values(currentSignsData).some(s => s && s.isScraped);
+        if (!hasScraped) {
+          currentSignsData = ContentScraper.generateAllDailySigns(targetDateObj, currentLengthMode);
+          VideoEngine.setAllSignsData(currentSignsData);
+        }
         loadSignIntoStudio(selectedSignId);
       });
     });

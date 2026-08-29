@@ -50,9 +50,9 @@ const ContentScraper = (function() {
   const LUCKY_COLORS = ['लाल (Red)', 'पीला (Yellow)', 'सुनहरा (Gold)', 'हरा (Green)', 'सफेद (White)', 'नारंगी (Orange)', 'गुलाबी (Pink)', 'केसरिया (Saffron)', 'आसमानी (Sky Blue)'];
 
   // ══════════════════════════════════════════════════════════════════
-  // 1. High-Precision Web Page Fetcher (With Strict 4.5s Timeout)
+  // 1. High-Precision Web Page Fetcher
   // ══════════════════════════════════════════════════════════════════
-  async function fetchWithTimeout(url, timeoutMs = 4500) {
+  async function fetchWithTimeout(url, timeoutMs = 8500) {
     const controller = new AbortController();
     const id = setTimeout(() => controller.abort(), timeoutMs);
     try {
@@ -79,7 +79,7 @@ const ContentScraper = (function() {
 
     for (const gateway of proxyGateways) {
       try {
-        const response = await fetchWithTimeout(gateway, 4500);
+        const response = await fetchWithTimeout(gateway, 8500);
         if (response.ok) {
           const text = await response.text();
           if (text && text.length > 150) {
@@ -101,21 +101,41 @@ const ContentScraper = (function() {
     const prefix = isTomorrow ? 'kal-ka-rashifal.asp' : 'aaj-ka-rashifal.asp';
 
     const results = {};
-    const fetchPromises = ZODIAC_SIGNS.map(async (sign) => {
-      const signUrl = `https://www.astrosage.com/rashifal/${sign.astroSlug}-${prefix}`;
+
+    // 1. Direct fetch if user entered a specific sign page (e.g. mesh-kal-ka-rashifal.asp)
+    const specificSign = ZODIAC_SIGNS.find(s => url.includes(s.astroSlug) || url.includes(s.id) || url.toLowerCase().includes(s.nameEn.toLowerCase()));
+    if (specificSign) {
       try {
-        const content = await fetchCleanContent(signUrl);
+        const content = await fetchCleanContent(url);
         if (content) {
-          results[sign.id] = parseAstroSageSignContent(content, sign);
-          return;
+          results[specificSign.id] = parseAstroSageSignContent(content, specificSign);
         }
-      } catch (e) {}
+      } catch (e) {
+        console.warn('Direct specific sign fetch error:', e);
+      }
+    }
 
-      // Algorithmic Fallback if offline/timeout
-      results[sign.id] = generateDailySignData(sign);
-    });
+    // 2. Fetch remaining signs with batching
+    for (let i = 0; i < ZODIAC_SIGNS.length; i += 4) {
+      const chunk = ZODIAC_SIGNS.slice(i, i + 4);
+      await Promise.all(chunk.map(async (sign) => {
+        if (results[sign.id] && results[sign.id].isScraped) return;
 
-    await Promise.allSettled(fetchPromises);
+        const signUrl = `https://www.astrosage.com/rashifal/${sign.astroSlug}-${prefix}`;
+        try {
+          const content = await fetchCleanContent(signUrl);
+          if (content) {
+            results[sign.id] = parseAstroSageSignContent(content, sign);
+            return;
+          }
+        } catch (e) {}
+
+        if (!results[sign.id]) {
+          results[sign.id] = generateDailySignData(sign);
+        }
+      }));
+    }
+
     return results;
   }
 
@@ -134,7 +154,8 @@ const ContentScraper = (function() {
     }
 
     // Extract Prediction
-    const dateMatch = text.match(/\*\*(Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday)[^\*]+\*\*\s*\n+([\s\S]+?)(?=(\*\*उपाय|##|\n\n\n|$))/i);
+    const dateMatch = text.match(/\*\*(Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday)[^\*]+\*\*\s*\n+([\s\S]+?)(?=(\*\*उपाय|उपाय|##|\n\n\n|$))/i) ||
+                      text.match(/(Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday)[^\n]+\n+([\s\S]+?)(?=(\*\*उपाय|उपाय|##|\n\n\n|$))/i);
     if (dateMatch && dateMatch[2]) {
       prediction = dateMatch[2].replace(/[\*\_]/g, ' ').replace(/\n+/g, ' ').trim();
     } else {
@@ -145,10 +166,8 @@ const ContentScraper = (function() {
       }
     }
 
-    if (!prediction || prediction.length < 30) {
+    if (!prediction || prediction.length < 25) {
       prediction = generateDailySignData(sign).prediction;
-    } else if (prediction.length > 230) {
-      prediction = prediction.substring(0, 225) + '...';
     }
 
     const luckyColor = LUCKY_COLORS[Math.floor(Math.random() * LUCKY_COLORS.length)];
@@ -169,7 +188,8 @@ const ContentScraper = (function() {
       luckyNumber: luckyNumber,
       luckPercent: luckPercent,
       prediction: prediction,
-      upay: upay
+      upay: upay,
+      isScraped: true
     };
   }
 
