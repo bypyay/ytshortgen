@@ -772,12 +772,15 @@ const VideoEngine = (function() {
       ctx.strokeRect(18, 18, CANVAS_WIDTH - 36, CANVAS_HEIGHT - 36);
     }
 
-    // 2. Top Header Title
+    // 2. Top Header Title (Dynamically today vs tomorrow)
+    const isTomorrow = projectData.targetDate && (new Date(projectData.targetDate).getDate() !== new Date().getDate());
+    const headerTitle = isTomorrow ? 'कल का राशिफल' : 'आज का राशिफल';
+
     ctx.save();
     ctx.font = '900 78px "Noto Sans Devanagari", "Yatra One", sans-serif';
     ctx.fillStyle = isNewspaper ? '#0f172a' : '#111827';
     ctx.textAlign = 'center';
-    ctx.fillText('आज का राशिफल', CANVAS_WIDTH / 2, 95);
+    ctx.fillText(headerTitle, CANVAS_WIDTH / 2, 95);
 
     // Date Subheading
     ctx.font = '800 42px "Noto Sans Devanagari", sans-serif';
@@ -801,12 +804,12 @@ const VideoEngine = (function() {
 
     // 3. 12-Zodiac Grid (3 Columns x 4 Rows)
     const startX = 36;
-    const startY = 215;
+    const startY = 210;
     const gapX = 14;
-    const gapY = 14;
+    const gapY = 12;
     const colCount = 3;
     const boxW = Math.floor((CANVAS_WIDTH - (startX * 2) - (gapX * (colCount - 1))) / colCount); // ~326px
-    const boxH = 370;
+    const boxH = 372;
 
     const cardColors = [
       { border: '#dc2626', header: '#b91c1c' }, // Red (Aries)
@@ -833,52 +836,60 @@ const VideoEngine = (function() {
       const colorScheme = cardColors[i % cardColors.length];
       const signData = (projectData.allSignsData && projectData.allSignsData[sign.id]) || sign;
 
-      // Draw Box
+      // Draw Card Base Box
       ctx.save();
-      ctx.fillStyle = '#ffffff';
       roundRect(ctx, x, y, boxW, boxH, 16);
+      ctx.fillStyle = '#ffffff';
       ctx.fill();
       ctx.strokeStyle = colorScheme.border;
-      ctx.lineWidth = 3;
+      ctx.lineWidth = 3.5;
       ctx.stroke();
 
+      // Strict Card Inner Clipping so text NEVER spills out
+      roundRect(ctx, x + 2, y + 2, boxW - 4, boxH - 4, 14);
+      ctx.clip();
+
       // Card Header: Sign Name (Left) + Sign Symbol / Icon (Right)
-      ctx.font = '900 44px "Noto Sans Devanagari", sans-serif';
+      ctx.font = '900 42px "Noto Sans Devanagari", sans-serif';
       ctx.fillStyle = colorScheme.header;
       ctx.textAlign = 'left';
       ctx.textBaseline = 'top';
-      ctx.fillText(sign.nameHi, x + 16, y + 16);
+      ctx.fillText(sign.nameHi, x + 16, y + 14);
 
       // Sign Symbol or Custom Image
       if (signData.customImage && (signData.customImage.complete || signData.customImage instanceof HTMLImageElement)) {
         ctx.save();
         ctx.beginPath();
-        ctx.arc(x + boxW - 36, y + 36, 24, 0, Math.PI * 2);
+        ctx.arc(x + boxW - 36, y + 36, 22, 0, Math.PI * 2);
         ctx.clip();
-        ctx.drawImage(signData.customImage, x + boxW - 60, y + 12, 48, 48);
+        ctx.drawImage(signData.customImage, x + boxW - 58, y + 14, 44, 44);
         ctx.restore();
       } else {
         ctx.font = '36px "Plus Jakarta Sans", sans-serif';
         ctx.fillStyle = colorScheme.header;
         ctx.textAlign = 'right';
-        ctx.fillText(sign.symbol || '♈', x + boxW - 16, y + 18);
+        ctx.fillText(sign.symbol || '♈', x + boxW - 16, y + 16);
       }
 
       // Divider inside box
       ctx.beginPath();
-      ctx.moveTo(x + 12, y + 72);
-      ctx.lineTo(x + boxW - 12, y + 72);
+      ctx.moveTo(x + 12, y + 66);
+      ctx.lineTo(x + boxW - 12, y + 66);
       ctx.strokeStyle = 'rgba(0, 0, 0, 0.12)';
       ctx.lineWidth = 1.5;
       ctx.stroke();
 
-      // Prediction Text Lines
+      // Prediction Text with dynamic scaling and overflow clipping
       const predText = signData.prediction || 'आज का दिन शुभ रहेगा। सोचे हुए कार्य पूरे होंगे और लाभ मिलेगा।';
-      ctx.font = '600 24px "Noto Sans Devanagari", sans-serif';
+      const textLen = predText.length;
+      const fontSize = textLen > 220 ? 19 : textLen > 130 ? 21 : 23;
+      const lineHeight = Math.round(fontSize * 1.45);
+
+      ctx.font = `600 ${fontSize}px "Noto Sans Devanagari", sans-serif`;
       ctx.fillStyle = '#1e293b';
       ctx.textAlign = 'left';
       ctx.textBaseline = 'top';
-      wrapText(ctx, predText, x + 14, y + 84, boxW - 28, 38);
+      wrapTextClipped(ctx, predText, x + 14, y + 76, boxW - 28, lineHeight, y + boxH - 12);
 
       ctx.restore();
     }
@@ -886,17 +897,17 @@ const VideoEngine = (function() {
     // 4. Bottom Footer Call-To-Action (Matching Image 2)
     ctx.save();
     ctx.fillStyle = '#ffffff';
-    roundRect(ctx, 36, 1770, CANVAS_WIDTH - 72, 110, 16);
+    roundRect(ctx, 36, 1762, CANVAS_WIDTH - 72, 114, 16);
     ctx.fill();
     ctx.strokeStyle = '#dc2626';
-    ctx.lineWidth = 2.5;
+    ctx.lineWidth = 3;
     ctx.stroke();
 
     ctx.font = '900 38px "Noto Sans Devanagari", sans-serif';
     ctx.fillStyle = '#dc2626';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('रोज सबसे पहले सटीक राशिफल पाने के लिए 👍 Follow/Subscribe करें!', CANVAS_WIDTH / 2, 1825);
+    ctx.fillText('रोज सबसे पहले सटीक राशिफल पाने के लिए 👍 Follow/Subscribe करें!', CANVAS_WIDTH / 2, 1819);
     ctx.restore();
   }
 
@@ -1165,6 +1176,35 @@ const VideoEngine = (function() {
     }
     if (isCenter) c.fillText(line.trim(), x, curY);
     else c.fillText(line.trim(), x, curY);
+  }
+
+  function wrapTextClipped(c, text, x, y, maxWidth, lineHeight, maxY) {
+    const words = text.split(' ');
+    let line = '';
+    let curY = y;
+
+    for (let n = 0; n < words.length; n++) {
+      if (curY + lineHeight > maxY) {
+        if (line.trim().length > 0) {
+          c.fillText(line.trim() + '...', x, curY);
+        }
+        return;
+      }
+      const testLine = line + words[n] + ' ';
+      const metrics = c.measureText(testLine);
+      const testWidth = metrics.width;
+
+      if (testWidth > maxWidth && n > 0) {
+        c.fillText(line.trim(), x, curY);
+        line = words[n] + ' ';
+        curY += lineHeight;
+      } else {
+        line = testLine;
+      }
+    }
+    if (curY <= maxY && line.trim().length > 0) {
+      c.fillText(line.trim(), x, curY);
+    }
   }
 
   // Setters for external UI bindings

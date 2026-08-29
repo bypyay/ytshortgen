@@ -76,7 +76,9 @@ const TemplateEngine = (function() {
 
   function loadSignIntoStudio(signId) {
     const sign = currentSignsData[signId] || ContentScraper.generateDailySignData(ContentScraper.ZODIAC_SIGNS.find(s => s.id === signId));
+    currentSignsData[signId] = sign;
     VideoEngine.setSign(sign);
+    VideoEngine.setAllSignsData(currentSignsData);
 
     // Update Textarea & Input Fields in Left Panel
     const inpColor = document.getElementById('inpLuckyColor');
@@ -155,6 +157,7 @@ const TemplateEngine = (function() {
     try {
       const scrapedData = await ContentScraper.scrapeMultipleUrls(urls);
       currentSignsData = scrapedData;
+      VideoEngine.setAllSignsData(currentSignsData);
       loadSignIntoStudio(selectedSignId);
       btnScrape.innerHTML = '<i class="fa-solid fa-check"></i> डेटा लोड हो गया!';
       setTimeout(() => {
@@ -175,6 +178,7 @@ const TemplateEngine = (function() {
     try {
       const parsedData = ContentScraper.parseAstrologyText(raw);
       currentSignsData = parsedData;
+      VideoEngine.setAllSignsData(currentSignsData);
       loadSignIntoStudio(selectedSignId);
       alert('✅ पेस्ट किए गए टेक्स्ट से 12 राशियों का कंटेंट सफलतापूर्वक लोड हो गया!');
     } catch (e) {
@@ -507,7 +511,9 @@ const TemplateEngine = (function() {
       if (txtPrediction) curSign.prediction = txtPrediction.value;
       if (txtUpay) curSign.upay = txtUpay.value;
 
+      currentSignsData[selectedSignId] = curSign;
       VideoEngine.setSign(curSign);
+      VideoEngine.setAllSignsData(currentSignsData);
       renderTimelineThumbs();
     };
 
@@ -650,7 +656,8 @@ const TemplateEngine = (function() {
 
       const isoDate = targetDateObj.toISOString().slice(0, 10);
       VideoEngine.setTargetDate(isoDate);
-      currentSignsData = ContentScraper.generateAllDailySigns(targetDateObj);
+      currentSignsData = ContentScraper.generateAllDailySigns(targetDateObj, currentLengthMode);
+      VideoEngine.setAllSignsData(currentSignsData);
       loadSignIntoStudio(selectedSignId);
     };
 
