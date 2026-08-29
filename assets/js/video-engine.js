@@ -772,17 +772,14 @@ const VideoEngine = (function() {
       ctx.strokeRect(18, 18, CANVAS_WIDTH - 36, CANVAS_HEIGHT - 36);
     }
 
-    // 2. Top Header Title (Dynamically today vs tomorrow)
-    const isTomorrow = projectData.targetDate && (new Date(projectData.targetDate).getDate() !== new Date().getDate());
-    const headerTitle = isTomorrow ? 'कल का राशिफल' : 'आज का राशिफल';
-
+    // 2. Top Header Title (Always "आज का राशिफल" so next morning viewers see today title)
     ctx.save();
-    ctx.font = '900 78px "Noto Sans Devanagari", "Yatra One", sans-serif';
+    ctx.font = '900 80px "Noto Sans Devanagari", "Yatra One", sans-serif';
     ctx.fillStyle = isNewspaper ? '#0f172a' : '#111827';
     ctx.textAlign = 'center';
-    ctx.fillText(headerTitle, CANVAS_WIDTH / 2, 95);
+    ctx.fillText('आज का राशिफल', CANVAS_WIDTH / 2, 95);
 
-    // Date Subheading
+    // Date Subheading (Target date e.g. 30 अगस्त 2026 रविवार)
     ctx.font = '800 42px "Noto Sans Devanagari", sans-serif';
     ctx.fillStyle = '#1e293b';
     ctx.fillText(dateStr, CANVAS_WIDTH / 2, 165);
@@ -893,20 +890,64 @@ const VideoEngine = (function() {
       ctx.restore();
     }
 
-    // 4. Bottom Footer Call-To-Action (Matching Image 2)
+    // 4. Bottom Footer Call-To-Action with Animated Subscribe Badge
     ctx.save();
+    const footX = 36;
+    const footY = 1762;
+    const footW = CANVAS_WIDTH - 72;
+    const footH = 114;
+
+    // Outer Card Container
+    roundRect(ctx, footX, footY, footW, footH, 20);
     ctx.fillStyle = '#ffffff';
-    roundRect(ctx, 36, 1762, CANVAS_WIDTH - 72, 114, 16);
     ctx.fill();
     ctx.strokeStyle = '#dc2626';
     ctx.lineWidth = 3;
     ctx.stroke();
 
-    ctx.font = '900 38px "Noto Sans Devanagari", sans-serif';
-    ctx.fillStyle = '#dc2626';
+    // Left Prompt Text (Fits neatly inside left area)
+    ctx.font = '800 30px "Noto Sans Devanagari", sans-serif';
+    ctx.fillStyle = '#1e293b';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('🔔 सबसे पहले सटीक राशिफल के लिए', footX + 24, footY + footH / 2);
+
+    // Right Animated Subscribe Button Badge
+    const btnW = 340;
+    const btnH = 68;
+    const btnX = footX + footW - btnW - 20;
+    const btnY = footY + (footH - btnH) / 2;
+
+    // Animation Pulse for Video
+    const pulse = 1 + Math.sin((time || 0) * 4.5) * 0.035;
+    const centerX = btnX + btnW / 2;
+    const centerY = btnY + btnH / 2;
+
+    ctx.save();
+    ctx.translate(centerX, centerY);
+    ctx.scale(pulse, pulse);
+    ctx.translate(-centerX, -centerY);
+
+    // Subscribe Button Gradient
+    const btnGrad = ctx.createLinearGradient(btnX, btnY, btnX + btnW, btnY + btnH);
+    btnGrad.addColorStop(0, '#ef4444');
+    btnGrad.addColorStop(1, '#b91c1c');
+
+    roundRect(ctx, btnX, btnY, btnW, btnH, 16);
+    ctx.fillStyle = btnGrad;
+    ctx.fill();
+    ctx.strokeStyle = '#fef08a';
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
+
+    // Subscribe Text inside button
+    ctx.font = '900 28px "Noto Sans Devanagari", "Plus Jakarta Sans", sans-serif';
+    ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('रोज सबसे पहले सटीक राशिफल पाने के लिए 👍 Follow/Subscribe करें!', CANVAS_WIDTH / 2, 1819);
+    ctx.fillText('👍 Follow / Subscribe', centerX, centerY);
+    ctx.restore();
+
     ctx.restore();
   }
 
