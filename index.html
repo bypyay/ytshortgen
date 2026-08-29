@@ -15,7 +15,7 @@
   <meta property="og:url" content="https://bypyay.github.io/ytshortgen/">
 
   <!-- Stylesheets & Fonts -->
-  <link rel="stylesheet" href="assets/css/studio.css?v=8">
+  <link rel="stylesheet" href="assets/css/studio.css?v=9">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
   <!-- Structured Data JSON-LD (Schema.org) -->
@@ -371,6 +371,14 @@
           <div class="zodiac-grid" id="zodiacGrid">
             <!-- Rendered by JS -->
           </div>
+
+          <!-- Custom Sign Image / Photo Picker -->
+          <div style="margin-top:8px;">
+            <input type="file" id="inpSignCustomImg" accept="image/*" style="display:none;">
+            <button type="button" class="btn-tool-sub" style="width:100%; font-size:0.74rem; justify-content:center;" onclick="document.getElementById('inpSignCustomImg').click()">
+              <i class="fa-solid fa-image" style="color:#38bdf8;"></i> 🖼️ इस राशि का कस्टम फोटो/लोगो लगाएं
+            </button>
+          </div>
         </div>
 
         <!-- Active Zodiac Content Fields -->
@@ -431,6 +439,16 @@
       <!-- CENTER PANEL: 9:16 Interactive Video Canvas Player Stage -->
       <section class="stage-center-panel mobile-active" id="centerPanel">
 
+        <!-- Layout Mode Switcher (Single Sign Video vs 12-in-1 Static Video & Poster) -->
+        <div style="display:flex; justify-content:center; gap:8px; margin-bottom:8px;">
+          <button type="button" class="layout-mode-pill active" data-layout="single" id="btnLayoutSingle">
+            <i class="fa-solid fa-film"></i> 🎬 4-Scene Short
+          </button>
+          <button type="button" class="layout-mode-pill" data-layout="poster" id="btnLayoutPoster">
+            <i class="fa-solid fa-table-cells"></i> 📰 12-राशि ऑल-इन-वन पोस्टर (Image Mode)
+          </button>
+        </div>
+
         <div class="video-canvas-stage">
           <div class="canvas-live-badge">
             <span class="live-dot"></span>
@@ -454,6 +472,9 @@
               <button type="button" class="btn-ctrl" onclick="VideoEngine.seek(0)" title="Rewind to Start">
                 <i class="fa-solid fa-rotate-left"></i>
               </button>
+              <button type="button" class="btn-ctrl" id="btnDownloadPosterImg" style="display:none; background:#10b981; color:#fff; border-color:#059669; font-weight:700; padding:0 12px; width:auto; font-size:0.75rem;" onclick="VideoEngine.downloadPosterImage()" title="Download 1080x1920 HD Poster Image">
+                <i class="fa-solid fa-camera"></i> 📸 HD इमेज
+              </button>
             </div>
 
             <button type="button" class="btn-export-main" id="btnExportMain" aria-label="Export and Render MP4 Video">
@@ -468,30 +489,50 @@
       <aside class="studio-panel" id="rightPanel">
         <div class="panel-section-title"><i class="fa-solid fa-palette" style="color:#a855f7;"></i> 2. Design &amp; Styling</div>
 
-        <!-- Animated Background Themes -->
+        <!-- 12+ Animated & Vintage Background Themes -->
         <div class="panel-card">
-          <label class="input-label"><span>बैकग्राउंड थीम (Backgrounds)</span></label>
-          <div class="theme-swatch-grid">
-            <div class="theme-swatch gold active" data-theme="gold">Gold Aura</div>
-            <div class="theme-swatch cosmic" data-theme="cosmic">Cosmic</div>
-            <div class="theme-swatch devotional" data-theme="devotional">Devotional</div>
-            <div class="theme-swatch cyber" data-theme="cyber">Cyber Neon</div>
-            <div class="theme-swatch royal" data-theme="royal">Royal Silk</div>
-            <div class="theme-swatch minimal" data-theme="minimal">Minimal</div>
+          <label class="input-label"><span>बैकग्राउंड थीम (12 Themes)</span></label>
+          <div class="theme-swatch-grid" style="grid-template-columns: repeat(3, 1fr);">
+            <div class="theme-swatch gold active" data-theme="gold">🌟 Gold</div>
+            <div class="theme-swatch bhojpatra" data-theme="bhojpatra" style="background:#582103; border-color:#d97706;">📜 भोजपत्र</div>
+            <div class="theme-swatch newspaper" data-theme="newspaper" style="background:#292524; border-color:#78716c;">📰 अख़बार</div>
+            <div class="theme-swatch panchang" data-theme="panchang" style="background:#78350f; border-color:#f59e0b;">🪔 पंचांग</div>
+            <div class="theme-swatch banarasi" data-theme="banarasi" style="background:#881337; border-color:#f43f5e;">⚜️ बनारसी</div>
+            <div class="theme-swatch shiva" data-theme="shiva" style="background:#0369a1; border-color:#38bdf8;">🕉️ शिव शक्ति</div>
+            <div class="theme-swatch nature" data-theme="nature" style="background:#064e3b; border-color:#10b981;">🌿 प्रकृति</div>
+            <div class="theme-swatch copper" data-theme="copper" style="background:#7c2d12; border-color:#fb923c;">🏛️ ताम्रपत्र</div>
+            <div class="theme-swatch obsidian" data-theme="obsidian" style="background:#030712; border-color:#64748b;">🌑 अमावस्या</div>
+            <div class="theme-swatch saffron" data-theme="saffron" style="background:#c2410c; border-color:#f97316;">🌅 सूर्योदय</div>
+            <div class="theme-swatch cosmic" data-theme="cosmic">🌌 गैलेक्सी</div>
+            <div class="theme-swatch cyber" data-theme="cyber">⚡ साइबर</div>
           </div>
         </div>
 
-        <!-- Audio & Background Music (BGM) -->
+        <!-- 10 Peaceful Audio & Background Music (BGM) Presets -->
         <div class="panel-card">
           <label class="input-label" for="selBgmTrack">
-            <span>बैकग्राउंड म्यूज़िक (BGM Audio)</span>
+            <span>बैकग्राउंड म्यूज़िक (10 Peaceful BGM)</span>
             <span style="color:#10b981;">Web Audio</span>
           </label>
           <select class="studio-select" id="selBgmTrack">
-            <option value="spiritual">🕉️ 432Hz Spiritual Tanpura &amp; Ambient (Default)</option>
-            <option value="cosmic">🌌 Cosmic Meditation Bells</option>
+            <option value="spiritual">🕉️ 1. 432Hz Sacred Tanpura &amp; Ambient (Default)</option>
+            <option value="temple_bells">🪔 2. Morning Temple Bells &amp; Shankh</option>
+            <option value="meditation_drone">🌌 3. 528Hz Alpha Waves Meditation Drone</option>
+            <option value="bansuri">🪈 4. Divine Krishna Bansuri Harmonics</option>
+            <option value="sitar">🪕 5. Vedic Sitar &amp; Swar Alap</option>
+            <option value="peaceful_rain">🌧️ 6. Peaceful Nature Rain &amp; Tone</option>
+            <option value="om_chant">☀️ 7. Gayatri &amp; Om Sacred Resonance</option>
+            <option value="singing_bowl">🔔 8. Tibetan Singing Bowl &amp; Chimes</option>
+            <option value="chakra">🧘 9. 741Hz Mind Calm Chakra Cleansing</option>
+            <option value="brahma_muhurta">🌅 10. Brahma Muhurta Serene Sunrise</option>
             <option value="none">🔇 No Audio / Mute</option>
           </select>
+
+          <!-- Custom Audio Upload Button -->
+          <input type="file" id="inpCustomAudio" accept="audio/*" style="display:none;">
+          <button type="button" class="btn-tool-sub" style="width:100%; margin-top:8px; font-size:0.74rem; justify-content:center;" onclick="document.getElementById('inpCustomAudio').click()">
+            <i class="fa-solid fa-file-audio" style="color:#10b981;"></i> 📁 अपना खुद का बैकग्राउंड ऑडियो अपलोड करें
+          </button>
 
           <!-- BGM Volume Slider -->
           <div style="margin-top:10px;">
@@ -617,8 +658,8 @@
   </footer>
 
   <!-- Scripts -->
-  <script src="assets/js/content-scraper.js?v=8"></script>
-  <script src="assets/js/video-engine.js?v=8"></script>
-  <script src="assets/js/template-engine.js?v=8"></script>
+  <script src="assets/js/content-scraper.js?v=9"></script>
+  <script src="assets/js/video-engine.js?v=9"></script>
+  <script src="assets/js/template-engine.js?v=9"></script>
 </body>
 </html>

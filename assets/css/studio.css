@@ -410,6 +410,32 @@ body {
   box-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
 }
 
+/* Layout Mode Switcher (Single Sign Video vs 12-in-1 Poster) */
+.layout-mode-pill {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #cbd5e1;
+  padding: 7px 14px;
+  border-radius: var(--radius-md);
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.layout-mode-pill:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(245, 158, 11, 0.4);
+}
+.layout-mode-pill.active {
+  background: rgba(245, 158, 11, 0.22);
+  border-color: #fbbf24;
+  color: #fff;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.35);
+}
+
 /* Zodiac Sign Selector Grid (12 Signs) */
 .zodiac-grid {
   display: grid;

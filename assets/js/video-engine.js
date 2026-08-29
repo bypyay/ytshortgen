@@ -179,23 +179,28 @@ const VideoEngine = (function() {
     // Clear Screen
     ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-    // Layer 1: Background & Particle Effects
-    drawBackground(time);
-    drawParticles(time);
+    if (projectData.layoutMode === 'poster') {
+      // Render 12-Zodiacs 1-Page All-in-One Poster
+      drawPosterLayout(time);
+    } else {
+      // Layer 1: Background & Particle Effects
+      drawBackground(time);
+      drawParticles(time);
 
-    // Layer 2: Decorative Frame & Header
-    drawOrnateHeader(time);
+      // Layer 2: Decorative Frame & Header
+      drawOrnateHeader(time);
 
-    // Layer 3: Dynamic Slide Content (based on current time)
-    drawActiveSlide(time);
+      // Layer 3: Dynamic Slide Content (based on current time)
+      drawActiveSlide(time);
 
-    // Layer 4: Footer & Watermark
-    drawFooter(time);
+      // Layer 4: Footer & Watermark
+      drawFooter(time);
+    }
   }
 
-  // Layer 1: Dynamic Animated Backgrounds
+  // Layer 1: Dynamic Animated Backgrounds (12+ Spiritual & Vintage Themes)
   function drawBackground(time) {
-    const theme = projectData.theme;
+    const theme = projectData.theme || 'gold';
 
     if (theme === 'gold') {
       const grad = ctx.createRadialGradient(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, 50, CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, 1100);
@@ -218,7 +223,90 @@ const VideoEngine = (function() {
       }
       ctx.restore();
 
-    } else if (theme === 'cosmic') {
+    } else if (theme === 'bhojpatra') { // 📜 Ancient Bhojpatra Parchment
+      const grad = ctx.createRadialGradient(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, 80, CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, 1100);
+      grad.addColorStop(0, '#451a03');
+      grad.addColorStop(0.5, '#290f02');
+      grad.addColorStop(1, '#150600');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+      // Sanskrit Sacred Geometry Border lines
+      ctx.save();
+      ctx.strokeStyle = 'rgba(251, 191, 36, 0.15)';
+      ctx.lineWidth = 3;
+      ctx.strokeRect(30, 30, CANVAS_WIDTH - 60, CANVAS_HEIGHT - 60);
+      ctx.strokeRect(45, 45, CANVAS_WIDTH - 90, CANVAS_HEIGHT - 90);
+      ctx.restore();
+
+    } else if (theme === 'newspaper') { // 📰 Vintage Newsprint Editorial
+      const grad = ctx.createLinearGradient(0, 0, 0, CANVAS_HEIGHT);
+      grad.addColorStop(0, '#1c1917');
+      grad.addColorStop(0.5, '#0c0a09');
+      grad.addColorStop(1, '#050505');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+      // Editorial Double Border
+      ctx.save();
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
+      ctx.lineWidth = 4;
+      ctx.strokeRect(36, 36, CANVAS_WIDTH - 72, CANVAS_HEIGHT - 72);
+      ctx.restore();
+
+    } else if (theme === 'panchang') { // 🪔 Traditional Saffron Panchang
+      const grad = ctx.createRadialGradient(CANVAS_WIDTH / 2, 600, 100, CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, 1100);
+      grad.addColorStop(0, '#78350f');
+      grad.addColorStop(0.5, '#451a03');
+      grad.addColorStop(1, '#1c0701');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+    } else if (theme === 'banarasi') { // ⚜️ Royal Banarasi Crimson & Zari
+      const grad = ctx.createRadialGradient(CANVAS_WIDTH / 2, 800, 80, CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, 1100);
+      grad.addColorStop(0, '#881337');
+      grad.addColorStop(0.5, '#4c0519');
+      grad.addColorStop(1, '#1f020a');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+    } else if (theme === 'shiva') { // 🕉️ Divine Shiva Neelkanth Blue
+      const grad = ctx.createRadialGradient(CANVAS_WIDTH / 2, 700, 100, CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, 1200);
+      grad.addColorStop(0, '#0369a1');
+      grad.addColorStop(0.5, '#075985');
+      grad.addColorStop(1, '#082f49');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+    } else if (theme === 'nature') { // 🌿 Emerald Nature & Mercury Jade
+      const grad = ctx.createRadialGradient(CANVAS_WIDTH / 2, 700, 100, CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, 1200);
+      grad.addColorStop(0, '#065f46');
+      grad.addColorStop(0.5, '#064e3b');
+      grad.addColorStop(1, '#022c22');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+    } else if (theme === 'copper') { // 🏛️ Antique Copper Inscription
+      const grad = ctx.createRadialGradient(CANVAS_WIDTH / 2, 700, 100, CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, 1200);
+      grad.addColorStop(0, '#7c2d12');
+      grad.addColorStop(0.5, '#431407');
+      grad.addColorStop(1, '#1e0802');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+    } else if (theme === 'obsidian') { // 🌑 OLED Pure Obsidian
+      ctx.fillStyle = '#030712';
+      ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+    } else if (theme === 'saffron') { // 🌅 Surya Dawn Saffron
+      const grad = ctx.createLinearGradient(0, 0, 0, CANVAS_HEIGHT);
+      grad.addColorStop(0, '#c2410c');
+      grad.addColorStop(0.4, '#9a3412');
+      grad.addColorStop(1, '#431407');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+    } else if (theme === 'cosmic') { // 🌌 Deep Cosmic Galaxy
       const grad = ctx.createRadialGradient(CANVAS_WIDTH / 2, 700, 100, CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, 1200);
       grad.addColorStop(0, '#3b0764');
       grad.addColorStop(0.5, '#0f172a');
@@ -226,15 +314,7 @@ const VideoEngine = (function() {
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-    } else if (theme === 'devotional') {
-      const grad = ctx.createLinearGradient(0, 0, 0, CANVAS_HEIGHT);
-      grad.addColorStop(0, '#7c2d12');
-      grad.addColorStop(0.4, '#431407');
-      grad.addColorStop(1, '#1c0802');
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-
-    } else if (theme === 'cyber') {
+    } else if (theme === 'cyber') { // ⚡ Cyber Neon
       const grad = ctx.createLinearGradient(0, 0, 0, CANVAS_HEIGHT);
       grad.addColorStop(0, '#083344');
       grad.addColorStop(0.5, '#021e2f');
@@ -242,16 +322,12 @@ const VideoEngine = (function() {
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-    } else if (theme === 'royal') {
+    } else { // royal / minimal
       const grad = ctx.createRadialGradient(CANVAS_WIDTH / 2, 800, 80, CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, 1100);
       grad.addColorStop(0, '#701a75');
       grad.addColorStop(0.6, '#2e0854');
       grad.addColorStop(1, '#0d021a');
       ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-
-    } else { // minimal
-      ctx.fillStyle = '#090d16';
       ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
     }
   }
@@ -328,12 +404,21 @@ const VideoEngine = (function() {
     ctx.fill();
     ctx.stroke();
 
-    // Zodiac Symbol
-    ctx.font = '90px "Plus Jakarta Sans", sans-serif';
-    ctx.fillStyle = '#fef08a';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(sign.symbol || '♈', CANVAS_WIDTH / 2, badgeY - 5);
+    // Zodiac Symbol or Custom Uploaded Image
+    if (sign.customImage && (sign.customImage.complete || sign.customImage instanceof HTMLImageElement)) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(CANVAS_WIDTH / 2, badgeY, 80, 0, Math.PI * 2);
+      ctx.clip();
+      ctx.drawImage(sign.customImage, CANVAS_WIDTH / 2 - 80, badgeY - 80, 160, 160);
+      ctx.restore();
+    } else {
+      ctx.font = '90px "Plus Jakarta Sans", sans-serif';
+      ctx.fillStyle = '#fef08a';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(sign.symbol || '♈', CANVAS_WIDTH / 2, badgeY - 5);
+    }
 
     // Sign Name Label below badge (Fixed undefined bug!)
     ctx.font = '900 68px "Noto Sans Devanagari", "Yatra One", sans-serif';
@@ -458,15 +543,21 @@ const VideoEngine = (function() {
     ctx.lineWidth = 2;
     ctx.stroke();
 
-    ctx.font = '700 36px "Noto Sans Devanagari", sans-serif';
+    ctx.font = '800 38px "Noto Sans Devanagari", sans-serif';
     ctx.fillStyle = '#38bdf8';
     ctx.textAlign = 'left';
-    ctx.fillText('🎨 शुभ रंग (Lucky Color):', 170, 825);
+    ctx.fillText('🎨 शुभ रंग:', 170, 825);
 
-    ctx.font = '900 44px "Noto Sans Devanagari", sans-serif';
+    const colVal = sign.luckyColor || 'पीला (Yellow)';
+    let colFontSize = 42;
+    ctx.font = `900 ${colFontSize}px "Noto Sans Devanagari", sans-serif`;
+    while (ctx.measureText(colVal).width > 440 && colFontSize > 26) {
+      colFontSize -= 2;
+      ctx.font = `900 ${colFontSize}px "Noto Sans Devanagari", sans-serif`;
+    }
     ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'right';
-    ctx.fillText(sign.luckyColor || 'पीला (Yellow)', CANVAS_WIDTH - 170, 825);
+    ctx.fillText(colVal, CANVAS_WIDTH - 170, 825);
 
     // 2. Lucky Number Box
     ctx.fillStyle = 'rgba(255, 255, 255, 0.06)';
@@ -476,10 +567,10 @@ const VideoEngine = (function() {
     ctx.lineWidth = 2;
     ctx.stroke();
 
-    ctx.font = '700 36px "Noto Sans Devanagari", sans-serif';
+    ctx.font = '800 38px "Noto Sans Devanagari", sans-serif';
     ctx.fillStyle = '#fbbf24';
     ctx.textAlign = 'left';
-    ctx.fillText('🔢 शुभ अंक (Lucky Number):', 170, 1005);
+    ctx.fillText('🔢 शुभ अंक:', 170, 1005);
 
     ctx.font = '900 52px "JetBrains Mono", sans-serif';
     ctx.fillStyle = '#fbbf24';
@@ -637,8 +728,210 @@ const VideoEngine = (function() {
   }
 
   // ══════════════════════════════════════════════════════════════════
-  // 4. In-Browser Audio Synthesizer (Zero External Dependencies)
+  // Layer 5: 12-Zodiacs 1-Page All-in-One Poster / Video Mode
   // ══════════════════════════════════════════════════════════════════
+  function drawPosterLayout(time) {
+    const signs = (typeof ContentScraper !== 'undefined') ? ContentScraper.ZODIAC_SIGNS : [];
+    const targetDate = parseDateSafe(projectData.targetDate);
+    const days = ['रविवार', 'सोमवार', 'मंगलवार', 'बुधवार', 'गुरुवार', 'शुक्रवार', 'शनिवार'];
+    const months = ['जनवरी', 'फरवरी', 'मार्च', 'अप्रैल', 'मई', 'जून', 'जुलाई', 'अगस्त', 'सितंबर', 'अक्टूबर', 'नवंबर', 'दिसंबर'];
+    const dateStr = `${targetDate.getDate()} ${months[targetDate.getMonth()]} ${targetDate.getFullYear()} ${days[targetDate.getDay()]}`;
+
+    const isNewspaper = projectData.theme === 'newspaper';
+    const isBhojpatra = projectData.theme === 'bhojpatra';
+    const isPanchang = projectData.theme === 'panchang';
+
+    // 1. Poster Canvas Background (Paper/Parchment or Classic White)
+    if (isNewspaper) {
+      ctx.fillStyle = '#f8f4e9';
+      ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+      ctx.strokeStyle = '#1e293b';
+      ctx.lineWidth = 5;
+      ctx.strokeRect(18, 18, CANVAS_WIDTH - 36, CANVAS_HEIGHT - 36);
+    } else if (isBhojpatra) {
+      const bgGrad = ctx.createLinearGradient(0, 0, 0, CANVAS_HEIGHT);
+      bgGrad.addColorStop(0, '#fef3c7');
+      bgGrad.addColorStop(0.5, '#fde68a');
+      bgGrad.addColorStop(1, '#f59e0b');
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+      ctx.strokeStyle = '#78350f';
+      ctx.lineWidth = 5;
+      ctx.strokeRect(18, 18, CANVAS_WIDTH - 36, CANVAS_HEIGHT - 36);
+    } else if (isPanchang) {
+      ctx.fillStyle = '#fffbeb';
+      ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+      ctx.strokeStyle = '#b45309';
+      ctx.lineWidth = 5;
+      ctx.strokeRect(18, 18, CANVAS_WIDTH - 36, CANVAS_HEIGHT - 36);
+    } else {
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+      ctx.strokeStyle = '#991b1b';
+      ctx.lineWidth = 5;
+      ctx.strokeRect(18, 18, CANVAS_WIDTH - 36, CANVAS_HEIGHT - 36);
+    }
+
+    // 2. Top Header Title
+    ctx.save();
+    ctx.font = '900 78px "Noto Sans Devanagari", "Yatra One", sans-serif';
+    ctx.fillStyle = isNewspaper ? '#0f172a' : '#111827';
+    ctx.textAlign = 'center';
+    ctx.fillText('आज का राशिफल', CANVAS_WIDTH / 2, 95);
+
+    // Date Subheading
+    ctx.font = '800 42px "Noto Sans Devanagari", sans-serif';
+    ctx.fillStyle = '#1e293b';
+    ctx.fillText(dateStr, CANVAS_WIDTH / 2, 165);
+
+    // Channel Brand / Watermark Badge (Top Right)
+    ctx.font = '800 28px "Plus Jakarta Sans", sans-serif';
+    ctx.fillStyle = '#d97706';
+    ctx.textAlign = 'right';
+    ctx.fillText(projectData.channelName || '@DailyRashifal', CANVAS_WIDTH - 40, 80);
+    ctx.restore();
+
+    // Top Divider Line
+    ctx.beginPath();
+    ctx.moveTo(40, 195);
+    ctx.lineTo(CANVAS_WIDTH - 40, 195);
+    ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // 3. 12-Zodiac Grid (3 Columns x 4 Rows)
+    const startX = 36;
+    const startY = 215;
+    const gapX = 14;
+    const gapY = 14;
+    const colCount = 3;
+    const boxW = Math.floor((CANVAS_WIDTH - (startX * 2) - (gapX * (colCount - 1))) / colCount); // ~326px
+    const boxH = 370;
+
+    const cardColors = [
+      { border: '#dc2626', header: '#b91c1c' }, // Red (Aries)
+      { border: '#2563eb', header: '#1d4ed8' }, // Blue (Taurus)
+      { border: '#0284c7', header: '#0369a1' }, // Sky (Gemini)
+      { border: '#dc2626', header: '#b91c1c' }, // Red (Cancer)
+      { border: '#d97706', header: '#b45309' }, // Orange (Leo)
+      { border: '#059669', header: '#047857' }, // Green (Virgo)
+      { border: '#7c3aed', header: '#6d28d9' }, // Purple (Libra)
+      { border: '#dc2626', header: '#b91c1c' }, // Red (Scorpio)
+      { border: '#2563eb', header: '#1d4ed8' }, // Blue (Sagittarius)
+      { border: '#059669', header: '#047857' }, // Green (Capricorn)
+      { border: '#b91c1c', header: '#991b1b' }, // Maroon (Aquarius)
+      { border: '#0284c7', header: '#0369a1' }  // Ocean (Pisces)
+    ];
+
+    for (let i = 0; i < signs.length; i++) {
+      const sign = signs[i];
+      const col = i % colCount;
+      const row = Math.floor(i / colCount);
+      const x = startX + col * (boxW + gapX);
+      const y = startY + row * (boxH + gapY);
+
+      const colorScheme = cardColors[i % cardColors.length];
+      const signData = (projectData.allSignsData && projectData.allSignsData[sign.id]) || sign;
+
+      // Draw Box
+      ctx.save();
+      ctx.fillStyle = '#ffffff';
+      roundRect(ctx, x, y, boxW, boxH, 16);
+      ctx.fill();
+      ctx.strokeStyle = colorScheme.border;
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      // Card Header: Sign Name (Left) + Sign Symbol / Icon (Right)
+      ctx.font = '900 44px "Noto Sans Devanagari", sans-serif';
+      ctx.fillStyle = colorScheme.header;
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'top';
+      ctx.fillText(sign.nameHi, x + 16, y + 16);
+
+      // Sign Symbol or Custom Image
+      if (signData.customImage && (signData.customImage.complete || signData.customImage instanceof HTMLImageElement)) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(x + boxW - 36, y + 36, 24, 0, Math.PI * 2);
+        ctx.clip();
+        ctx.drawImage(signData.customImage, x + boxW - 60, y + 12, 48, 48);
+        ctx.restore();
+      } else {
+        ctx.font = '36px "Plus Jakarta Sans", sans-serif';
+        ctx.fillStyle = colorScheme.header;
+        ctx.textAlign = 'right';
+        ctx.fillText(sign.symbol || '♈', x + boxW - 16, y + 18);
+      }
+
+      // Divider inside box
+      ctx.beginPath();
+      ctx.moveTo(x + 12, y + 72);
+      ctx.lineTo(x + boxW - 12, y + 72);
+      ctx.strokeStyle = 'rgba(0, 0, 0, 0.12)';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      // Prediction Text Lines
+      const predText = signData.prediction || 'आज का दिन शुभ रहेगा। सोचे हुए कार्य पूरे होंगे और लाभ मिलेगा।';
+      ctx.font = '600 24px "Noto Sans Devanagari", sans-serif';
+      ctx.fillStyle = '#1e293b';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'top';
+      wrapText(ctx, predText, x + 14, y + 84, boxW - 28, 38);
+
+      ctx.restore();
+    }
+
+    // 4. Bottom Footer Call-To-Action (Matching Image 2)
+    ctx.save();
+    ctx.fillStyle = '#ffffff';
+    roundRect(ctx, 36, 1770, CANVAS_WIDTH - 72, 110, 16);
+    ctx.fill();
+    ctx.strokeStyle = '#dc2626';
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
+
+    ctx.font = '900 38px "Noto Sans Devanagari", sans-serif';
+    ctx.fillStyle = '#dc2626';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('रोज सबसे पहले सटीक राशिफल पाने के लिए 👍 Follow/Subscribe करें!', CANVAS_WIDTH / 2, 1825);
+    ctx.restore();
+  }
+
+  // 1-Click HD Poster Image Download (1080x1920 PNG)
+  function downloadPosterImage() {
+    renderFrame(0);
+    const link = document.createElement('a');
+    link.download = `Rashifal_12_Signs_Poster_${projectData.targetDate || 'today'}.png`;
+    link.href = canvas.toDataURL('image/png', 1.0);
+    link.click();
+  }
+
+  // ══════════════════════════════════════════════════════════════════
+  // 4. In-Browser Audio Synthesizer & Custom Audio Player
+  // ══════════════════════════════════════════════════════════════════
+  let customAudioBuffer = null;
+
+  function setCustomAudioFile(file) {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      try {
+        customAudioBuffer = await audioCtx.decodeAudioData(e.target.result);
+        bgmType = 'custom';
+        alert('✅ आपका कस्टम बैकग्राउंड ऑडियो लोड हो गया!');
+      } catch (err) {
+        alert('⚠️ ऑडियो डिकोड करने में त्रुटि: ' + err.message);
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  }
+
   function startAudio() {
     if (bgmType === 'none') return;
     try {
@@ -663,7 +956,6 @@ const VideoEngine = (function() {
   function playAmbientSynthLoop(targetDestination = null) {
     if (!audioCtx || bgmType === 'none') return;
     const now = audioCtx.currentTime;
-
     const vol = (projectData.bgmVolume !== undefined) ? projectData.bgmVolume : 0.85;
 
     const gain = audioCtx.createGain();
@@ -676,16 +968,58 @@ const VideoEngine = (function() {
       bgmGainNode = gain;
     }
 
-    // Warm spiritual ambient chords (Tanpura / Flute harmonics) with richer resonance
-    const freqs = [108, 162, 216, 324, 432, 540]; // 432Hz sacred harmonic tuning
+    if (bgmType === 'custom' && customAudioBuffer) {
+      const src = audioCtx.createBufferSource();
+      src.buffer = customAudioBuffer;
+      src.loop = true;
+      src.connect(gain);
+      src.start(now);
+      src.stop(now + totalDuration + 2);
+      return;
+    }
+
+    // 10 Peaceful Soundscapes Tuning Matrices
+    let freqs = [108, 162, 216, 324, 432, 540]; // 1. 432Hz Spiritual Tanpura (Default)
+    let waveType = 'sine';
+
+    if (bgmType === 'temple_bells') { // 2. Morning Temple Bells
+      freqs = [220, 440, 660, 880, 1320];
+      waveType = 'triangle';
+    } else if (bgmType === 'meditation_drone') { // 3. 528Hz Alpha Waves Drone
+      freqs = [132, 264, 528, 792, 1056];
+      waveType = 'sine';
+    } else if (bgmType === 'bansuri') { // 4. Krishna Bansuri Harmonics
+      freqs = [144, 216, 288, 432, 576, 864];
+      waveType = 'triangle';
+    } else if (bgmType === 'sitar') { // 5. Vedic Sitar & Swar Alap
+      freqs = [110, 165, 220, 330, 440, 550];
+      waveType = 'sawtooth';
+    } else if (bgmType === 'peaceful_rain') { // 6. Nature Rain & Temple Tone
+      freqs = [96, 144, 192, 288, 384, 576];
+      waveType = 'sine';
+    } else if (bgmType === 'om_chant') { // 7. Gayatri & Om Resonance
+      freqs = [136.1, 272.2, 408.3, 544.4];
+      waveType = 'sine';
+    } else if (bgmType === 'singing_bowl') { // 8. Tibetan Singing Bowl
+      freqs = [216, 432, 648, 864, 1296];
+      waveType = 'sine';
+    } else if (bgmType === 'chakra') { // 9. 741Hz Chakra Cleansing
+      freqs = [185.25, 370.5, 741, 1111.5];
+      waveType = 'triangle';
+    } else if (bgmType === 'brahma_muhurta') { // 10. Brahma Muhurta Sunrise
+      freqs = [120, 180, 240, 360, 480, 720];
+      waveType = 'sine';
+    }
+
     freqs.forEach((freq, idx) => {
       const osc = audioCtx.createOscillator();
       const oscGain = audioCtx.createGain();
 
-      osc.type = idx % 2 === 0 ? 'sine' : 'triangle';
+      osc.type = (waveType === 'sawtooth' && idx > 2) ? 'sine' : waveType;
       osc.frequency.setValueAtTime(freq, now);
 
-      oscGain.gain.setValueAtTime(0.08 * vol, now);
+      const noteVol = (waveType === 'sawtooth' ? 0.02 : 0.07) * vol;
+      oscGain.gain.setValueAtTime(noteVol, now);
       osc.connect(oscGain);
       oscGain.connect(gain);
 
@@ -885,6 +1219,16 @@ const VideoEngine = (function() {
     return new Date(dateInput);
   }
 
+  function setLayoutMode(mode) {
+    projectData.layoutMode = mode; // 'single' (4 scenes animation) or 'poster' (12-in-1 static video/image)
+    renderFrame(currentTime);
+  }
+
+  function setAllSignsData(data) {
+    projectData.allSignsData = data;
+    renderFrame(currentTime);
+  }
+
   return {
     init: init,
     play: play,
@@ -898,6 +1242,10 @@ const VideoEngine = (function() {
     setBgmVolume: setBgmVolume,
     setTargetDate: setTargetDate,
     setPredictionFontSize: setPredictionFontSize,
+    setLayoutMode: setLayoutMode,
+    setAllSignsData: setAllSignsData,
+    setCustomAudioFile: setCustomAudioFile,
+    downloadPosterImage: downloadPosterImage,
     exportVideo: exportVideo,
     getProjectData: () => projectData,
     getTotalDuration: () => totalDuration

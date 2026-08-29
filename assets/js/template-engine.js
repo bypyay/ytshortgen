@@ -551,6 +551,62 @@ const TemplateEngine = (function() {
     const btnSavePreset = document.getElementById('btnSavePreset');
     if (btnSavePreset) btnSavePreset.addEventListener('click', saveCurrentPreset);
 
+    // Custom Sign Image Upload
+    const inpCustomImg = document.getElementById('inpSignCustomImg');
+    if (inpCustomImg) {
+      inpCustomImg.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const img = new Image();
+          img.onload = () => {
+            const curSign = currentSignsData[selectedSignId] || {};
+            curSign.customImage = img;
+            VideoEngine.setSign(curSign);
+            renderTimelineThumbs();
+            alert('✅ इस राशि का फोटो सफलतापूर्ण लोड हो गया!');
+          };
+          img.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // Custom BGM Audio File Upload
+    const inpCustomAudio = document.getElementById('inpCustomAudio');
+    if (inpCustomAudio) {
+      inpCustomAudio.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) VideoEngine.setCustomAudioFile(file);
+      });
+    }
+
+    // Layout Mode Switcher (Single Sign Video vs 12-in-1 Poster Mode)
+    const btnLayoutSingle = document.getElementById('btnLayoutSingle');
+    const btnLayoutPoster = document.getElementById('btnLayoutPoster');
+    const btnDownloadPosterImg = document.getElementById('btnDownloadPosterImg');
+    const bottomTimeline = document.getElementById('bottomTimeline');
+
+    if (btnLayoutSingle && btnLayoutPoster) {
+      btnLayoutSingle.addEventListener('click', () => {
+        btnLayoutSingle.classList.add('active');
+        btnLayoutPoster.classList.remove('active');
+        if (btnDownloadPosterImg) btnDownloadPosterImg.style.display = 'none';
+        if (bottomTimeline) bottomTimeline.style.display = 'block';
+        VideoEngine.setLayoutMode('single');
+      });
+
+      btnLayoutPoster.addEventListener('click', () => {
+        btnLayoutPoster.classList.add('active');
+        btnLayoutSingle.classList.remove('active');
+        if (btnDownloadPosterImg) btnDownloadPosterImg.style.display = 'inline-flex';
+        if (bottomTimeline) bottomTimeline.style.display = 'none';
+        VideoEngine.setAllSignsData(currentSignsData);
+        VideoEngine.setLayoutMode('poster');
+      });
+    }
+
     // Mobile Navigation Tab Switcher
     setupMobileTabs();
   }
