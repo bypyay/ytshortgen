@@ -648,13 +648,19 @@ const VideoEngine = (function() {
     }
   }
 
-  function playAmbientSynthLoop() {
-    if (!audioCtx) return;
+  function playAmbientSynthLoop(targetDestination = null) {
+    if (!audioCtx || bgmType === 'none') return;
     const now = audioCtx.currentTime;
 
-    bgmGainNode = audioCtx.createGain();
-    bgmGainNode.gain.setValueAtTime(0.12, now);
-    bgmGainNode.connect(audioCtx.destination);
+    const gain = audioCtx.createGain();
+    gain.gain.setValueAtTime(0.15, now);
+
+    if (targetDestination) {
+      gain.connect(targetDestination);
+    } else {
+      gain.connect(audioCtx.destination);
+      bgmGainNode = gain;
+    }
 
     // Warm spiritual ambient chords (Tanpura / Flute harmonics)
     const freqs = [108, 162, 216, 324, 432]; // 432Hz sacred harmonic tuning
@@ -667,7 +673,7 @@ const VideoEngine = (function() {
 
       oscGain.gain.setValueAtTime(0.04, now);
       osc.connect(oscGain);
-      oscGain.connect(bgmGainNode);
+      oscGain.connect(gain);
 
       osc.start(now);
       osc.stop(now + totalDuration + 2);
@@ -681,34 +687,49 @@ const VideoEngine = (function() {
     pause();
     currentTime = 0;
 
-    const stream = canvas.captureStream(60); // 60fps stream
+    // Draw initial frame
+    renderFrame(0);
 
-    // Add audio if available
-    let combinedStream = stream;
-    if (audioCtx && bgmGainNode) {
-      try {
-        const dest = audioCtx.createMediaStreamDestination();
-        bgmGainNode.connect(dest);
-        const audioTracks = dest.stream.getAudioTracks();
-        if (audioTracks.length > 0) {
-          combinedStream = new MediaStream([stream.getVideoTracks()[0], audioTracks[0]]);
-        }
-      } catch(e) {}
+    const stream = canvas.captureStream(30); // 30fps stream for solid recording
+
+    // Initialize Web Audio synth track for pristine synchronized audio
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtx.state === 'suspended') {
+      try { await audioCtx.resume(); } catch(e) {}
     }
 
-    let mimeType = 'video/webm;codecs=vp9';
+    const dest = audioCtx.createMediaStreamDestination();
+    playAmbientSynthLoop(dest); // connect synth to stream destination
+
+    let combinedStream = stream;
+    const audioTracks = dest.stream.getAudioTracks();
+    if (audioTracks && audioTracks.length > 0) {
+      combinedStream = new MediaStream([stream.getVideoTracks()[0], audioTracks[0]]);
+    }
+
+    let mimeType = 'video/webm;codecs=vp8,opus';
     if (!MediaRecorder.isTypeSupported(mimeType)) {
-      mimeType = 'video/webm';
+      mimeType = 'video/webm;codecs=vp9,opus';
       if (!MediaRecorder.isTypeSupported(mimeType)) {
-        mimeType = 'video/mp4';
+        mimeType = 'video/webm';
+        if (!MediaRecorder.isTypeSupported(mimeType)) {
+          mimeType = 'video/mp4';
+        }
       }
     }
 
     const recordedChunks = [];
-    const recorder = new MediaRecorder(combinedStream, {
-      mimeType: mimeType,
-      videoBitsPerSecond: 8000000 // 8 Mbps High Quality Full HD
-    });
+    let recorder;
+    try {
+      recorder = new MediaRecorder(combinedStream, {
+        mimeType: mimeType,
+        videoBitsPerSecond: 6000000 // 6 Mbps High Quality
+      });
+    } catch(e) {
+      recorder = new MediaRecorder(combinedStream);
+    }
 
     recorder.ondataavailable = function(e) {
       if (e.data && e.data.size > 0) {
@@ -717,36 +738,45 @@ const VideoEngine = (function() {
     };
 
     recorder.onstop = function() {
-      const blob = new Blob(recordedChunks, { type: mimeType });
+      const blob = new Blob(recordedChunks, { type: recorder.mimeType || mimeType });
       const videoUrl = URL.createObjectURL(blob);
       if (onComplete) onComplete(videoUrl, blob);
     };
 
-    recorder.start(100);
+    recorder.start(200); // 200ms chunk interval
 
-    // Frame-by-frame rendering loop
-    const frameRate = 60;
-    const totalFrames = Math.floor(totalDuration * frameRate);
-    let currentFrame = 0;
+    const exportStartTime = performance.now();
+    let exportAnimId = null;
 
-    function renderNextFrame() {
-      if (currentFrame >= totalFrames) {
-        recorder.stop();
+    function exportLoop(now) {
+      const elapsedMs = now - exportStartTime;
+      const progressSec = elapsedMs / 1000;
+
+      if (progressSec >= totalDuration) {
+        renderFrame(totalDuration);
+        if (onProgress) onProgress(100);
+
+        try { recorder.requestData(); } catch(e) {}
+
+        setTimeout(function() {
+          try {
+            recorder.stop();
+          } catch(e) {
+            if (onError) onError(e);
+          }
+        }, 350);
         return;
       }
 
-      const frameTime = currentFrame / frameRate;
-      renderFrame(frameTime);
-
+      renderFrame(progressSec);
       if (onProgress) {
-        onProgress(Math.round((currentFrame / totalFrames) * 100));
+        onProgress(Math.min(99, Math.round((progressSec / totalDuration) * 100)));
       }
 
-      currentFrame++;
-      setTimeout(renderNextFrame, 1000 / frameRate);
+      exportAnimId = requestAnimationFrame(exportLoop);
     }
 
-    renderNextFrame();
+    exportAnimId = requestAnimationFrame(exportLoop);
   }
 
   // ══════════════════════════════════════════════════════════════════

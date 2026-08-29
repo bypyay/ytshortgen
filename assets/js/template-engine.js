@@ -22,8 +22,10 @@ const TemplateEngine = (function() {
     VideoEngine.init('studioVideoCanvas');
     loadSignIntoStudio(selectedSignId);
 
-    // 3. Render Zodiac Selector Grid
+    // 3. Render Zodiac Selector Grid & Popular Sources
     renderZodiacGrid();
+    renderPopularSourceChips();
+    addSourceRow('https://www.aajtak.in/astrology/rashifal');
 
     // 4. Render Slide Timeline Thumbnails
     renderTimelineThumbs();
@@ -82,25 +84,68 @@ const TemplateEngine = (function() {
   }
 
   // ══════════════════════════════════════════════════════════════════
-  // 3. Web URL Scraping Handler
+  // 3. Multi-Source URL Management & Scraping Handler
   // ══════════════════════════════════════════════════════════════════
+  function renderPopularSourceChips() {
+    const chipContainer = document.getElementById('popularSourcesList');
+    if (!chipContainer) return;
+
+    chipContainer.innerHTML = '';
+    ContentScraper.POPULAR_SOURCES.forEach(src => {
+      const chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'source-quick-chip';
+      chip.innerHTML = `<span>+ ${src.name}</span>`;
+      chip.addEventListener('click', () => {
+        addSourceRow(src.url);
+      });
+      chipContainer.appendChild(chip);
+    });
+  }
+
+  function addSourceRow(url = '') {
+    const container = document.getElementById('sourcesListContainer');
+    if (!container) return;
+
+    const row = document.createElement('div');
+    row.className = 'source-url-row';
+    row.innerHTML = `
+      <input type="url" class="studio-input source-url-input" placeholder="https://example.com/aaj-ka-rashifal" value="${url}">
+      <button type="button" class="btn-remove-source" onclick="TemplateEngine.removeSourceRow(this)" title="हटाएं"><i class="fa-solid fa-trash-can"></i></button>
+    `;
+    container.appendChild(row);
+  }
+
+  function removeSourceRow(btn) {
+    const container = document.getElementById('sourcesListContainer');
+    if (!container) return;
+    const row = btn.closest('.source-url-row');
+    if (row && container.children.length > 1) {
+      row.remove();
+    } else if (row) {
+      row.querySelector('.source-url-input').value = '';
+    }
+  }
+
   async function handleScrapeUrl() {
-    const urlInput = document.getElementById('inpScrapeUrl');
+    const inputs = document.querySelectorAll('.source-url-input');
+    const urls = Array.from(inputs).map(inp => inp.value.trim()).filter(u => u.length > 0);
+
     const btnScrape = document.getElementById('btnScrape');
-    if (!urlInput || !urlInput.value.trim()) {
-      alert('कृपया एक वेबसाइट लिंक दर्ज करें!');
+    if (urls.length === 0) {
+      alert('कृपया कम से कम एक वेबसाइट लिंक दर्ज करें!');
       return;
     }
 
     const originalBtnHtml = btnScrape.innerHTML;
     btnScrape.disabled = true;
-    btnScrape.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Scraper Active...';
+    btnScrape.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Scraping ' + urls.length + ' Sources...';
 
     try {
-      const scrapedData = await ContentScraper.scrapeUrl(urlInput.value.trim());
+      const scrapedData = await ContentScraper.scrapeMultipleUrls(urls);
       currentSignsData = scrapedData;
       loadSignIntoStudio(selectedSignId);
-      alert('✅ वेबसाइट से 12 राशियों का कंटेंट सफलतापूर्वक लोड कर लिया गया है!');
+      alert('✅ ' + urls.length + ' वेबसाइट स्रोतों से 12 राशियों का कंटेंट सफलतापूर्वक लोड कर लिया गया है!');
     } catch (err) {
       alert('⚠️ ' + err.message);
     } finally {
@@ -356,6 +401,8 @@ const TemplateEngine = (function() {
 
   return {
     init: init,
+    addSourceRow: addSourceRow,
+    removeSourceRow: removeSourceRow,
     handleScrapeUrl: handleScrapeUrl,
     startVideoExport: startVideoExport,
     closeExportModal: closeExportModal,

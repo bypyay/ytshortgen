@@ -288,7 +288,7 @@ body {
   line-height: 1.45;
 }
 
-/* URL Scraper Input Group */
+/* URL Scraper Input Group & Multi-Source Management */
 .url-input-group {
   display: flex;
   gap: 6px;
@@ -311,6 +311,49 @@ body {
 .btn-scrape:hover {
   filter: brightness(1.15);
   box-shadow: 0 0 12px rgba(6, 182, 212, 0.5);
+}
+
+.source-quick-chip {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #94a3b8;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.source-quick-chip:hover {
+  background: rgba(6, 182, 212, 0.15);
+  border-color: #38bdf8;
+  color: #38bdf8;
+}
+
+.source-url-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.btn-remove-source {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #f87171;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.78rem;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+.btn-remove-source:hover {
+  background: #dc2626;
+  color: #fff;
 }
 
 /* Zodiac Sign Selector Grid (12 Signs) */

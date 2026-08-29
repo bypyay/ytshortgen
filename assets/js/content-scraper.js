@@ -37,12 +37,21 @@ const ContentScraper = (function() {
 
   const LUCKY_COLORS = ['लाल (Red)', 'पीला (Yellow)', 'सुनहरा (Gold)', 'हरा (Green)', 'सफेद (White)', 'नारंगी (Orange)', 'गुलाबी (Pink)', 'केसरिया (Saffron)'];
 
+  // Popular Pre-configured Sources
+  const POPULAR_SOURCES = [
+    { name: 'Aaj Tak Rashifal', url: 'https://www.aajtak.in/astrology/rashifal' },
+    { name: 'Amar Ujala', url: 'https://www.amarujala.com/astrology/rashifal' },
+    { name: 'Live Hindustan', url: 'https://www.livehindustan.com/astrology/rashifal/' },
+    { name: 'Webdunia Hindi', url: 'https://hindi.webdunia.com/astrology' },
+    { name: 'Dainik Jagran', url: 'https://www.jagran.com/astrology/rashifal.html' }
+  ];
+
   // ══════════════════════════════════════════════════════════════════
-  // 1. Fetch & Scrape Content from User-Provided URL
+  // 1. Fetch & Scrape Content from Single / Multiple URLs
   // ══════════════════════════════════════════════════════════════════
-  async function scrapeUrl(targetUrl) {
+  async function scrapeSingleUrl(targetUrl) {
     if (!targetUrl || !targetUrl.startsWith('http')) {
-      throw new Error('कृपया एक वैध वेबसाइट URL (http/https) दर्ज करें।');
+      return null;
     }
 
     const proxies = [
@@ -52,8 +61,6 @@ const ContentScraper = (function() {
     ];
 
     let htmlText = '';
-    let success = false;
-
     for (const proxy of proxies) {
       try {
         const response = await fetch(proxy, { headers: { 'User-Agent': 'Mozilla/5.0' } });
@@ -64,30 +71,44 @@ const ContentScraper = (function() {
           } else {
             htmlText = await response.text();
           }
-          if (htmlText && htmlText.length > 200) {
-            success = true;
-            break;
-          }
+          if (htmlText && htmlText.length > 200) break;
         }
-      } catch (e) {
-        console.warn('Proxy attempt failed:', proxy);
-      }
+      } catch (e) {}
     }
 
-    if (!success || !htmlText) {
-      throw new Error('वेबसाइट से डेटा लोड नहीं हो सका। कृपया लिंक जांचें या टेक्स्ट मैन्युअल रूप से पेस्ट करें।');
-    }
+    if (!htmlText || htmlText.length < 200) return null;
 
-    // Parse HTML to clean text
     const parser = new DOMParser();
     const doc = parser.parseFromString(htmlText, 'text/html');
-
-    // Remove scripts, styles, navs
     const unwanted = doc.querySelectorAll('script, style, nav, footer, header, noscript, iframe, .ads');
     unwanted.forEach(el => el.remove());
 
-    const bodyText = doc.body.innerText || '';
-    return parseAstrologyText(bodyText);
+    return doc.body.innerText || '';
+  }
+
+  // Scrape Multiple Sources & Merge Data
+  async function scrapeMultipleUrls(urlsArray) {
+    const validUrls = urlsArray.filter(u => u && u.trim().startsWith('http'));
+    if (validUrls.length === 0) {
+      throw new Error('कृपया कम से कम एक वैध वेबसाइट URL (http/https) दर्ज करें।');
+    }
+
+    let combinedRawText = '';
+    let successCount = 0;
+
+    for (const url of validUrls) {
+      const text = await scrapeSingleUrl(url.trim());
+      if (text) {
+        combinedRawText += '\n' + text;
+        successCount++;
+      }
+    }
+
+    if (successCount === 0 || combinedRawText.length < 200) {
+      throw new Error('दिए गए किसी भी लिंक से डेटा प्राप्त नहीं हो सका। कृपया लिंक जांचें या इन-बिल्ट डेली राशिफल का उपयोग करें।');
+    }
+
+    return parseAstrologyText(combinedRawText);
   }
 
   // ══════════════════════════════════════════════════════════════════
@@ -211,7 +232,9 @@ const ContentScraper = (function() {
 
   return {
     ZODIAC_SIGNS: ZODIAC_SIGNS,
-    scrapeUrl: scrapeUrl,
+    POPULAR_SOURCES: POPULAR_SOURCES,
+    scrapeSingleUrl: scrapeSingleUrl,
+    scrapeMultipleUrls: scrapeMultipleUrls,
     parseAstrologyText: parseAstrologyText,
     generateDailySignData: generateDailySignData,
     generateAllDailySigns: generateAllDailySigns
