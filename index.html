@@ -15,7 +15,7 @@
   <meta property="og:url" content="https://bypyay.github.io/ytshortgen/">
 
   <!-- Stylesheets & Fonts -->
-  <link rel="stylesheet" href="assets/css/studio.css?v=13">
+  <link rel="stylesheet" href="assets/css/studio.css?v=14">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
   <!-- Structured Data JSON-LD (Schema.org) -->
@@ -428,6 +428,75 @@
             <span>आज का उपाय (Remedy)</span>
           </label>
           <textarea class="studio-textarea" id="txtUpay" rows="2" style="min-height:50px;">हनुमान चालीसा का पाठ करें और सिंदूर का तिलक लगाएं।</textarea>
+
+          <!-- Star Ratings (दैनिक सितारे) -->
+          <div style="margin-top:10px; border-top:1px solid rgba(255,255,255,0.08); padding-top:8px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <span style="font-size:0.75rem; font-weight:800; color:#fbbf24;"><i class="fa-solid fa-star"></i> दैनिक सितारे (Star Ratings)</span>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; font-size:0.72rem;">
+              <div>
+                <label for="selRatingHealth" style="color:#94a3b8; display:block; margin-bottom:2px;">🩺 स्वास्थ्य:</label>
+                <select class="studio-input" id="selRatingHealth" style="padding:4px 6px; font-size:0.72rem;">
+                  <option value="5">★★★★★ (5)</option>
+                  <option value="4" selected>★★★★☆ (4)</option>
+                  <option value="3">★★★☆☆ (3)</option>
+                  <option value="2">★★☆☆☆ (2)</option>
+                  <option value="1">★☆☆☆☆ (1)</option>
+                </select>
+              </div>
+              <div>
+                <label for="selRatingWealth" style="color:#94a3b8; display:block; margin-bottom:2px;">💰 धन-सम्पत्ति:</label>
+                <select class="studio-input" id="selRatingWealth" style="padding:4px 6px; font-size:0.72rem;">
+                  <option value="5" selected>★★★★★ (5)</option>
+                  <option value="4">★★★★☆ (4)</option>
+                  <option value="3">★★★☆☆ (3)</option>
+                  <option value="2">★★☆☆☆ (2)</option>
+                  <option value="1">★☆☆☆☆ (1)</option>
+                </select>
+              </div>
+              <div>
+                <label for="selRatingFamily" style="color:#94a3b8; display:block; margin-bottom:2px;">👨‍👩‍👧‍👦 परिवार:</label>
+                <select class="studio-input" id="selRatingFamily" style="padding:4px 6px; font-size:0.72rem;">
+                  <option value="5">★★★★★ (5)</option>
+                  <option value="4" selected>★★★★☆ (4)</option>
+                  <option value="3">★★★☆☆ (3)</option>
+                  <option value="2">★★☆☆☆ (2)</option>
+                  <option value="1">★☆☆☆☆ (1)</option>
+                </select>
+              </div>
+              <div>
+                <label for="selRatingLove" style="color:#94a3b8; display:block; margin-bottom:2px;">❤️ प्रेम संबंध:</label>
+                <select class="studio-input" id="selRatingLove" style="padding:4px 6px; font-size:0.72rem;">
+                  <option value="5">★★★★★ (5)</option>
+                  <option value="4">★★★★☆ (4)</option>
+                  <option value="3" selected>★★★☆☆ (3)</option>
+                  <option value="2">★★☆☆☆ (2)</option>
+                  <option value="1">★☆☆☆☆ (1)</option>
+                </select>
+              </div>
+              <div>
+                <label for="selRatingBusiness" style="color:#94a3b8; display:block; margin-bottom:2px;">💼 व्यवसाय:</label>
+                <select class="studio-input" id="selRatingBusiness" style="padding:4px 6px; font-size:0.72rem;">
+                  <option value="5" selected>★★★★★ (5)</option>
+                  <option value="4">★★★★☆ (4)</option>
+                  <option value="3">★★★☆☆ (3)</option>
+                  <option value="2">★★☆☆☆ (2)</option>
+                  <option value="1">★☆☆☆☆ (1)</option>
+                </select>
+              </div>
+              <div>
+                <label for="selRatingMarriage" style="color:#94a3b8; display:block; margin-bottom:2px;">💍 वैवाहिक जीवन:</label>
+                <select class="studio-input" id="selRatingMarriage" style="padding:4px 6px; font-size:0.72rem;">
+                  <option value="5">★★★★★ (5)</option>
+                  <option value="4" selected>★★★★☆ (4)</option>
+                  <option value="3">★★★☆☆ (3)</option>
+                  <option value="2">★★☆☆☆ (2)</option>
+                  <option value="1">★☆☆☆☆ (1)</option>
+                </select>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- Bulk 12-Shorts Generator Button -->
@@ -442,7 +511,7 @@
         <!-- Layout Mode Switcher (Single Sign Video vs 12-in-1 Static Video & Poster) -->
         <div style="display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:8px; margin-bottom:8px;">
           <button type="button" class="layout-mode-pill active" data-layout="single" id="btnLayoutSingle">
-            <i class="fa-solid fa-film"></i> 🎬 4-Scene Short
+            <i class="fa-solid fa-film"></i> 🎬 5-Scene Short (Stars Added)
           </button>
           <button type="button" class="layout-mode-pill" data-layout="poster" id="btnLayoutPoster">
             <i class="fa-solid fa-table-cells"></i> 📰 12-राशि ऑल-इन-वन पोस्टर (Image Mode)
@@ -665,8 +734,8 @@
   </footer>
 
   <!-- Scripts -->
-  <script src="assets/js/content-scraper.js?v=13"></script>
-  <script src="assets/js/video-engine.js?v=13"></script>
-  <script src="assets/js/template-engine.js?v=13"></script>
+  <script src="assets/js/content-scraper.js?v=14"></script>
+  <script src="assets/js/video-engine.js?v=14"></script>
+  <script src="assets/js/template-engine.js?v=14"></script>
 </body>
 </html>

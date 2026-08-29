@@ -93,6 +93,22 @@ const TemplateEngine = (function() {
     if (txtPrediction) txtPrediction.value = sign.prediction;
     if (txtUpay) txtUpay.value = sign.upay;
 
+    // Load Star Ratings into selects
+    const ratings = sign.ratings || { health: 4, wealth: 5, family: 4, love: 3, business: 5, marriage: 4 };
+    const selHealth = document.getElementById('selRatingHealth');
+    const selWealth = document.getElementById('selRatingWealth');
+    const selFamily = document.getElementById('selRatingFamily');
+    const selLove = document.getElementById('selRatingLove');
+    const selBusiness = document.getElementById('selRatingBusiness');
+    const selMarriage = document.getElementById('selRatingMarriage');
+
+    if (selHealth) selHealth.value = String(ratings.health || 4);
+    if (selWealth) selWealth.value = String(ratings.wealth || 5);
+    if (selFamily) selFamily.value = String(ratings.family || 4);
+    if (selLove) selLove.value = String(ratings.love || 3);
+    if (selBusiness) selBusiness.value = String(ratings.business || 5);
+    if (selMarriage) selMarriage.value = String(ratings.marriage || 4);
+
     renderTimelineThumbs();
   }
 
@@ -209,6 +225,9 @@ const TemplateEngine = (function() {
       } else if (slide.type === 'prediction') {
         title = `Scene ${idx + 1}: Forecast`;
         snippet = project.sign.prediction;
+      } else if (slide.type === 'ratings') {
+        title = `Scene ${idx + 1}: Stars`;
+        snippet = 'स्वास्थ्य, धन, परिवार, प्रेम, व्यवसाय, विवाह';
       } else if (slide.type === 'upay') {
         title = `Scene ${idx + 1}: Upay`;
         snippet = project.sign.upay;
@@ -511,14 +530,41 @@ const TemplateEngine = (function() {
       if (txtPrediction) curSign.prediction = txtPrediction.value;
       if (txtUpay) curSign.upay = txtUpay.value;
 
+      // Update ratings
+      const selHealth = document.getElementById('selRatingHealth');
+      const selWealth = document.getElementById('selRatingWealth');
+      const selFamily = document.getElementById('selRatingFamily');
+      const selLove = document.getElementById('selRatingLove');
+      const selBusiness = document.getElementById('selRatingBusiness');
+      const selMarriage = document.getElementById('selRatingMarriage');
+
+      curSign.ratings = {
+        health: selHealth ? parseInt(selHealth.value, 10) : 4,
+        wealth: selWealth ? parseInt(selWealth.value, 10) : 5,
+        family: selFamily ? parseInt(selFamily.value, 10) : 4,
+        love: selLove ? parseInt(selLove.value, 10) : 3,
+        business: selBusiness ? parseInt(selBusiness.value, 10) : 5,
+        marriage: selMarriage ? parseInt(selMarriage.value, 10) : 4
+      };
+
       currentSignsData[selectedSignId] = curSign;
       VideoEngine.setSign(curSign);
       VideoEngine.setAllSignsData(currentSignsData);
       renderTimelineThumbs();
     };
 
-    [inpColor, inpNumber, inpPercent, txtPrediction, txtUpay].forEach(el => {
-      if (el) el.addEventListener('input', updateSignData);
+    [inpColor, inpNumber, inpPercent, txtPrediction, txtUpay,
+     document.getElementById('selRatingHealth'),
+     document.getElementById('selRatingWealth'),
+     document.getElementById('selRatingFamily'),
+     document.getElementById('selRatingLove'),
+     document.getElementById('selRatingBusiness'),
+     document.getElementById('selRatingMarriage')
+    ].forEach(el => {
+      if (el) {
+        el.addEventListener('input', updateSignData);
+        el.addEventListener('change', updateSignData);
+      }
     });
 
     if (inpChannel) {

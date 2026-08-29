@@ -56,9 +56,10 @@ const VideoEngine = (function() {
     channelName: '@DailyRashifal',
     slides: [
       { id: 1, type: 'intro', duration: 3.5 },
-      { id: 2, type: 'metrics', duration: 4.0 },
-      { id: 3, type: 'prediction', duration: 5.5 },
-      { id: 4, type: 'upay', duration: 3.0 }
+      { id: 2, type: 'metrics', duration: 3.5 },
+      { id: 3, type: 'prediction', duration: 5.0 },
+      { id: 4, type: 'ratings', duration: 4.0 },
+      { id: 5, type: 'upay', duration: 3.5 }
     ]
   };
 
@@ -457,6 +458,8 @@ const VideoEngine = (function() {
       renderSlideMetrics(slideLocalTime, activeSlide.duration);
     } else if (activeSlide.type === 'prediction') {
       renderSlidePrediction(slideLocalTime, activeSlide.duration);
+    } else if (activeSlide.type === 'ratings') {
+      renderSlideRatings(slideLocalTime, activeSlide.duration);
     } else if (activeSlide.type === 'upay') {
       renderSlideUpay(slideLocalTime, activeSlide.duration);
     }
@@ -616,7 +619,7 @@ const VideoEngine = (function() {
     ctx.restore();
   }
 
-  // Slide 3: Main Daily Forecast / Prediction
+  // Slide 3: Main Daily Forecast / Prediction with Dynamic Auto-Expanding Box
   function renderSlidePrediction(t, dur) {
     const sign = projectData.sign;
     const progress = Math.min(1, t / 0.5);
@@ -624,38 +627,181 @@ const VideoEngine = (function() {
     ctx.save();
     ctx.globalAlpha = progress;
 
-    // Prediction Card
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.70)';
-    roundRect(ctx, 80, 560, CANVAS_WIDTH - 160, 920, 36);
+    const text = sign.prediction || 'आज का दिन आपके लिए मंगलकारी रहेगा। बिगड़े कार्य पूरे होंगे और आर्थिक लाभ मिलेगा।';
+    const fontSize = projectData.predictionFontSize || 38;
+    const lineHeight = Math.round(fontSize * 1.50);
+
+    ctx.font = `600 ${fontSize}px "Noto Sans Devanagari", sans-serif`;
+
+    // 1. Dynamic line wrapping & height measurement
+    const textMaxWidth = CANVAS_WIDTH - 320; // 760px
+    const words = text.split(' ');
+    const lines = [];
+    let curLine = '';
+    for (let n = 0; n < words.length; n++) {
+      const test = curLine + words[n] + ' ';
+      if (ctx.measureText(test).width > textMaxWidth && n > 0) {
+        lines.push(curLine.trim());
+        curLine = words[n] + ' ';
+      } else {
+        curLine = test;
+      }
+    }
+    if (curLine.trim().length > 0) lines.push(curLine.trim());
+
+    const totalTextH = lines.length * lineHeight;
+    const innerBoxH = Math.max(480, Math.min(940, totalTextH + 50));
+    const outerCardH = innerBoxH + 150;
+    const cardY = Math.max(480, 550 - Math.max(0, (outerCardH - 880) / 2));
+    const innerBoxY = cardY + 120;
+
+    // Outer Prediction Card (Auto-expanded)
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.72)';
+    roundRect(ctx, 80, cardY, CANVAS_WIDTH - 160, outerCardH, 36);
     ctx.fill();
     ctx.strokeStyle = 'rgba(245, 158, 11, 0.45)';
     ctx.lineWidth = 3;
     ctx.stroke();
 
+    // Card Header Title
     ctx.font = '900 48px "Noto Sans Devanagari", sans-serif';
     ctx.fillStyle = '#fbbf24';
     ctx.textAlign = 'center';
-    ctx.fillText('📖 दैनिक भविष्यफल (Prediction)', CANVAS_WIDTH / 2, 645);
+    ctx.fillText('📖 दैनिक भविष्यफल (Prediction)', CANVAS_WIDTH / 2, cardY + 75);
 
-    // Inner Text Box with subtle glass border
+    // Inner Text Box with subtle glass border & dynamic height
     ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
-    roundRect(ctx, 120, 705, CANVAS_WIDTH - 240, 735, 24);
+    roundRect(ctx, 120, innerBoxY, CANVAS_WIDTH - 240, innerBoxH, 24);
     ctx.fill();
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.10)';
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    // Devanagari Word-Wrapped Paragraph with dynamic sizing
-    const text = sign.prediction || 'आज का दिन आपके लिए मंगलकारी रहेगा। बिगड़े कार्य पूरे होंगे और आर्थिक लाभ मिलेगा।';
-    const fontSize = projectData.predictionFontSize || 42;
-    const lineHeight = Math.round(fontSize * 1.52);
+    // Strict clipping inside inner box
+    ctx.save();
+    roundRect(ctx, 120, innerBoxY, CANVAS_WIDTH - 240, innerBoxH, 24);
+    ctx.clip();
 
     ctx.font = `600 ${fontSize}px "Noto Sans Devanagari", sans-serif`;
     ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
 
-    wrapText(ctx, text, 160, 745, CANVAS_WIDTH - 320, lineHeight);
+    let textY = innerBoxY + 25;
+    for (let i = 0; i < lines.length; i++) {
+      if (textY + lineHeight > innerBoxY + innerBoxH) break;
+      ctx.fillText(lines[i], 160, textY);
+      textY += lineHeight;
+    }
+    ctx.restore();
+
+    ctx.restore();
+  }
+
+  // Slide 4: 5-Star Ratings Scene (कुंडली व दैनिक सितारे)
+  function renderSlideRatings(t, dur) {
+    const sign = projectData.sign;
+    const progress = Math.min(1, t / 0.5);
+
+    ctx.save();
+    ctx.globalAlpha = progress;
+
+    // Main Card Container
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.72)';
+    roundRect(ctx, 80, 520, CANVAS_WIDTH - 160, 970, 36);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(245, 158, 11, 0.45)';
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    // Card Title
+    ctx.font = '900 48px "Noto Sans Devanagari", sans-serif';
+    ctx.fillStyle = '#fbbf24';
+    ctx.textAlign = 'center';
+    ctx.fillText('⭐ आज के दैनिक सितारे (Star Ratings) ⭐', CANVAS_WIDTH / 2, 605);
+
+    const ratings = sign.ratings || {
+      health: 4,
+      wealth: 5,
+      family: 4,
+      love: 3,
+      business: 5,
+      marriage: 4
+    };
+
+    const categories = [
+      { label: 'स्वास्थ्य (Health)', stars: ratings.health || 4, icon: '🩺' },
+      { label: 'धन-सम्पत्ति (Wealth)', stars: ratings.wealth || 5, icon: '💰' },
+      { label: 'परिवार (Family)', stars: ratings.family || 4, icon: '👨‍👩‍👧‍👦' },
+      { label: 'प्रेम संबंध (Love)', stars: ratings.love || 3, icon: '❤️' },
+      { label: 'व्यवसाय (Career)', stars: ratings.business || 5, icon: '💼' },
+      { label: 'वैवाहिक जीवन (Marriage)', stars: ratings.marriage || 4, icon: '💍' }
+    ];
+
+    const rowStartX = 120;
+    const rowStartY = 665;
+    const rowW = CANVAS_WIDTH - 240;
+    const rowH = 112;
+    const rowGap = 16;
+
+    categories.forEach((cat, idx) => {
+      const rowY = rowStartY + idx * (rowH + rowGap);
+
+      // Glass Pill Row
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+      roundRect(ctx, rowStartX, rowY, rowW, rowH, 20);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      // Category Icon & Label
+      ctx.font = '800 34px "Noto Sans Devanagari", sans-serif';
+      ctx.fillStyle = '#ffffff';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(`${cat.icon} ${cat.label}`, rowStartX + 24, rowY + rowH / 2);
+
+      // 5 Star Rating Rendering with Smooth Pulse Animation
+      const starCount = 5;
+      const starSize = 36;
+      const starGap = 8;
+      const starsTotalW = (starCount * starSize) + ((starCount - 1) * starGap);
+      const starsStartX = rowStartX + rowW - starsTotalW - 24;
+      const starsCenterY = rowY + rowH / 2;
+
+      const rowDelay = idx * 0.12;
+      const rowProgress = Math.max(0, Math.min(1, (t - rowDelay) / 0.4));
+
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      for (let s = 0; s < starCount; s++) {
+        const starX = starsStartX + s * (starSize + starGap) + starSize / 2;
+        const isFilled = s < cat.stars;
+
+        if (isFilled) {
+          ctx.save();
+          if (rowProgress > 0) {
+            const starScale = Math.min(1, rowProgress * 1.25);
+            ctx.translate(starX, starsCenterY);
+            ctx.scale(starScale, starScale);
+            ctx.translate(-starX, -starsCenterY);
+          }
+          ctx.font = '900 38px "Noto Sans Devanagari", sans-serif';
+          ctx.fillStyle = '#fbbf24';
+          ctx.shadowColor = '#f59e0b';
+          ctx.shadowBlur = 12;
+          ctx.fillText('★', starX, starsCenterY);
+          ctx.restore();
+        } else {
+          ctx.font = '900 38px "Noto Sans Devanagari", sans-serif';
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.20)';
+          ctx.shadowBlur = 0;
+          ctx.fillText('★', starX, starsCenterY);
+        }
+      }
+    });
 
     ctx.restore();
   }

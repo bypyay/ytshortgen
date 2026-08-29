@@ -170,9 +170,16 @@ const ContentScraper = (function() {
       prediction = generateDailySignData(sign).prediction;
     }
 
-    const luckyColor = LUCKY_COLORS[Math.floor(Math.random() * LUCKY_COLORS.length)];
-    const luckyNumber = Math.floor(Math.random() * 9) + 1;
-    const luckPercent = Math.floor(Math.random() * 22) + 76; // 76% - 98%
+    const daySeed = new Date().getFullYear() * 10000 + (new Date().getMonth() + 1) * 100 + new Date().getDate();
+    const signIndex = ZODIAC_SIGNS.findIndex(s => s.id === sign.id);
+    const ratings = {
+      health: Math.min(5, Math.max(3, 3 + ((daySeed + signIndex * 3) % 3))),
+      wealth: Math.min(5, Math.max(3, 4 + ((daySeed + signIndex * 5) % 2))),
+      family: Math.min(5, Math.max(3, 3 + ((daySeed + signIndex * 7) % 3))),
+      love: Math.min(5, Math.max(2, 3 + ((daySeed + signIndex * 2) % 3))),
+      business: Math.min(5, Math.max(3, 4 + ((daySeed + signIndex * 4) % 2))),
+      marriage: Math.min(5, Math.max(3, 3 + ((daySeed + signIndex * 6) % 3)))
+    };
 
     return {
       id: sign.id,
@@ -189,6 +196,7 @@ const ContentScraper = (function() {
       luckPercent: luckPercent,
       prediction: prediction,
       upay: upay,
+      ratings: ratings,
       isScraped: true
     };
   }
@@ -387,6 +395,15 @@ const ContentScraper = (function() {
       prediction = `${c} ${f} ${fam} ${h}`;
     }
 
+    const ratings = {
+      health: Math.min(5, Math.max(3, 3 + ((daySeed + signIndex * 3) % 3))),
+      wealth: Math.min(5, Math.max(3, 4 + ((daySeed + signIndex * 5) % 2))),
+      family: Math.min(5, Math.max(3, 3 + ((daySeed + signIndex * 7) % 3))),
+      love: Math.min(5, Math.max(2, 3 + ((daySeed + signIndex * 2) % 3))),
+      business: Math.min(5, Math.max(3, 4 + ((daySeed + signIndex * 4) % 2))),
+      marriage: Math.min(5, Math.max(3, 3 + ((daySeed + signIndex * 6) % 3)))
+    };
+
     return {
       id: sign.id,
       signId: sign.id,
@@ -401,7 +418,8 @@ const ContentScraper = (function() {
       luckyNumber: luckyNumber,
       luckPercent: luckPercent,
       prediction: prediction,
-      upay: upay
+      upay: upay,
+      ratings: ratings
     };
   }
 
