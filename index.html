@@ -15,7 +15,7 @@
   <meta property="og:url" content="https://bypyay.github.io/ytshortgen/">
 
   <!-- Stylesheets & Fonts -->
-  <link rel="stylesheet" href="assets/css/studio.css?v=3">
+  <link rel="stylesheet" href="assets/css/studio.css?v=4">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
   <!-- Structured Data JSON-LD (Schema.org) -->
@@ -300,6 +300,35 @@
       <aside class="studio-panel" id="leftPanel">
         <div class="panel-section-title"><i class="fa-solid fa-globe" style="color:#38bdf8;"></i> 1. Content &amp; Web Scraper</div>
 
+        <!-- Prediction Date Selector Card -->
+        <div class="panel-card" style="border-color: rgba(245, 158, 11, 0.4); background: rgba(245, 158, 11, 0.06);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <label class="input-label" style="margin-bottom:0; color:#fbbf24;">
+              <i class="fa-solid fa-calendar-day"></i> <span>राशिफल तारीख (Select Date)</span>
+            </label>
+            <span style="font-size:0.70rem; font-weight:800; color:#10b981; background:rgba(16,185,129,0.15); padding:2px 6px; border-radius:8px;">Live Date</span>
+          </div>
+
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px; margin-bottom:6px;">
+            <label class="date-radio-pill">
+              <input type="radio" name="dateMode" id="dateModeTomorrow" value="tomorrow" checked>
+              <span>🌟 कल का राशिफल</span>
+            </label>
+            <label class="date-radio-pill">
+              <input type="radio" name="dateMode" id="dateModeToday" value="today">
+              <span>📅 आज का राशिफल</span>
+            </label>
+          </div>
+
+          <div style="display:flex; gap:6px; align-items:center;">
+            <label class="date-radio-pill" style="flex:1;">
+              <input type="radio" name="dateMode" id="dateModeCustom" value="custom">
+              <span>🗓️ कस्टम तारीख</span>
+            </label>
+            <input type="date" class="studio-input" id="inpCustomDate" style="display:none; flex:1.2; padding:5px 8px; font-size:0.80rem;">
+          </div>
+        </div>
+
         <!-- Multi-Source URL Scraper Card -->
         <div class="panel-card">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
@@ -443,6 +472,17 @@
             <option value="cosmic">🌌 Cosmic Meditation Bells</option>
             <option value="none">🔇 No Audio / Mute</option>
           </select>
+
+          <!-- BGM Volume Slider -->
+          <div style="margin-top:10px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+              <label class="input-label" for="bgmVolumeSlider" style="margin-bottom:0;">
+                <i class="fa-solid fa-volume-high" style="color:#10b981;"></i> <span>म्यूज़िक आवाज़ (Volume Boost)</span>
+              </label>
+              <span id="bgmVolumeDisplay" style="font-size:0.75rem; font-weight:800; color:#10b981;">85%</span>
+            </div>
+            <input type="range" class="seek-slider" id="bgmVolumeSlider" min="0" max="150" value="85" style="width:100%;">
+          </div>
         </div>
 
         <!-- Channel Branding / Watermark -->
@@ -516,8 +556,8 @@
   </footer>
 
   <!-- Scripts -->
-  <script src="assets/js/content-scraper.js?v=3"></script>
-  <script src="assets/js/video-engine.js?v=3"></script>
-  <script src="assets/js/template-engine.js?v=3"></script>
+  <script src="assets/js/content-scraper.js?v=4"></script>
+  <script src="assets/js/video-engine.js?v=4"></script>
+  <script src="assets/js/template-engine.js?v=4"></script>
 </body>
 </html>

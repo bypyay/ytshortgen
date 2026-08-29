@@ -356,6 +356,29 @@ body {
   color: #fff;
 }
 
+.date-radio-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #e2e8f0;
+  transition: all 0.2s;
+}
+.date-radio-pill:hover {
+  background: rgba(245, 158, 11, 0.15);
+  border-color: rgba(245, 158, 11, 0.4);
+}
+.date-radio-pill input[type="radio"] {
+  accent-color: #f59e0b;
+  cursor: pointer;
+}
+
 /* Zodiac Sign Selector Grid (12 Signs) */
 .zodiac-grid {
   display: grid;

@@ -37,6 +37,8 @@ const VideoEngine = (function() {
   let projectData = {
     theme: 'gold', // 'gold', 'cosmic', 'devotional', 'cyber', 'royal', 'minimal'
     fontFamily: 'Noto Sans Devanagari',
+    targetDate: new Date(Date.now() + 86400000).toISOString().slice(0, 10), // Tomorrow by default
+    bgmVolume: 0.85, // rich spiritual sound
     sign: {
       id: 'aries',
       nameHi: 'मेष',
@@ -50,7 +52,7 @@ const VideoEngine = (function() {
       prediction: 'आज का दिन आपके लिए आर्थिक व पारिवारिक रूप से बेहद शुभ रहेगा। कार्यक्षेत्र में नए अवसर प्राप्त होंगे और सोचे हुए कार्य पूरे होंगे।',
       upay: 'हनुमान चालीसा का पाठ करें और सिंदूर का तिलक लगाएं।'
     },
-    dateText: 'आज का पंचांग एवं राशिफल',
+    dateText: 'कल का पंचांग एवं राशिफल',
     channelName: '@DailyRashifal',
     slides: [
       { id: 1, type: 'intro', duration: 3.5 },
@@ -293,10 +295,10 @@ const VideoEngine = (function() {
     ctx.stroke();
 
     // Date & Day Text
-    const now = new Date();
+    const targetDate = projectData.targetDate ? new Date(projectData.targetDate) : new Date();
     const days = ['रविवार', 'सोमवार', 'मंगलवार', 'बुधवार', 'गुरुवार', 'शुक्रवार', 'शनिवार'];
     const months = ['जनवरी', 'फरवरी', 'मार्च', 'अप्रैल', 'मई', 'जून', 'जुलाई', 'अगस्त', 'सितंबर', 'अक्टूबर', 'नवंबर', 'दिसंबर'];
-    const dateStr = `🕉️ ${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()} 🪔`;
+    const dateStr = `🕉️ ${days[targetDate.getDay()]}, ${targetDate.getDate()} ${months[targetDate.getMonth()]} ${targetDate.getFullYear()} 🪔`;
 
     ctx.font = '800 36px "Noto Sans Devanagari", sans-serif';
     ctx.fillStyle = '#fbbf24';
@@ -333,7 +335,7 @@ const VideoEngine = (function() {
     ctx.textBaseline = 'middle';
     ctx.fillText(sign.symbol || '♈', CANVAS_WIDTH / 2, badgeY - 5);
 
-    // Sign Name Label below badge
+    // Sign Name Label below badge (Fixed undefined bug!)
     ctx.font = '900 68px "Noto Sans Devanagari", "Yatra One", sans-serif';
     const grad = ctx.createLinearGradient(CANVAS_WIDTH / 2 - 200, 0, CANVAS_WIDTH / 2 + 200, 0);
     grad.addColorStop(0, '#fef08a');
@@ -342,7 +344,9 @@ const VideoEngine = (function() {
     ctx.fillStyle = grad;
     ctx.shadowColor = 'rgba(245, 158, 11, 0.6)';
     ctx.shadowBlur = 18;
-    ctx.fillText(`${sign.nameHi} राशि (${sign.nameEn})`, CANVAS_WIDTH / 2, badgeY + 140);
+    const signNameHi = sign.nameHi || sign.signNameHi || 'मेष';
+    const signNameEn = sign.nameEn || sign.signNameEn || 'Aries';
+    ctx.fillText(`${signNameHi} राशि (${signNameEn})`, CANVAS_WIDTH / 2, badgeY + 140);
     ctx.restore();
   }
 
@@ -401,9 +405,11 @@ const VideoEngine = (function() {
     roundRect(ctx, 160, 800, CANVAS_WIDTH - 320, 80, 20);
     ctx.fill();
 
+    const lord = sign.lord || 'मंगल';
+    const element = sign.element || 'अग्नि';
     ctx.font = '700 38px "Noto Sans Devanagari", sans-serif';
     ctx.fillStyle = '#fed7aa';
-    ctx.fillText(`स्वामी ग्रह: ${sign.lord || 'मंगल'} | तत्व: ${sign.element || 'अग्नि'}`, CANVAS_WIDTH / 2, 852);
+    ctx.fillText(`स्वामी ग्रह: ${lord} | तत्व: ${element}`, CANVAS_WIDTH / 2, 852);
 
     // Animated Highlights
     ctx.font = '800 48px "Noto Sans Devanagari", sans-serif';
@@ -652,8 +658,10 @@ const VideoEngine = (function() {
     if (!audioCtx || bgmType === 'none') return;
     const now = audioCtx.currentTime;
 
+    const vol = (projectData.bgmVolume !== undefined) ? projectData.bgmVolume : 0.85;
+
     const gain = audioCtx.createGain();
-    gain.gain.setValueAtTime(0.15, now);
+    gain.gain.setValueAtTime(vol * 0.45, now);
 
     if (targetDestination) {
       gain.connect(targetDestination);
@@ -662,8 +670,8 @@ const VideoEngine = (function() {
       bgmGainNode = gain;
     }
 
-    // Warm spiritual ambient chords (Tanpura / Flute harmonics)
-    const freqs = [108, 162, 216, 324, 432]; // 432Hz sacred harmonic tuning
+    // Warm spiritual ambient chords (Tanpura / Flute harmonics) with richer resonance
+    const freqs = [108, 162, 216, 324, 432, 540]; // 432Hz sacred harmonic tuning
     freqs.forEach((freq, idx) => {
       const osc = audioCtx.createOscillator();
       const oscGain = audioCtx.createGain();
@@ -671,7 +679,7 @@ const VideoEngine = (function() {
       osc.type = idx % 2 === 0 ? 'sine' : 'triangle';
       osc.frequency.setValueAtTime(freq, now);
 
-      oscGain.gain.setValueAtTime(0.04, now);
+      oscGain.gain.setValueAtTime(0.08 * vol, now);
       osc.connect(oscGain);
       oscGain.connect(gain);
 
@@ -827,7 +835,7 @@ const VideoEngine = (function() {
   }
 
   function setSign(signObj) {
-    projectData.sign = signObj;
+    projectData.sign = Object.assign({}, projectData.sign, signObj);
     renderFrame(currentTime);
   }
 
@@ -840,6 +848,20 @@ const VideoEngine = (function() {
     bgmType = type;
   }
 
+  function setBgmVolume(val) {
+    projectData.bgmVolume = parseFloat(val);
+    if (bgmGainNode && audioCtx) {
+      try {
+        bgmGainNode.gain.setValueAtTime(projectData.bgmVolume * 0.45, audioCtx.currentTime);
+      } catch(e) {}
+    }
+  }
+
+  function setTargetDate(dateStr) {
+    projectData.targetDate = dateStr;
+    renderFrame(currentTime);
+  }
+
   return {
     init: init,
     play: play,
@@ -850,6 +872,8 @@ const VideoEngine = (function() {
     setSign: setSign,
     setTheme: setTheme,
     setBgmType: setBgmType,
+    setBgmVolume: setBgmVolume,
+    setTargetDate: setTargetDate,
     exportVideo: exportVideo,
     getProjectData: () => projectData,
     getTotalDuration: () => totalDuration

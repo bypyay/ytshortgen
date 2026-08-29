@@ -143,8 +143,11 @@ const ContentScraper = (function() {
     const luckPercent = Math.floor(Math.random() * 22) + 76; // 76% - 98%
 
     return {
+      id: sign.id,
       signId: sign.id,
+      nameHi: sign.nameHi,
       signNameHi: sign.nameHi,
+      nameEn: sign.nameEn,
       signNameEn: sign.nameEn,
       symbol: sign.symbol,
       lord: sign.lord,
@@ -264,8 +267,11 @@ const ContentScraper = (function() {
     }
 
     return {
+      id: sign.id,
       signId: sign.id,
+      nameHi: sign.nameHi,
       signNameHi: sign.nameHi,
+      nameEn: sign.nameEn,
       signNameEn: sign.nameEn,
       symbol: sign.symbol,
       lord: sign.lord,
@@ -302,8 +308,11 @@ const ContentScraper = (function() {
     const prediction = predictions[(daySeed + signIndex * 3) % predictions.length];
 
     return {
+      id: sign.id,
       signId: sign.id,
+      nameHi: sign.nameHi,
       signNameHi: sign.nameHi,
+      nameEn: sign.nameEn,
       signNameEn: sign.nameEn,
       symbol: sign.symbol,
       lord: sign.lord,

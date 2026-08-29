@@ -10,16 +10,19 @@ const TemplateEngine = (function() {
 
   let currentSignsData = {};
   let selectedSignId = 'aries';
+  let targetDateObj = new Date(Date.now() + 86400000); // Tomorrow by default
+  let selectedDateMode = 'tomorrow';
 
   // ══════════════════════════════════════════════════════════════════
   // 1. Initialization
   // ══════════════════════════════════════════════════════════════════
   function init() {
-    // 1. Initialize 12 Daily Signs with authentic daily astrology
-    currentSignsData = ContentScraper.generateAllDailySigns();
+    // 1. Initialize 12 Daily Signs with authentic astrology for target date (Tomorrow by default)
+    currentSignsData = ContentScraper.generateAllDailySigns(targetDateObj);
 
     // 2. Initialize Video Engine Canvas
     VideoEngine.init('studioVideoCanvas');
+    VideoEngine.setTargetDate(targetDateObj.toISOString().slice(0, 10));
     loadSignIntoStudio(selectedSignId);
 
     // 3. Render Zodiac Selector Grid & Popular Sources
@@ -30,8 +33,9 @@ const TemplateEngine = (function() {
     // 4. Render Slide Timeline Thumbnails
     renderTimelineThumbs();
 
-    // 5. Setup Event Listeners
+    // 5. Setup Event Listeners & Date Switcher
     setupEventListeners();
+    setupDateControls();
 
     // 6. Load Saved Preset if any
     loadSavedPreset();
@@ -386,6 +390,70 @@ const TemplateEngine = (function() {
 
     // Mobile Navigation Tab Switcher
     setupMobileTabs();
+  }
+
+  function setupDateControls() {
+    const radioTomorrow = document.getElementById('dateModeTomorrow');
+    const radioToday = document.getElementById('dateModeToday');
+    const radioCustom = document.getElementById('dateModeCustom');
+    const inpCustomDate = document.getElementById('inpCustomDate');
+
+    const updateDate = () => {
+      if (radioTomorrow && radioTomorrow.checked) {
+        selectedDateMode = 'tomorrow';
+        targetDateObj = new Date(Date.now() + 86400000);
+        if (inpCustomDate) inpCustomDate.style.display = 'none';
+
+        // Update default URL to kal-ka-rashifal
+        const firstUrlInp = document.querySelector('.source-url-input');
+        if (firstUrlInp && firstUrlInp.value.includes('astrosage.com')) {
+          firstUrlInp.value = 'https://www.astrosage.com/rashifal/kal-ka-rashifal.asp';
+        }
+      } else if (radioToday && radioToday.checked) {
+        selectedDateMode = 'today';
+        targetDateObj = new Date();
+        if (inpCustomDate) inpCustomDate.style.display = 'none';
+
+        // Update default URL to aaj-ka-rashifal
+        const firstUrlInp = document.querySelector('.source-url-input');
+        if (firstUrlInp && firstUrlInp.value.includes('astrosage.com')) {
+          firstUrlInp.value = 'https://www.astrosage.com/rashifal/aaj-ka-rashifal.asp';
+        }
+      } else if (radioCustom && radioCustom.checked) {
+        selectedDateMode = 'custom';
+        if (inpCustomDate) {
+          inpCustomDate.style.display = 'block';
+          if (inpCustomDate.value) {
+            targetDateObj = new Date(inpCustomDate.value);
+          }
+        }
+      }
+
+      const isoDate = targetDateObj.toISOString().slice(0, 10);
+      VideoEngine.setTargetDate(isoDate);
+      currentSignsData = ContentScraper.generateAllDailySigns(targetDateObj);
+      loadSignIntoStudio(selectedSignId);
+    };
+
+    [radioTomorrow, radioToday, radioCustom].forEach(r => {
+      if (r) r.addEventListener('change', updateDate);
+    });
+
+    if (inpCustomDate) {
+      inpCustomDate.value = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
+      inpCustomDate.addEventListener('change', updateDate);
+    }
+
+    // BGM Volume Slider
+    const volSlider = document.getElementById('bgmVolumeSlider');
+    const volDisplay = document.getElementById('bgmVolumeDisplay');
+    if (volSlider) {
+      volSlider.addEventListener('input', (e) => {
+        const val = parseInt(e.target.value, 10);
+        if (volDisplay) volDisplay.textContent = val + '%';
+        VideoEngine.setBgmVolume(val / 100);
+      });
+    }
   }
 
   function setupMobileTabs() {
