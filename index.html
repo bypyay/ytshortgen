@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>AI YouTube Shorts &amp; Reels Generator Studio — Daily Rashifal &amp; Video Maker | Daily1Step</title>
+  <meta name="description" content="Create 9:16 vertical YouTube Shorts and Instagram Reels automatically from website URLs or text. Auto-generate daily Rashifal, festival dates, and astrology videos with 1080p MP4 export.">
+  <meta name="keywords" content="youtube shorts generator, rashifal video maker, astrology video generator, canva alternative video maker, 9:16 reels maker, daily rashifal shorts, daily1step ytshortgen">
+  <link rel="canonical" href="https://bypyay.github.io/ytshortgen/">
+
+  <!-- OpenGraph / Social Meta Tags -->
+  <meta property="og:title" content="AI YouTube Shorts &amp; Reels Video Generator Studio">
+  <meta property="og:description" content="Automatic 9:16 YouTube Shorts creator for daily rashifal, horoscope, quotes, and festival dates. In-browser 1080p MP4 export.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://bypyay.github.io/ytshortgen/">
+
+  <!-- Stylesheets & Fonts -->
+  <link rel="stylesheet" href="assets/css/studio.css?v=1">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Structured Data JSON-LD (Schema.org) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Daily1Step AI YouTube Shorts Video Studio",
+    "url": "https://bypyay.github.io/ytshortgen/",
+    "description": "Canva-like automated 9:16 YouTube Shorts and Instagram Reels video generator.",
+    "applicationCategory": "MultimediaApplication",
+    "operatingSystem": "All modern web browsers"
+  }
+  </script>
+</head>
+<body>
+
+  <!-- Ambient Glow Effects -->
+  <div class="ambient-glow ambient-1"></div>
+  <div class="ambient-glow ambient-2"></div>
+
+  <!-- Daily1Step FROZEN SUPER-NAVBAR START -->
+  <style id="d1s-frozen-bar-style">
+  .d1s-frozen-topbar-wrap {
+    position: sticky !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    z-index: 2147483647 !important;
+    background: rgba(11, 17, 33, 0.97) !important;
+    backdrop-filter: blur(20px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+    border-bottom: 1.5px solid rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4) !important;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  }
+  .d1s-frozen-inner {
+    max-width: 1720px !important;
+    margin: 0 auto !important;
+    padding: 0 14px !important;
+    height: 54px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 10px !important;
+  }
+  .d1s-brand-group {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    flex-shrink: 0 !important;
+    text-decoration: none !important;
+  }
+  .d1s-logo-badge {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding: 6px 13px !important;
+    border-radius: 30px !important;
+    background: linear-gradient(135deg, #0284c7 0%, #7c3aed 100%) !important;
+    color: #ffffff !important;
+    font-weight: 800 !important;
+    font-size: 0.9rem !important;
+    letter-spacing: -0.2px !important;
+    box-shadow: 0 2px 12px rgba(2, 132, 199, 0.45) !important;
+    position: relative !important;
+    overflow: hidden !important;
+  }
+  .d1s-pulse-tag {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    background: rgba(245, 158, 11, 0.16) !important;
+    border: 1px solid rgba(245, 158, 11, 0.45) !important;
+    color: #fbbf24 !important;
+    padding: 3px 9px !important;
+    border-radius: 14px !important;
+    font-size: 0.72rem !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.4px !important;
+    text-transform: uppercase !important;
+  }
+  .d1s-live-dot {
+    width: 7px !important;
+    height: 7px !important;
+    border-radius: 50% !important;
+    background: #f59e0b !important;
+    box-shadow: 0 0 10px #f59e0b !important;
+    animation: d1s-dot-blink 1.2s infinite ease-in-out !important;
+  }
+  @keyframes d1s-dot-blink {
+    0%, 100% { transform: scale(0.8); opacity: 0.5; }
+    50% { transform: scale(1.35); opacity: 1; }
+  }
+  .d1s-nav-scroll {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    overflow-x: auto !important;
+    scrollbar-width: none !important;
+  }
+  .d1s-nav-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    padding: 6px 11px !important;
+    border-radius: 9px !important;
+    font-size: 0.82rem !important;
+    font-weight: 700 !important;
+    color: #cbd5e1 !important;
+    text-decoration: none !important;
+    white-space: nowrap !important;
+    background: rgba(255, 255, 255, 0.06) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    transition: all 0.2s !important;
+  }
+  .d1s-nav-btn:hover {
+    color: #fff !important;
+    background: rgba(255, 255, 255, 0.16) !important;
+  }
+  .d1s-count {
+    font-size: 0.68rem !important;
+    font-weight: 800 !important;
+    padding: 2px 5px !important;
+    border-radius: 5px !important;
+    background: rgba(255, 255, 255, 0.18) !important;
+    color: #fff !important;
+  }
+  .d1s-mobile-trigger-btn {
+    display: none !important;
+    align-items: center !important;
+    gap: 7px !important;
+    padding: 6px 12px !important;
+    background: linear-gradient(135deg, rgba(2, 132, 199, 0.35), rgba(124, 58, 237, 0.35)) !important;
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    border-radius: 20px !important;
+    color: #ffffff !important;
+    font-size: 0.82rem !important;
+    font-weight: 800 !important;
+    cursor: pointer !important;
+  }
+  .d1s-dropdown-overlay {
+    display: none;
+    position: fixed !important;
+    top: 54px !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    background: rgba(11, 17, 33, 0.85) !important;
+    backdrop-filter: blur(12px) !important;
+    z-index: 2147483646 !important;
+  }
+  .d1s-dropdown-overlay.open { display: block !important; }
+  .d1s-dropdown-panel {
+    max-width: 600px !important;
+    margin: 0 auto !important;
+    background: #0f172a !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-top: none !important;
+    border-radius: 0 0 20px 20px !important;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7) !important;
+    padding: 16px 14px 20px !important;
+  }
+  .d1s-drop-grid { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 8px !important; }
+  .d1s-drop-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    padding: 10px 12px !important;
+    border-radius: 12px !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: #f1f5f9 !important;
+    text-decoration: none !important;
+  }
+  @media (max-width: 992px) {
+    .d1s-pulse-tag, .d1s-nav-scroll { display: none !important; }
+    .d1s-mobile-trigger-btn { display: inline-flex !important; }
+    .d1s-frozen-inner { height: 50px !important; padding: 0 10px !important; }
+  }
+  </style>
+
+  <div class="d1s-frozen-topbar-wrap">
+    <div class="d1s-frozen-inner">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <a href="https://bypyay.github.io/tools/" class="d1s-brand-group" title="Daily1Step All Tools Platform">
+          <div class="d1s-logo-badge">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+            <span>Daily1Step</span>
+          </div>
+        </a>
+        <span class="d1s-pulse-tag"><span class="d1s-live-dot"></span> YTShorts Studio</span>
+      </div>
+
+      <nav class="d1s-nav-scroll">
+        <a href="https://bypyay.github.io/tools/" class="d1s-nav-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> <span>All Tools</span></a>
+        <a href="https://bypyay.github.io/netspeedtest/" class="d1s-nav-btn"><span style="color:#06b6d4;">⚡</span> SpeedTest</a>
+        <a href="https://bypyay.github.io/tools/pdf/" class="d1s-nav-btn"><span style="color:#ef4444;">📄</span> PDF <span class="d1s-count">22</span></a>
+        <a href="https://bypyay.github.io/tools/image/" class="d1s-nav-btn"><span style="color:#10b981;">🖼️</span> Images <span class="d1s-count">27</span></a>
+        <a href="https://bypyay.github.io/tools/calculator/" class="d1s-nav-btn"><span style="color:#3b82f6;">🧮</span> Calculators <span class="d1s-count">207+</span></a>
+        <a href="https://bypyay.github.io/tools/audio/" class="d1s-nav-btn"><span style="color:#06b6d4;">🎙️</span> Audio <span class="d1s-count">25</span></a>
+        <a href="https://bypyay.github.io/tools/gif/" class="d1s-nav-btn"><span style="color:#f59e0b;">🎞️</span> GIF <span class="d1s-count">18</span></a>
+      </nav>
+
+      <button type="button" class="d1s-mobile-trigger-btn" onclick="toggleD1sMobileMenu()">
+        <span>⚡ 7 Suites</span>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Dropdown Drawer Panel -->
+  <div class="d1s-dropdown-overlay" id="d1sDropdownOverlay" onclick="closeD1sMobileMenu(event)">
+    <div class="d1s-dropdown-panel" onclick="event.stopPropagation()">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid rgba(255,255,255,0.1);">
+        <div style="font-size:0.86rem; font-weight:800; color:#fff;">⚡ All Specialized Suites</div>
+        <button type="button" onclick="closeD1sMobileMenu()" style="background:none; border:none; color:#94a3b8; font-size:1.3rem; line-height:1; cursor:pointer;">&times;</button>
+      </div>
+      <div class="d1s-drop-grid">
+        <a href="https://bypyay.github.io/tools/" class="d1s-drop-item"><div>🌐 All Tools Hub (320+)</div></a>
+        <a href="https://bypyay.github.io/netspeedtest/" class="d1s-drop-item"><div>⚡ NetSpeedTest PRO</div></a>
+        <a href="https://bypyay.github.io/tools/calculator/" class="d1s-drop-item"><div>🧮 207+ Calculators</div></a>
+        <a href="https://bypyay.github.io/tools/audio/" class="d1s-drop-item"><div>🎙️ Audio Studio (25)</div></a>
+        <a href="https://bypyay.github.io/tools/pdf/" class="d1s-drop-item"><div>📄 PDF Studio (22)</div></a>
+        <a href="https://bypyay.github.io/tools/image/" class="d1s-drop-item"><div>🖼️ Image Tools (27)</div></a>
+      </div>
+    </div>
+  </div>
+
+  <script id="d1s-topbar-script">
+  function toggleD1sMobileMenu() {
+    var overlay = document.getElementById('d1sDropdownOverlay');
+    if (!overlay) return;
+    if (overlay.classList.contains('open')) {
+      closeD1sMobileMenu();
+    } else {
+      overlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+  }
+  function closeD1sMobileMenu(e) {
+    if (e && e.target && e.target !== document.getElementById('d1sDropdownOverlay') && !e.target.hasAttribute('onclick')) return;
+    var overlay = document.getElementById('d1sDropdownOverlay');
+    if (overlay) overlay.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  </script>
+  <!-- Daily1Step FROZEN SUPER-NAVBAR END -->
+
+
+  <!-- Main App Studio Container -->
+  <main class="studio-container">
+
+    <!-- Top Studio Header -->
+    <header class="studio-header">
+      <div class="studio-brand-group">
+        <div class="studio-title-badge">
+          <i class="fa-brands fa-youtube" style="color:#ef4444;"></i>
+          <span>YTShorts Studio AI</span>
+        </div>
+        <span class="studio-header-tag">9:16 Full HD</span>
+      </div>
+
+      <div class="header-quick-actions">
+        <button type="button" class="btn-header" id="btnSavePreset"><i class="fa-solid fa-floppy-disk"></i> Save Theme</button>
+        <button type="button" class="btn-header primary" onclick="TemplateEngine.startVideoExport()"><i class="fa-solid fa-download"></i> 1-Click Export MP4</button>
+      </div>
+    </header>
+
+    <!-- Mobile Studio Tabs Switcher -->
+    <div class="mobile-studio-tabs">
+      <button type="button" class="mobile-tab-btn active" data-tab="preview"><i class="fa-solid fa-video"></i> <span>Preview</span></button>
+      <button type="button" class="mobile-tab-btn" data-tab="content"><i class="fa-solid fa-pen-nib"></i> <span>Content</span></button>
+      <button type="button" class="mobile-tab-btn" data-tab="style"><i class="fa-solid fa-wand-magic-sparkles"></i> <span>Design</span></button>
+      <button type="button" class="mobile-tab-btn" data-tab="timeline"><i class="fa-solid fa-timeline"></i> <span>Timeline</span></button>
+    </div>
+
+    <!-- Master 3-Panel Studio Layout -->
+    <div class="studio-grid">
+
+      <!-- LEFT PANEL: Content Ingestion & Web URL Scraper -->
+      <aside class="studio-panel" id="leftPanel">
+        <div class="panel-section-title"><i class="fa-solid fa-globe" style="color:#38bdf8;"></i> 1. Content &amp; Web Scraper</div>
+
+        <!-- URL Scraper Card -->
+        <div class="panel-card">
+          <label class="input-label" for="inpScrapeUrl">
+            <span>Website Link (URL से ऑटो-फेच)</span>
+            <span style="color:#38bdf8;">Auto-Parser</span>
+          </label>
+          <div class="url-input-group">
+            <input type="url" class="studio-input" id="inpScrapeUrl" placeholder="https://example.com/aaj-ka-rashifal">
+            <button type="button" class="btn-scrape" id="btnScrape"><i class="fa-solid fa-bolt"></i> Scrape</button>
+          </div>
+          <p style="font-size:0.72rem; color:#94a3b8;">किसी भी राशिफल या न्यूज़ वेबसाइट का लिंक डालें और 1-क्लिक में 12 राशियों का डेटा लोड करें।</p>
+        </div>
+
+        <!-- 12 Zodiac Selector Grid -->
+        <div class="panel-card">
+          <label class="input-label">
+            <span>राशि चुनें (Select Sign)</span>
+            <span style="color:#fbbf24;">12 Zodiacs</span>
+          </label>
+          <div class="zodiac-grid" id="zodiacGrid">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+
+        <!-- Active Zodiac Content Fields -->
+        <div class="panel-card">
+          <label class="input-label" for="inpLuckyColor">
+            <span>शुभ रंग (Lucky Color)</span>
+          </label>
+          <input type="text" class="studio-input" id="inpLuckyColor" value="लाल (Red)">
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+            <div>
+              <label class="input-label" for="inpLuckyNumber"><span>शुभ अंक (Number)</span></label>
+              <input type="number" class="studio-input" id="inpLuckyNumber" value="9">
+            </div>
+            <div>
+              <label class="input-label" for="inpLuckPercent"><span>भाग्य % (Luck)</span></label>
+              <input type="number" class="studio-input" id="inpLuckPercent" value="88">
+            </div>
+          </div>
+
+          <label class="input-label" for="txtPrediction">
+            <span>दैनिक भविष्यवाणी (Forecast)</span>
+          </label>
+          <textarea class="studio-textarea" id="txtPrediction" rows="3">आज का दिन आपके लिए आर्थिक व पारिवारिक रूप से बेहद शुभ रहेगा। कार्यक्षेत्र में नए अवसर प्राप्त होंगे।</textarea>
+
+          <label class="input-label" for="txtUpay">
+            <span>आज का उपाय (Remedy)</span>
+          </label>
+          <textarea class="studio-textarea" id="txtUpay" rows="2" style="min-height:50px;">हनुमान चालीसा का पाठ करें और सिंदूर का तिलक लगाएं।</textarea>
+        </div>
+
+        <!-- Bulk 12-Shorts Generator Button -->
+        <button type="button" class="btn-header" style="width:100%; justify-content:center; padding:10px; background:rgba(251,191,36,0.15); border-color:#fbbf24; color:#fbbf24;" onclick="TemplateEngine.generateAll12Shorts()">
+          <i class="fa-solid fa-layer-group"></i> 12 राशियों के 12 Shorts एक साथ बनाएं
+        </button>
+      </aside>
+
+      <!-- CENTER PANEL: 9:16 Interactive Video Canvas Player Stage -->
+      <section class="stage-center-panel mobile-active" id="centerPanel">
+
+        <div class="video-canvas-stage">
+          <div class="canvas-live-badge">
+            <span class="live-dot"></span>
+            <span>60fps HD Player</span>
+          </div>
+          <canvas id="studioVideoCanvas"></canvas>
+        </div>
+
+        <!-- Transport Controls Bar -->
+        <div class="player-controls-bar">
+          <div class="timeline-scrubber-row">
+            <span class="timecode-display" id="timecodeDisplay">00:00 / 00:16</span>
+            <input type="range" class="seek-slider" id="timelineSlider" min="0" max="16" step="0.05" value="0" aria-label="Seek Video Timeline">
+          </div>
+
+          <div class="playback-btn-row">
+            <div class="play-controls-left">
+              <button type="button" class="btn-ctrl play-main" id="btnPlayPause" aria-label="Play or Pause Video Preview">
+                <i class="fa-solid fa-play"></i>
+              </button>
+              <button type="button" class="btn-ctrl" onclick="VideoEngine.seek(0)" title="Rewind to Start">
+                <i class="fa-solid fa-rotate-left"></i>
+              </button>
+            </div>
+
+            <button type="button" class="btn-export-main" id="btnExportMain" aria-label="Export and Render MP4 Video">
+              <i class="fa-solid fa-download"></i> RENDER &amp; DOWNLOAD
+            </button>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- RIGHT PANEL: Design, Themes, BGM & Presets -->
+      <aside class="studio-panel" id="rightPanel">
+        <div class="panel-section-title"><i class="fa-solid fa-palette" style="color:#a855f7;"></i> 2. Design &amp; Styling</div>
+
+        <!-- Animated Background Themes -->
+        <div class="panel-card">
+          <label class="input-label"><span>बैकग्राउंड थीम (Backgrounds)</span></label>
+          <div class="theme-swatch-grid">
+            <div class="theme-swatch gold active" data-theme="gold">Gold Aura</div>
+            <div class="theme-swatch cosmic" data-theme="cosmic">Cosmic</div>
+            <div class="theme-swatch devotional" data-theme="devotional">Devotional</div>
+            <div class="theme-swatch cyber" data-theme="cyber">Cyber Neon</div>
+            <div class="theme-swatch royal" data-theme="royal">Royal Silk</div>
+            <div class="theme-swatch minimal" data-theme="minimal">Minimal</div>
+          </div>
+        </div>
+
+        <!-- Audio & Background Music (BGM) -->
+        <div class="panel-card">
+          <label class="input-label" for="selBgmTrack">
+            <span>बैकग्राउंड म्यूज़िक (BGM Audio)</span>
+            <span style="color:#10b981;">Web Audio</span>
+          </label>
+          <select class="studio-select" id="selBgmTrack">
+            <option value="spiritual">🕉️ 432Hz Spiritual Tanpura &amp; Ambient (Default)</option>
+            <option value="cosmic">🌌 Cosmic Meditation Bells</option>
+            <option value="none">🔇 No Audio / Mute</option>
+          </select>
+        </div>
+
+        <!-- Channel Branding / Watermark -->
+        <div class="panel-card">
+          <label class="input-label" for="inpChannelName">
+            <span>चैनल नाम / वॉटरमार्क (Channel Handle)</span>
+          </label>
+          <input type="text" class="studio-input" id="inpChannelName" value="@DailyRashifal">
+        </div>
+
+        <!-- Template Instructions Card -->
+        <div class="panel-card" style="border-color:rgba(245,158,11,0.25); background:rgba(245,158,11,0.05);">
+          <h4 style="font-size:0.8rem; color:#fbbf24; margin-bottom:4px;"><i class="fa-solid fa-lightbulb"></i> रोज़ 10 सेकंड में बनाएं:</h4>
+          <ol style="margin-left:18px; font-size:0.75rem; color:#94a3b8; line-height:1.6;">
+            <li>सुबह ऐप खोलें और राशि चुनें या लिंक डालें।</li>
+            <li>कंटेंट अपने-आप भर जाएगा।</li>
+            <li><strong>RENDER &amp; DOWNLOAD</strong> दबाएं और सीधे YouTube Shorts / Reels पर अपलोड करें!</li>
+          </ol>
+        </div>
+      </aside>
+
+    </div>
+
+    <!-- Bottom Timeline Strip (Multi-Slide Scenes) -->
+    <section class="bottom-timeline-strip" id="bottomTimeline">
+      <div class="timeline-header-row">
+        <div class="panel-section-title"><i class="fa-solid fa-film" style="color:#fbbf24;"></i> 3. Scene Slides Timeline (4 Dynamic Scenes)</div>
+        <span style="font-size:0.75rem; color:#94a3b8; font-weight:700;">TOTAL: 16.0s</span>
+      </div>
+
+      <div class="timeline-slides-container" id="timelineSlidesContainer">
+        <!-- Rendered dynamically by JS -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Video Export Progress Modal -->
+  <div class="export-modal-overlay" id="exportModalOverlay">
+    <div class="export-modal-box">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h3 style="color:#fff; font-size:1.15rem; font-weight:900;"><i class="fa-solid fa-video" style="color:#10b981; margin-right:8px;"></i> Exporting 1080x1920 Short</h3>
+        <button type="button" id="btnCloseExportModal" style="background:none; border:none; color:#94a3b8; font-size:1.4rem; cursor:pointer;" aria-label="Close Export Dialog">&times;</button>
+      </div>
+
+      <p style="color:#94a3b8; font-size:0.84rem;">60fps Full HD वीडियो इन-ब्राउज़र रेंडर की जा रही है...</p>
+
+      <div class="export-progress-bar-wrap">
+        <div class="export-progress-fill" id="exportProgressFill"></div>
+      </div>
+
+      <div id="exportStatusText" style="font-size:0.86rem; font-weight:800; color:#fbbf24;">प्रारंभ हो रहा है...</div>
+
+      <button type="button" class="btn-export-main" id="btnDownloadVideo" style="display:none; justify-content:center; padding:12px 24px; font-size:1rem; margin-top:8px;">
+        <i class="fa-solid fa-download"></i> DOWNLOAD MP4 VIDEO
+      </button>
+    </div>
+  </div>
+
+  <!-- Studio Footer -->
+  <footer style="background:#070a14; border-top:1px solid rgba(255,255,255,0.08); padding:24px 16px; margin-top:30px; text-align:center; color:#64748b; font-size:0.82rem;">
+    <div style="max-width:1200px; margin:0 auto; display:flex; flex-wrap:wrap; justify-content:space-between; gap:16px; align-items:center;">
+      <div>&copy; 2026 Daily1Step YTShorts Studio AI. 100% In-Browser 60fps Rendering.</div>
+      <div style="display:flex; gap:14px;">
+        <a href="https://bypyay.github.io/tools/privacy-policy.html" style="color:#94a3b8; text-decoration:none;">Privacy Policy</a>
+        <a href="https://bypyay.github.io/tools/terms.html" style="color:#94a3b8; text-decoration:none;">Terms</a>
+        <a href="https://bypyay.github.io/tools/about.html" style="color:#94a3b8; text-decoration:none;">About</a>
+        <a href="https://bypyay.github.io/tools/contact.html" style="color:#94a3b8; text-decoration:none;">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="assets/js/content-scraper.js?v=1"></script>
+  <script src="assets/js/video-engine.js?v=1"></script>
+  <script src="assets/js/template-engine.js?v=1"></script>
+</body>
+</html>
