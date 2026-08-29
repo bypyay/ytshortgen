@@ -239,23 +239,34 @@ const TemplateEngine = (function() {
     const presetName = prompt('इस टेम्पलेट प्रीसेट का नाम दें:', 'My Rashifal Theme');
     if (!presetName) return;
 
-    const project = VideoEngine.getProjectData();
-    const presets = JSON.parse(localStorage.getItem('ytshortgen_presets') || '{}');
-    presets[presetName] = {
-      theme: project.theme,
-      channelName: project.channelName,
-      slides: project.slides
-    };
-    localStorage.setItem('ytshortgen_presets', JSON.stringify(presets));
-    alert(`✅ प्रीसेट "${presetName}" सफलतापूर्वक सेव हो गया!`);
+    try {
+      const project = VideoEngine.getProjectData();
+      const presets = (typeof localStorage !== 'undefined') ? JSON.parse(localStorage.getItem('ytshortgen_presets') || '{}') : {};
+      presets[presetName] = {
+        theme: project.theme,
+        channelName: project.channelName,
+        slides: project.slides
+      };
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem('ytshortgen_presets', JSON.stringify(presets));
+      }
+      alert(`✅ प्रीसेट "${presetName}" सफलतापूर्वक सेव हो गया!`);
+    } catch(e) {
+      console.warn('Could not save preset to localStorage:', e);
+    }
   }
 
   function loadSavedPreset() {
-    const presets = JSON.parse(localStorage.getItem('ytshortgen_presets') || '{}');
-    const keys = Object.keys(presets);
-    if (keys.length > 0) {
-      const lastPreset = presets[keys[keys.length - 1]];
-      VideoEngine.setTheme(lastPreset.theme || 'gold');
+    try {
+      if (typeof localStorage === 'undefined') return;
+      const presets = JSON.parse(localStorage.getItem('ytshortgen_presets') || '{}');
+      const keys = Object.keys(presets);
+      if (keys.length > 0) {
+        const lastPreset = presets[keys[keys.length - 1]];
+        VideoEngine.setTheme(lastPreset.theme || 'gold');
+      }
+    } catch(e) {
+      console.warn('Could not load preset from localStorage:', e);
     }
   }
 
@@ -652,7 +663,7 @@ const TemplateEngine = (function() {
     openBatchModal: openBatchModal,
     closeBatchModal: closeBatchModal,
     generateAll12Shorts: generateAll12Shorts,
-    startBatch12Render: startBatch12Render,
+    startBatch12Render: generateAll12Shorts,
     downloadSingleBatchVideo: downloadSingleBatchVideo,
     downloadAllBatchVideos: downloadAllBatchVideos
   };
