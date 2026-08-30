@@ -709,46 +709,20 @@ const VideoEngine = (function() {
     if (curLine.trim().length > 0) lines.push(curLine.trim());
 
     const totalTextH = lines.length * lineHeight;
-    const innerBoxH = Math.max(480, Math.min(940, totalTextH + 50));
-    const outerCardH = innerBoxH + 150;
-    const cardY = Math.max(480, 550 - Math.max(0, (outerCardH - 880) / 2));
-    const innerBoxY = cardY + 120;
+    const cardH = Math.max(500, Math.min(1000, totalTextH + 80));
+    const cardY = 500;
 
-    // Outer Prediction Card (Auto-expanded)
+    // Main Prediction Glass Card (No redundant sub-heading, maximizing usable reading space)
     ctx.fillStyle = 'rgba(0, 0, 0, 0.72)';
-    roundRect(ctx, 80, cardY, CANVAS_WIDTH - 160, outerCardH, 36);
+    roundRect(ctx, 80, cardY, CANVAS_WIDTH - 160, cardH, 36);
     ctx.fill();
     ctx.strokeStyle = 'rgba(245, 158, 11, 0.45)';
     ctx.lineWidth = 3;
     ctx.stroke();
 
-    // Card Header Title
-    let predTitle = '📖 दैनिक भविष्यफल (Prediction)';
-    const horizon = projectData.horizonType || 'daily';
-    if (horizon === 'weekly') {
-      predTitle = '📖 साप्ताहिक भविष्यफल (Weekly Forecast)';
-    } else if (horizon === 'monthly') {
-      predTitle = '📖 मासिक भविष्यफल (Monthly Forecast)';
-    } else if (horizon === 'yearly') {
-      predTitle = '📖 वार्षिक भविष्यफल (Yearly Forecast)';
-    }
-
-    ctx.font = '900 48px "Noto Sans Devanagari", sans-serif';
-    ctx.fillStyle = '#fbbf24';
-    ctx.textAlign = 'center';
-    ctx.fillText(predTitle, CANVAS_WIDTH / 2, cardY + 75);
-
-    // Inner Text Box with subtle glass border & dynamic height
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
-    roundRect(ctx, 120, innerBoxY, CANVAS_WIDTH - 240, innerBoxH, 24);
-    ctx.fill();
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.10)';
-    ctx.lineWidth = 1.5;
-    ctx.stroke();
-
-    // Strict clipping inside inner box
+    // Strict clipping inside card
     ctx.save();
-    roundRect(ctx, 120, innerBoxY, CANVAS_WIDTH - 240, innerBoxH, 24);
+    roundRect(ctx, 80, cardY, CANVAS_WIDTH - 160, cardH, 36);
     ctx.clip();
 
     ctx.font = `600 ${fontSize}px "Noto Sans Devanagari", sans-serif`;
@@ -756,10 +730,10 @@ const VideoEngine = (function() {
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
 
-    let textY = innerBoxY + 25;
+    let textY = cardY + 40;
     for (let i = 0; i < lines.length; i++) {
-      if (textY + lineHeight > innerBoxY + innerBoxH) break;
-      ctx.fillText(lines[i], 160, textY);
+      if (textY + lineHeight > cardY + cardH - 25) break;
+      ctx.fillText(lines[i], 120, textY);
       textY += lineHeight;
     }
     ctx.restore();
