@@ -854,13 +854,39 @@ const TemplateEngine = (function() {
   }
 
   function setupLengthAndFontControls() {
-    // Length Mode Pills (Detailed / Medium / Short)
+    // Length Mode Pills (20-25 Words Video / Full YouTube Post / Medium)
     document.querySelectorAll('.length-mode-pill').forEach(pill => {
       pill.addEventListener('click', () => {
         document.querySelectorAll('.length-mode-pill').forEach(p => p.classList.remove('active'));
         pill.classList.add('active');
         const mode = pill.getAttribute('data-length');
         currentLengthMode = mode;
+
+        const sizeSlider = document.getElementById('predictionFontSizeSlider');
+        const sizeDisplay = document.getElementById('predictionFontSizeDisplay');
+
+        if (mode === 'short') { // 20-25 Words Crisp Mode
+          if (sizeSlider) {
+            sizeSlider.value = '26';
+            if (sizeDisplay) sizeDisplay.textContent = '26px';
+            VideoEngine.setPredictionFontSize(30);
+            VideoEngine.setPosterFontSize(26);
+          }
+        } else if (mode === 'detailed') { // 50-80 Words YouTube Post Mode
+          if (sizeSlider) {
+            sizeSlider.value = '22';
+            if (sizeDisplay) sizeDisplay.textContent = '22px';
+            VideoEngine.setPredictionFontSize(25);
+            VideoEngine.setPosterFontSize(22);
+          }
+        } else { // Medium Mode
+          if (sizeSlider) {
+            sizeSlider.value = '24';
+            if (sizeDisplay) sizeDisplay.textContent = '24px';
+            VideoEngine.setPredictionFontSize(27);
+            VideoEngine.setPosterFontSize(24);
+          }
+        }
 
         const hasScraped = Object.values(currentSignsData).some(s => s && s.isScraped);
         if (!hasScraped) {
@@ -881,6 +907,41 @@ const TemplateEngine = (function() {
         VideoEngine.setPredictionFontSize(val);
         VideoEngine.setPosterFontSize(val);
       });
+    }
+  }
+
+  // 1-Click Copy All 12 Signs Formatted for YouTube Community Tab
+  function copyYouTubeCommunityPost() {
+    const signs = ContentScraper.ZODIAC_SIGNS;
+    const periodStr = VideoEngine.getFormattedPeriodString(false);
+
+    let postText = `✨【 संपूर्ण 12 राशि दैनिक राशिफल 】✨\n`;
+    postText += `📅 ${periodStr}\n\n`;
+    postText += `━━━━━━━━━━━━━━━━━━━━━\n\n`;
+
+    signs.forEach((s) => {
+      const signData = (currentSignsData && currentSignsData[s.id]) || s;
+      postText += `${s.symbol} ${s.nameHi} (${s.nameEn}):\n`;
+      postText += `${signData.prediction || 'आज का दिन आपके लिए शुभ व फलदायी रहेगा।'}\n`;
+      postText += `🎨 शुभ रंग: ${signData.luckyColor || 'लाल'} | 🔢 शुभ अंक: ${signData.luckyNumber || 7} | 💖 भाग्य: ${signData.luckPercent || 85}%\n`;
+      if (signData.upay) {
+        postText += `🪔 उपाय: ${signData.upay}\n`;
+      }
+      postText += `\n`;
+    });
+
+    postText += `━━━━━━━━━━━━━━━━━━━━━\n`;
+    postText += `🔔 रोज़ाना सबसे पहले सटीक राशिफल जानने के लिए चैनल को सब्सक्राइब करें!\n`;
+    postText += `#Rashifal #Horoscope #DailyHoroscope #Astrology #${signs[0].nameHi}राशिफल`;
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(postText).then(() => {
+        alert('✅ 12 राशियों का संपूर्ण यूट्यूब कम्युनिटी पोस्ट क्लिपबोर्ड पर कॉपी हो गया!\n\nअब आप इसे YouTube Community Tab, WhatsApp या Facebook पर सीधे पेस्ट कर सकते हैं।');
+      }).catch(() => {
+        prompt('यहाँ से यूट्यूब पोस्ट टेक्स्ट कॉपी करें:', postText);
+      });
+    } else {
+      prompt('यहाँ से यूट्यूब पोस्ट टेक्स्ट कॉपी करें:', postText);
     }
   }
 
@@ -922,7 +983,8 @@ const TemplateEngine = (function() {
     generateAll12Shorts: generateAll12Shorts,
     startBatch12Render: generateAll12Shorts,
     downloadSingleBatchVideo: downloadSingleBatchVideo,
-    downloadAllBatchVideos: downloadAllBatchVideos
+    downloadAllBatchVideos: downloadAllBatchVideos,
+    copyYouTubeCommunityPost: copyYouTubeCommunityPost
   };
 })();
 

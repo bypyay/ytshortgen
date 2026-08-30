@@ -404,11 +404,11 @@ const ContentScraper = (function() {
     const h = healths[(daySeed + signIndex * 7) % healths.length];
 
     let prediction = '';
-    if (lengthMode === 'short') {
+    if (lengthMode === 'short') { // 20-25 words (Crisp Video & Poster Mode)
+      prediction = `${c}`;
+    } else if (lengthMode === 'medium') { // 35-45 words (Medium Mode)
       prediction = `${c} ${f}`;
-    } else if (lengthMode === 'medium') {
-      prediction = `${c} ${f} ${fam}`;
-    } else { // 'detailed' / 'full' - Fills the video card richly
+    } else { // 'detailed' / 'full' (50-80 words YouTube Community Post Mode)
       prediction = `${c} ${f} ${fam} ${h}`;
     }
 
