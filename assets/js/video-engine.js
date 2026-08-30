@@ -1022,17 +1022,17 @@ const VideoEngine = (function() {
       ctx.lineWidth = 1.5;
       ctx.stroke();
 
-      // Prediction Text: Intelligent Devanagari Summarizer with Love Star Footer
+      // Prediction Text: Whole-Horoscope Balanced Summarizer with Love Star Footer
       const rawText = signData.prediction || 'आज का दिन शुभ रहेगा। सोचे हुए कार्य पूरे होंगे और लाभ मिलेगा।';
-      const summarizedText = summarizeForPoster(rawText, 120);
-      const fontSize = projectData.posterFontSize || 23;
-      const lineHeight = Math.round(fontSize * 1.46);
+      const summarizedText = summarizeForPoster(rawText, 190);
+      const fontSize = projectData.posterFontSize || 22;
+      const lineHeight = Math.round(fontSize * 1.45);
 
       ctx.font = `700 ${fontSize}px "Noto Sans Devanagari", sans-serif`;
       ctx.fillStyle = '#0f172a'; // Bold deep black-navy for maximum readability
       ctx.textAlign = 'left';
       ctx.textBaseline = 'top';
-      wrapTextPoster(ctx, summarizedText, x + 14, y + 74, boxW - 28, lineHeight, y + 308);
+      wrapTextPoster(ctx, summarizedText, x + 14, y + 72, boxW - 28, lineHeight, y + 310);
 
       // Card Footer Pill with Love Stars (❤️ प्रेम: ★★★★☆ | 🔢 अंक: 9)
       const ratings = signData.ratings || { love: 4 };
@@ -1374,28 +1374,60 @@ const VideoEngine = (function() {
     c.closePath();
   }
 
-  function summarizeForPoster(text, maxChars = 125) {
-    if (!text) return 'आज का दिन शुभ रहेगा। सोचे हुए कार्य पूरे होंगे।';
-    const clean = text.replace(/[\*\_]/g, ' ').replace(/\s+/g, ' ').trim();
-    if (clean.length <= maxChars) return clean;
+  function summarizeForPoster(fullText, targetMaxChars = 190) {
+    if (!fullText) return 'आज का दिन शुभ रहेगा। सोचे हुए कार्य पूरे होंगे।';
+    const clean = fullText.replace(/[\*\_]/g, ' ').replace(/\s+/g, ' ').trim();
+    if (clean.length <= targetMaxChars) return clean;
 
-    const sentences = clean.split(/(?<=[।!?])/g).map(s => s.trim()).filter(Boolean);
-    let summary = '';
-    for (const s of sentences) {
-      if ((summary + ' ' + s).trim().length <= maxChars) {
-        summary = (summary + ' ' + s).trim();
-      } else {
-        break;
+    const sentences = clean.split(/(?<=[।!?])/g).map(s => s.trim()).filter(s => s.length > 5);
+    if (sentences.length <= 2) {
+      let cut = clean.substring(0, targetMaxChars);
+      const lastSpace = cut.lastIndexOf(' ');
+      if (lastSpace > 40) cut = cut.substring(0, lastSpace);
+      return cut + '...';
+    }
+
+    let selected = [];
+    let currentLen = 0;
+
+    // 1. Sentence 1: Core theme / mindset / health
+    selected.push(sentences[0]);
+    currentLen += sentences[0].length;
+
+    // 2. Middle highlight: Finance / Career / Love / Family / Work
+    for (let i = 1; i < sentences.length - 1; i++) {
+      const s = sentences[i];
+      if (s.includes('धन') || s.includes('पैसे') || s.includes('आर्थिक') || s.includes('कार्य') || s.includes('नौकरी') || s.includes('परिवार') || s.includes('लाभ') || s.includes('व्यापार') || s.includes('प्यार') || s.includes('दोस्त') || s.includes('स्वास्थ्य') || s.includes('निवेश')) {
+        if (currentLen + s.length + 1 <= targetMaxChars) {
+          selected.push(s);
+          currentLen += s.length + 1;
+          break;
+        }
       }
     }
 
-    if (summary.length < 45) {
-      let cut = clean.substring(0, maxChars);
-      const lastSpace = cut.lastIndexOf(' ');
-      if (lastSpace > 35) {
-        cut = cut.substring(0, lastSpace);
+    // 3. Fill remaining available space with subsequent sentences
+    for (let i = 1; i < sentences.length; i++) {
+      if (!selected.includes(sentences[i])) {
+        if (currentLen + sentences[i].length + 1 <= targetMaxChars) {
+          selected.push(sentences[i]);
+          currentLen += sentences[i].length + 1;
+        }
       }
-      summary = cut + '...';
+    }
+
+    selected.sort((a, b) => sentences.indexOf(a) - sentences.indexOf(b));
+    let summary = selected.join(' ');
+
+    if (summary.length < 110) {
+      summary = '';
+      for (const s of sentences) {
+        if ((summary + ' ' + s).trim().length <= targetMaxChars) {
+          summary = (summary + ' ' + s).trim();
+        } else {
+          break;
+        }
+      }
     }
 
     return summary;
