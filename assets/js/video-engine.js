@@ -1022,16 +1022,49 @@ const VideoEngine = (function() {
       ctx.lineWidth = 1.5;
       ctx.stroke();
 
-      // Prediction Text: Real-time slider adjustable font size & crisp high readability
-      const predText = signData.prediction || 'आज का दिन शुभ रहेगा। सोचे हुए कार्य पूरे होंगे और लाभ मिलेगा।';
-      const fontSize = projectData.posterFontSize || projectData.predictionFontSize || 26;
-      const lineHeight = Math.round(fontSize * 1.48);
+      // Prediction Text: Intelligent Devanagari Summarizer with Love Star Footer
+      const rawText = signData.prediction || 'आज का दिन शुभ रहेगा। सोचे हुए कार्य पूरे होंगे और लाभ मिलेगा।';
+      const summarizedText = summarizeForPoster(rawText, 120);
+      const fontSize = projectData.posterFontSize || 23;
+      const lineHeight = Math.round(fontSize * 1.46);
 
       ctx.font = `700 ${fontSize}px "Noto Sans Devanagari", sans-serif`;
       ctx.fillStyle = '#0f172a'; // Bold deep black-navy for maximum readability
       ctx.textAlign = 'left';
       ctx.textBaseline = 'top';
-      wrapTextPoster(ctx, predText, x + 14, y + 76, boxW - 28, lineHeight, y + boxH - 10);
+      wrapTextPoster(ctx, summarizedText, x + 14, y + 74, boxW - 28, lineHeight, y + 308);
+
+      // Card Footer Pill with Love Stars (❤️ प्रेम: ★★★★☆ | 🔢 अंक: 9)
+      const ratings = signData.ratings || { love: 4 };
+      const loveStarsCount = Math.min(5, Math.max(1, ratings.love || 4));
+      let starStr = '';
+      for (let s = 0; s < 5; s++) {
+        starStr += (s < loveStarsCount) ? '★' : '☆';
+      }
+
+      ctx.save();
+      const pillY = y + boxH - 52;
+      const pillH = 40;
+      roundRect(ctx, x + 10, pillY, boxW - 20, pillH, 10);
+      ctx.fillStyle = 'rgba(248, 250, 252, 0.95)';
+      ctx.fill();
+      ctx.strokeStyle = colorScheme.border;
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+
+      // Love star badge on left
+      ctx.font = '800 21px "Noto Sans Devanagari", sans-serif';
+      ctx.fillStyle = '#e11d48';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(`❤️ प्रेम: ${starStr}`, x + 18, pillY + pillH / 2);
+
+      // Lucky Number on right
+      ctx.font = '800 20px "Noto Sans Devanagari", sans-serif';
+      ctx.fillStyle = '#1e293b';
+      ctx.textAlign = 'right';
+      ctx.fillText(`🔢 अंक: ${signData.luckyNumber || 7}`, x + boxW - 18, pillY + pillH / 2);
+      ctx.restore();
 
       ctx.restore();
     }
@@ -1339,6 +1372,33 @@ const VideoEngine = (function() {
     c.lineTo(x, y + radius);
     c.quadraticCurveTo(x, y, x + radius, y);
     c.closePath();
+  }
+
+  function summarizeForPoster(text, maxChars = 125) {
+    if (!text) return 'आज का दिन शुभ रहेगा। सोचे हुए कार्य पूरे होंगे।';
+    const clean = text.replace(/[\*\_]/g, ' ').replace(/\s+/g, ' ').trim();
+    if (clean.length <= maxChars) return clean;
+
+    const sentences = clean.split(/(?<=[।!?])/g).map(s => s.trim()).filter(Boolean);
+    let summary = '';
+    for (const s of sentences) {
+      if ((summary + ' ' + s).trim().length <= maxChars) {
+        summary = (summary + ' ' + s).trim();
+      } else {
+        break;
+      }
+    }
+
+    if (summary.length < 45) {
+      let cut = clean.substring(0, maxChars);
+      const lastSpace = cut.lastIndexOf(' ');
+      if (lastSpace > 35) {
+        cut = cut.substring(0, lastSpace);
+      }
+      summary = cut + '...';
+    }
+
+    return summary;
   }
 
   function wrapText(c, text, x, y, maxWidth, lineHeight, isCenter = false) {

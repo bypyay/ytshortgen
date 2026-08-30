@@ -105,35 +105,34 @@ const ContentScraper = (function() {
     // 1. Direct fetch if user entered a specific sign page (e.g. mesh-kal-ka-rashifal.asp)
     const specificSign = ZODIAC_SIGNS.find(s => url.includes(s.astroSlug) || url.includes(s.id) || url.toLowerCase().includes(s.nameEn.toLowerCase()));
     if (specificSign) {
-      try {
-        const content = await fetchCleanContent(url);
-        if (content) {
-          results[specificSign.id] = parseAstroSageSignContent(content, specificSign);
-        }
-      } catch (e) {
-        console.warn('Direct specific sign fetch error:', e);
+      const content = await fetchCleanContent(url);
+      if (!content || content.length < 300) {
+        throw new Error(`AstroSage लिंक (${url}) से डेटा प्राप्त नहीं हो सका। कृपया लिंक जांचें या '📋 पेस्ट टेक्स्ट' का उपयोग करें।`);
       }
+      results[specificSign.id] = parseAstroSageSignContent(content, specificSign);
     }
 
     // 2. Fetch remaining signs with batching
-    for (let i = 0; i < ZODIAC_SIGNS.length; i += 4) {
-      const chunk = ZODIAC_SIGNS.slice(i, i + 4);
+    for (let i = 0; i < ZODIAC_SIGNS.length; i += 3) {
+      const chunk = ZODIAC_SIGNS.slice(i, i + 3);
       await Promise.all(chunk.map(async (sign) => {
         if (results[sign.id] && results[sign.id].isScraped) return;
 
         const signUrl = `https://www.astrosage.com/rashifal/${sign.astroSlug}-${prefix}`;
         try {
           const content = await fetchCleanContent(signUrl);
-          if (content) {
+          if (content && content.length > 300) {
             results[sign.id] = parseAstroSageSignContent(content, sign);
-            return;
           }
-        } catch (e) {}
-
-        if (!results[sign.id]) {
-          results[sign.id] = generateDailySignData(sign);
+        } catch (e) {
+          console.warn(`Could not scrape ${sign.id}:`, e);
         }
       }));
+    }
+
+    const scrapedCount = Object.values(results).filter(s => s && s.isScraped && s.prediction).length;
+    if (scrapedCount === 0) {
+      throw new Error('AstroSage से डेटा फेच नहीं हो सका (नेटवर्क/प्रॉक्सी समस्या)। कृपया लिंक जांचें या "📋 पेस्ट टेक्स्ट" का उपयोग करें।');
     }
 
     return results;
@@ -150,36 +149,48 @@ const ContentScraper = (function() {
     if (upayMatch && upayMatch[1]) {
       upay = upayMatch[1].replace(/[\*\_]/g, '').trim();
     } else {
-      upay = UPAY_BANK[Math.floor(Math.random() * UPAY_BANK.length)];
+      upay = '';
     }
 
-    // Extract Prediction
-    const dateMatch = text.match(/\*\*(Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday)[^\*]+\*\*\s*\n+([\s\S]+?)(?=(\*\*उपाय|उपाय|##|\n\n\n|$))/i) ||
-                      text.match(/(Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday)[^\n]+\n+([\s\S]+?)(?=(\*\*उपाय|उपाय|##|\n\n\n|$))/i);
+    // Extract Exact Prediction
+    const dateMatch = text.match(/(Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday)[^\n\r]*\n+([\s\S]+?)(?=(उपाय|##|\*\*कल का दिन|\n\n\n\n|$))/i) ||
+                      text.match(/\*\*(Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday)[^\*]+\*\*\s*\n+([\s\S]+?)(?=(\*\*उपाय|उपाय|##|\n\n\n|$))/i);
     if (dateMatch && dateMatch[2]) {
-      prediction = dateMatch[2].replace(/[\*\_]/g, ' ').replace(/\n+/g, ' ').trim();
+      prediction = dateMatch[2].replace(/[\*\_]/g, ' ').replace(/\s+/g, ' ').trim();
     } else {
-      // Find sign section
-      const signMatch = text.match(new RegExp(`(${sign.nameHi}|${sign.nameEn})[\\s\\S]{1,600}?(?=(उपाय|##|\n\n\n|$))`, 'i'));
+      const signMatch = text.match(new RegExp(`(${sign.nameHi}|${sign.nameEn})[\\s\\S]{1,800}?(?=(उपाय|##|\n\n\n|$))`, 'i'));
       if (signMatch) {
-        prediction = signMatch[0].replace(/[\*\_]/g, ' ').replace(/\n+/g, ' ').trim();
+        prediction = signMatch[0].replace(/[\*\_]/g, ' ').replace(/\s+/g, ' ').trim();
       }
     }
 
-    if (!prediction || prediction.length < 25) {
-      prediction = generateDailySignData(sign).prediction;
+    // Extract Star Ratings from AstroSage HTML/Markdown (Counting star2.gif filled stars)
+    function countStars(category, fallbackVal) {
+      const reg = new RegExp(`\\*\\*${category}:?\\*\\*([\\s\\S]*?)(?=(\\*\\*|$|\\n\\n))`, 'i');
+      const m = text.match(reg);
+      if (!m) return fallbackVal;
+      const block = m[1];
+      const filledMatches = block.match(/star2\.gif/g);
+      if (filledMatches && filledMatches.length > 0) return filledMatches.length;
+      const unicodeFilled = block.match(/★/g);
+      if (unicodeFilled && unicodeFilled.length > 0) return unicodeFilled.length;
+      return fallbackVal;
     }
 
     const daySeed = new Date().getFullYear() * 10000 + (new Date().getMonth() + 1) * 100 + new Date().getDate();
     const signIndex = ZODIAC_SIGNS.findIndex(s => s.id === sign.id);
     const ratings = {
-      health: Math.min(5, Math.max(3, 3 + ((daySeed + signIndex * 3) % 3))),
-      wealth: Math.min(5, Math.max(3, 4 + ((daySeed + signIndex * 5) % 2))),
-      family: Math.min(5, Math.max(3, 3 + ((daySeed + signIndex * 7) % 3))),
-      love: Math.min(5, Math.max(2, 3 + ((daySeed + signIndex * 2) % 3))),
-      business: Math.min(5, Math.max(3, 4 + ((daySeed + signIndex * 4) % 2))),
-      marriage: Math.min(5, Math.max(3, 3 + ((daySeed + signIndex * 6) % 3)))
+      health: countStars('स्वास्थ्य', 2 + ((daySeed + signIndex * 3) % 4)),
+      wealth: countStars('धन-सम्पत्ति', 3 + ((daySeed + signIndex * 5) % 3)),
+      family: countStars('परिवार', 2 + ((daySeed + signIndex * 7) % 4)),
+      love: countStars('प्रेम आदि', 3 + ((daySeed + signIndex * 2) % 3)),
+      business: countStars('व्यवसाय', 2 + ((daySeed + signIndex * 4) % 4)),
+      marriage: countStars('वैवाहिक जीवन', 3 + ((daySeed + signIndex * 6) % 3))
     };
+
+    const luckyColor = LUCKY_COLORS[Math.floor(Math.random() * LUCKY_COLORS.length)];
+    const luckyNumber = Math.floor(Math.random() * 9) + 1;
+    const luckPercent = Math.floor(Math.random() * 22) + 76;
 
     return {
       id: sign.id,
@@ -213,14 +224,7 @@ const ContentScraper = (function() {
     // Check if any URL is AstroSage
     const astroSageUrl = validUrls.find(u => u.includes('astrosage.com'));
     if (astroSageUrl) {
-      try {
-        const astroData = await scrapeAstroSage(astroSageUrl);
-        if (Object.keys(astroData).length >= 12) {
-          return astroData;
-        }
-      } catch (e) {
-        console.warn('Direct AstroSage crawl error:', e);
-      }
+      return await scrapeAstroSage(astroSageUrl);
     }
 
     // Generic Multi-Source Crawl

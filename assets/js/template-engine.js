@@ -174,6 +174,20 @@ const TemplateEngine = (function() {
       const scrapedData = await ContentScraper.scrapeMultipleUrls(urls);
       currentSignsData = scrapedData;
       VideoEngine.setAllSignsData(currentSignsData);
+
+      // If user entered a single-sign URL (e.g. mesh-kal-ka-rashifal.asp), auto-select that sign
+      const singleSignMatch = ContentScraper.ZODIAC_SIGNS.find(s => urls.some(u => u.includes(s.astroSlug) || u.includes(s.id) || u.toLowerCase().includes(s.nameEn.toLowerCase())));
+      if (singleSignMatch && scrapedData[singleSignMatch.id]) {
+        selectedSignId = singleSignMatch.id;
+        document.querySelectorAll('.zodiac-grid-pill').forEach(pill => {
+          if (pill.getAttribute('data-sign') === selectedSignId) {
+            pill.classList.add('active');
+          } else {
+            pill.classList.remove('active');
+          }
+        });
+      }
+
       loadSignIntoStudio(selectedSignId);
       btnScrape.innerHTML = '<i class="fa-solid fa-check"></i> डेटा लोड हो गया!';
       setTimeout(() => {
