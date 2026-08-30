@@ -15,7 +15,7 @@
   <meta property="og:url" content="https://bypyay.github.io/ytshortgen/">
 
   <!-- Stylesheets & Fonts -->
-  <link rel="stylesheet" href="assets/css/studio.css?v=30">
+  <link rel="stylesheet" href="assets/css/studio.css?v=31">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
   <!-- Structured Data JSON-LD (Schema.org) -->
@@ -775,9 +775,18 @@
 
       <div id="exportStatusText" style="font-size:0.86rem; font-weight:800; color:#fbbf24;">प्रारंभ हो रहा है...</div>
 
-      <button type="button" class="btn-export-main" id="btnDownloadVideo" style="display:none; justify-content:center; padding:12px 24px; font-size:1rem; margin-top:8px;">
-        <i class="fa-solid fa-download"></i> DOWNLOAD MP4 VIDEO
-      </button>
+      <!-- In-Browser Video Player for Instant Mobile Playback Testing -->
+      <video id="exportPreviewVideo" controls playsinline style="display:none; width:100%; max-width:240px; max-height:340px; aspect-ratio:9/16; border-radius:12px; margin:8px auto; background:#000; border:2px solid rgba(251,191,36,0.5);"></video>
+
+      <!-- Action Buttons -->
+      <div id="exportActionsGroup" style="display:flex; flex-direction:column; gap:8px; width:100%; margin-top:4px;">
+        <button type="button" class="btn-export-main" id="btnDownloadVideo" style="display:none; justify-content:center; padding:11px 20px; font-size:0.95rem;">
+          <i class="fa-solid fa-download"></i> 📥 डाउनलोड वीडियो (Save Video)
+        </button>
+        <button type="button" class="btn-tool-sub" id="btnShareVideo" style="display:none; justify-content:center; padding:11px 20px; font-size:0.95rem; background:linear-gradient(135deg, #10b981, #059669); color:#fff; border:none; font-weight:800; border-radius:8px; cursor:pointer;">
+          <i class="fa-solid fa-share-nodes"></i> 📲 मोबाइल में शेयर / सेव करें (WhatsApp, Shorts)
+        </button>
+      </div>
     </div>
   </div>
 
@@ -836,8 +845,8 @@
   </footer>
 
   <!-- Scripts -->
-  <script src="assets/js/content-scraper.js?v=30"></script>
-  <script src="assets/js/video-engine.js?v=30"></script>
-  <script src="assets/js/template-engine.js?v=30"></script>
+  <script src="assets/js/content-scraper.js?v=31"></script>
+  <script src="assets/js/video-engine.js?v=31"></script>
+  <script src="assets/js/template-engine.js?v=31"></script>
 </body>
 </html>

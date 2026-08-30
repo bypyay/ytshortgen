@@ -1038,6 +1038,13 @@ body {
 @media (max-width: 992px) {
   .mobile-studio-tabs {
     display: grid !important;
+    position: sticky;
+    top: 6px;
+    z-index: 100;
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    background: rgba(15, 23, 42, 0.95);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
   }
   .studio-grid {
     grid-template-columns: 1fr !important;
@@ -1060,6 +1067,83 @@ body {
   }
   .bottom-timeline-strip.mobile-active {
     display: flex !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .studio-container {
+    padding: 6px 8px 24px;
+    gap: 8px;
+  }
+  .studio-header {
+    padding: 6px 10px;
+    gap: 6px;
+  }
+  .studio-title-badge {
+    font-size: 0.98rem;
+    gap: 4px;
+  }
+  .studio-header-tag {
+    display: none;
+  }
+  .header-quick-actions {
+    gap: 5px;
+  }
+  .btn-header {
+    padding: 5px 8px;
+    font-size: 0.74rem;
+  }
+  .mobile-tab-btn {
+    padding: 6px 2px;
+    font-size: 0.70rem;
+    min-height: 42px;
+  }
+  .mobile-tab-btn i {
+    font-size: 0.92rem;
+  }
+  .video-canvas-stage {
+    max-width: min(85vw, 310px);
+    max-height: 52vh;
+    border-width: 1.5px;
+  }
+  .player-controls-bar {
+    padding: 8px 10px;
+    gap: 6px;
+  }
+  .zodiac-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 4px !important;
+  }
+  .zodiac-pill {
+    padding: 6px 2px !important;
+    font-size: 0.72rem !important;
+    min-height: 36px !important;
+  }
+  .sources-quick-chips {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 5px;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .sources-quick-chips::-webkit-scrollbar {
+    display: none;
+  }
+  .theme-swatches-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 6px !important;
+  }
+  .theme-swatch {
+    padding: 6px 4px !important;
+    font-size: 0.72rem !important;
+  }
+  .export-modal-box, .batch-modal-box {
+    padding: 16px 14px;
+    width: 94vw;
+    max-width: 400px;
+    border-radius: 14px;
   }
 }
 

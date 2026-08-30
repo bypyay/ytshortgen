@@ -317,39 +317,89 @@ const TemplateEngine = (function() {
     const progressFill = document.getElementById('exportProgressFill');
     const statusText = document.getElementById('exportStatusText');
     const downloadBtn = document.getElementById('btnDownloadVideo');
+    const shareBtn = document.getElementById('btnShareVideo');
+    const previewVideo = document.getElementById('exportPreviewVideo');
 
     if (modal) modal.classList.add('open');
     if (downloadBtn) downloadBtn.style.display = 'none';
+    if (shareBtn) shareBtn.style.display = 'none';
+    if (previewVideo) {
+      previewVideo.style.display = 'none';
+      previewVideo.src = '';
+    }
 
     VideoEngine.exportVideo(
       function onProgress(pct) {
         if (progressFill) progressFill.style.width = pct + '%';
         if (statusText) statusText.textContent = `रेंडरिंग जारी है: ${pct}% (60fps Full HD)`;
       },
-      function onComplete(videoUrl, blob) {
+      function onComplete(videoUrl, blob, mimeType) {
         if (progressFill) progressFill.style.width = '100%';
-        if (statusText) statusText.innerHTML = `✅ वीडियो तैयार है! (${(blob.size / (1024 * 1024)).toFixed(1)} MB)`;
+        const sizeMb = (blob.size / (1024 * 1024)).toFixed(1);
+        if (statusText) statusText.innerHTML = `✅ वीडियो तैयार है! (${sizeMb} MB) <br><span style="font-size:0.75rem; color:#94a3b8;">(नीचे प्ले करके देखें या डाउनलोड/शेयर करें)</span>`;
+
+        const sign = VideoEngine.getProjectData().sign || {};
+        const signName = sign.nameEn || sign.signNameEn || 'Aries';
+        const dateStr = targetDateObj ? targetDateObj.toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10);
+        const filename = `Rashifal_${signName}_${dateStr}.mp4`;
+
+        // 1. Show Embedded Video Player for Instant Playback Verification
+        if (previewVideo) {
+          previewVideo.src = videoUrl;
+          previewVideo.style.display = 'block';
+          previewVideo.load();
+        }
+
+        // 2. Download Button
         if (downloadBtn) {
           downloadBtn.style.display = 'inline-flex';
           downloadBtn.onclick = function() {
             const a = document.createElement('a');
-            const sign = VideoEngine.getProjectData().sign;
-            const signName = sign.nameEn || sign.signNameEn || 'Aries';
-            const dateStr = targetDateObj ? targetDateObj.toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10);
             a.href = videoUrl;
-            a.download = `Rashifal_${signName}_${dateStr}.webm`;
+            a.download = filename;
+            document.body.appendChild(a);
             a.click();
+            setTimeout(() => a.remove(), 200);
           };
+        }
+
+        // 3. Mobile Web Share API
+        if (shareBtn) {
+          const canShare = typeof navigator !== 'undefined' && navigator.canShare;
+          if (canShare || (typeof navigator !== 'undefined' && navigator.share)) {
+            shareBtn.style.display = 'inline-flex';
+            shareBtn.onclick = async function() {
+              try {
+                const file = new File([blob], filename, { type: blob.type || 'video/mp4' });
+                await navigator.share({
+                  title: `दैनिक राशिफल - ${sign.nameHi || signName}`,
+                  text: `✨ ${sign.nameHi || signName} का राशिफल (${dateStr})`,
+                  files: [file]
+                });
+              } catch(err) {
+                if (err.name !== 'AbortError') {
+                  downloadBtn.click();
+                }
+              }
+            };
+          } else {
+            shareBtn.style.display = 'none';
+          }
         }
       },
       function onError(err) {
-        if (statusText) statusText.textContent = 'त्रुटि: ' + err.message;
+        if (statusText) statusText.textContent = 'त्रुटि: ' + (err ? err.message : 'Unknown error');
       }
     );
   }
 
   function closeExportModal() {
     const modal = document.getElementById('exportModalOverlay');
+    const previewVideo = document.getElementById('exportPreviewVideo');
+    if (previewVideo) {
+      previewVideo.pause();
+      previewVideo.src = '';
+    }
     if (modal) modal.classList.remove('open');
   }
 
@@ -488,8 +538,10 @@ const TemplateEngine = (function() {
     const a = document.createElement('a');
     a.href = item.url;
     const dateStr = targetDateObj ? targetDateObj.toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10);
-    a.download = `Rashifal_${item.nameEn}_${dateStr}.webm`;
+    a.download = `Rashifal_${item.nameEn}_${dateStr}.mp4`;
+    document.body.appendChild(a);
     a.click();
+    setTimeout(() => a.remove(), 200);
   }
 
   function downloadAllBatchVideos() {
@@ -998,6 +1050,11 @@ const TemplateEngine = (function() {
         if (target === 'preview' && centerPanel) centerPanel.classList.add('mobile-active');
         if (target === 'style' && rightPanel) rightPanel.classList.add('mobile-active');
         if (target === 'timeline' && bottomTimeline) bottomTimeline.classList.add('mobile-active');
+
+        // Smooth scroll to top on mobile
+        if (window.innerWidth <= 992) {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
       });
     });
   }

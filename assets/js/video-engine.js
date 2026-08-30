@@ -1682,6 +1682,103 @@ const VideoEngine = (function() {
   // ══════════════════════════════════════════════════════════════════
   // 5. In-Browser 1080x1920 Video Export Engine (MediaRecorder)
   // ══════════════════════════════════════════════════════════════════
+  function fixWebmDuration(blob, durationMs) {
+    return new Promise((resolve) => {
+      if (!blob || blob.size < 100 || (blob.type && blob.type.includes('mp4'))) {
+        return resolve(blob);
+      }
+      try {
+        if (typeof FileReader === 'undefined') return resolve(blob);
+        const reader = new FileReader();
+        reader.onloadend = function() {
+          try {
+            const buffer = reader.result;
+            const u8 = new Uint8Array(buffer);
+            const dataView = new DataView(buffer);
+
+            // Find Segment Info (0x15 0x49 0xA9 0x66)
+            let infoPos = -1;
+            for (let i = 0; i < Math.min(u8.length - 4, 1024); i++) {
+              if (u8[i] === 0x15 && u8[i+1] === 0x49 && u8[i+2] === 0xA9 && u8[i+3] === 0x66) {
+                infoPos = i;
+                break;
+              }
+            }
+
+            if (infoPos === -1) {
+              return resolve(blob);
+            }
+
+            // Check if Duration (0x44 0x89) is present in Info segment
+            let durationPos = -1;
+            for (let i = infoPos; i < Math.min(u8.length - 6, infoPos + 200); i++) {
+              if (u8[i] === 0x44 && u8[i+1] === 0x89) {
+                durationPos = i;
+                break;
+              }
+            }
+
+            if (durationPos !== -1) {
+              const len = u8[durationPos + 2];
+              if (len === 0x84 || len === 4) {
+                dataView.setFloat32(durationPos + 3, durationMs, false);
+                return resolve(new Blob([buffer], { type: blob.type }));
+              } else if (len === 0x88 || len === 8) {
+                dataView.setFloat64(durationPos + 3, durationMs, false);
+                return resolve(new Blob([buffer], { type: blob.type }));
+              }
+            }
+
+            // Append standard Duration element right after Info Header
+            const durTag = new Uint8Array(11);
+            durTag[0] = 0x44;
+            durTag[1] = 0x89;
+            durTag[2] = 0x88;
+            const durView = new DataView(durTag.buffer);
+            durView.setFloat64(3, durationMs, false);
+
+            const insertPos = infoPos + 5;
+            const newBlob = new Blob([u8.slice(0, insertPos), durTag, u8.slice(insertPos)], { type: blob.type });
+            return resolve(newBlob);
+          } catch (err) {
+            console.warn("WebM duration patch error:", err);
+            return resolve(blob);
+          }
+        };
+        reader.onerror = function() {
+          resolve(blob);
+        };
+        reader.readAsArrayBuffer(blob);
+      } catch(e) {
+        resolve(blob);
+      }
+    });
+  }
+
+  function getBestSupportedMimeType() {
+    const candidateTypes = [
+      'video/mp4;codecs=avc1.42E01E,mp4a.40.2',
+      'video/mp4;codecs=avc1,mp4a.40.2',
+      'video/mp4;codecs=avc1',
+      'video/mp4;codecs=h264,aac',
+      'video/mp4',
+      'video/webm;codecs=h264,opus',
+      'video/webm;codecs=h264',
+      'video/webm;codecs=vp9,opus',
+      'video/webm;codecs=vp8,opus',
+      'video/webm'
+    ];
+
+    if (typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported) {
+      for (const t of candidateTypes) {
+        if (MediaRecorder.isTypeSupported(t)) {
+          return t;
+        }
+      }
+    }
+    return 'video/webm';
+  }
+
   async function exportVideo(onProgress, onComplete, onError) {
     pause();
     currentTime = 0;
@@ -1708,16 +1805,7 @@ const VideoEngine = (function() {
       combinedStream = new MediaStream([stream.getVideoTracks()[0], audioTracks[0]]);
     }
 
-    let mimeType = 'video/webm;codecs=vp8,opus';
-    if (!MediaRecorder.isTypeSupported(mimeType)) {
-      mimeType = 'video/webm;codecs=vp9,opus';
-      if (!MediaRecorder.isTypeSupported(mimeType)) {
-        mimeType = 'video/webm';
-        if (!MediaRecorder.isTypeSupported(mimeType)) {
-          mimeType = 'video/mp4';
-        }
-      }
-    }
+    const mimeType = getBestSupportedMimeType();
 
     const recordedChunks = [];
     let recorder;
@@ -1736,10 +1824,12 @@ const VideoEngine = (function() {
       }
     };
 
-    recorder.onstop = function() {
-      const blob = new Blob(recordedChunks, { type: recorder.mimeType || mimeType });
-      const videoUrl = URL.createObjectURL(blob);
-      if (onComplete) onComplete(videoUrl, blob);
+    recorder.onstop = async function() {
+      const rawBlob = new Blob(recordedChunks, { type: recorder.mimeType || mimeType });
+      const durationMs = totalDuration * 1000;
+      const patchedBlob = await fixWebmDuration(rawBlob, durationMs);
+      const videoUrl = URL.createObjectURL(patchedBlob);
+      if (onComplete) onComplete(videoUrl, patchedBlob, recorder.mimeType || mimeType);
     };
 
     recorder.start(200); // 200ms chunk interval
