@@ -1101,17 +1101,17 @@ const VideoEngine = (function() {
       ctx.lineWidth = 1.5;
       ctx.stroke();
 
-      // Prediction Text: Whole-Horoscope Balanced Summarizer with Love Star Footer
+      // Prediction Text: Whole-Horoscope Balanced Dynamic Summarizer with Love Star Footer
       const rawText = signData.prediction || 'आज का दिन शुभ रहेगा। सोचे हुए कार्य पूरे होंगे और लाभ मिलेगा।';
-      const summarizedText = summarizeForPoster(rawText, 190);
       const fontSize = projectData.posterFontSize || 22;
-      const lineHeight = Math.round(fontSize * 1.45);
+      const summarizedText = summarizeForPoster(rawText, fontSize);
+      const lineHeight = Math.round(fontSize * 1.42);
 
       ctx.font = `700 ${fontSize}px "Noto Sans Devanagari", sans-serif`;
       ctx.fillStyle = '#0f172a'; // Bold deep black-navy for maximum readability
       ctx.textAlign = 'left';
       ctx.textBaseline = 'top';
-      wrapTextPoster(ctx, summarizedText, x + 14, y + 72, boxW - 28, lineHeight, y + 310);
+      wrapTextPoster(ctx, summarizedText, x + 14, y + 72, boxW - 28, lineHeight, y + boxH - 58);
 
       // Card Footer Pill with Love Stars (❤️ प्रेम: ★★★★☆ | 🔢 अंक: 9)
       const ratings = signData.ratings || { love: 4 };
@@ -1453,30 +1453,45 @@ const VideoEngine = (function() {
     c.closePath();
   }
 
-  function summarizeForPoster(fullText, targetMaxChars = 190) {
-    if (!fullText) return 'आज का दिन शुभ रहेगा। सोचे हुए कार्य पूरे होंगे।';
+  function summarizeForPoster(fullText, fontSizeOrTarget = 22) {
+    if (!fullText) return 'आज का दिन आपके लिए शुभ व मंगलकारी रहेगा। सोचे हुए कार्य पूरे होंगे।';
+
+    // Determine target character capacity dynamically based on font size or explicit max chars
+    let targetMaxChars = 145;
+    if (typeof fontSizeOrTarget === 'number') {
+      if (fontSizeOrTarget >= 10 && fontSizeOrTarget <= 40) {
+        // It's a font size
+        const lineHeight = Math.round(fontSizeOrTarget * 1.42);
+        const maxLines = Math.floor(238 / lineHeight);
+        const charsPerLine = Math.floor(298 / (fontSizeOrTarget * 0.58));
+        targetMaxChars = Math.max(70, maxLines * charsPerLine - 8);
+      } else {
+        targetMaxChars = fontSizeOrTarget;
+      }
+    }
+
     const clean = fullText.replace(/[\*\_]/g, ' ').replace(/\s+/g, ' ').trim();
     if (clean.length <= targetMaxChars) return clean;
 
     const sentences = clean.split(/(?<=[।!?])/g).map(s => s.trim()).filter(s => s.length > 5);
-    if (sentences.length <= 2) {
+    if (sentences.length <= 1) {
       let cut = clean.substring(0, targetMaxChars);
-      const lastSpace = cut.lastIndexOf(' ');
-      if (lastSpace > 40) cut = cut.substring(0, lastSpace);
-      return cut + '...';
+      const lastDanda = cut.lastIndexOf('।');
+      if (lastDanda > 20) return cut.substring(0, lastDanda + 1);
+      return cut + '।';
     }
 
     let selected = [];
     let currentLen = 0;
 
-    // 1. Sentence 1: Core theme / mindset / health
+    // 1. Sentence 1: Core theme / mindset / health / opening
     selected.push(sentences[0]);
     currentLen += sentences[0].length;
 
     // 2. Middle highlight: Finance / Career / Love / Family / Work
-    for (let i = 1; i < sentences.length - 1; i++) {
+    for (let i = 1; i < sentences.length; i++) {
       const s = sentences[i];
-      if (s.includes('धन') || s.includes('पैसे') || s.includes('आर्थिक') || s.includes('कार्य') || s.includes('नौकरी') || s.includes('परिवार') || s.includes('लाभ') || s.includes('व्यापार') || s.includes('प्यार') || s.includes('दोस्त') || s.includes('स्वास्थ्य') || s.includes('निवेश')) {
+      if (s.includes('धन') || s.includes('पैसे') || s.includes('आर्थिक') || s.includes('कार्य') || s.includes('नौकरी') || s.includes('व्यापार') || s.includes('लाभ') || s.includes('निवेश')) {
         if (currentLen + s.length + 1 <= targetMaxChars) {
           selected.push(s);
           currentLen += s.length + 1;
@@ -1485,7 +1500,21 @@ const VideoEngine = (function() {
       }
     }
 
-    // 3. Fill remaining available space with subsequent sentences
+    // 3. Middle/End highlight: Love / Family / Relationship / Advice
+    for (let i = 1; i < sentences.length; i++) {
+      const s = sentences[i];
+      if (!selected.includes(s)) {
+        if (s.includes('प्यार') || s.includes('परिवार') || s.includes('रिश्ते') || s.includes('जीवनसाथी') || s.includes('मित्र') || s.includes('सलाह') || s.includes('सावधानी') || s.includes('प्रेम')) {
+          if (currentLen + s.length + 1 <= targetMaxChars) {
+            selected.push(s);
+            currentLen += s.length + 1;
+            break;
+          }
+        }
+      }
+    }
+
+    // 4. Fill remaining space with sequential complete sentences if available
     for (let i = 1; i < sentences.length; i++) {
       if (!selected.includes(sentences[i])) {
         if (currentLen + sentences[i].length + 1 <= targetMaxChars) {
@@ -1495,18 +1524,13 @@ const VideoEngine = (function() {
       }
     }
 
+    // Maintain natural reading order
     selected.sort((a, b) => sentences.indexOf(a) - sentences.indexOf(b));
-    let summary = selected.join(' ');
+    let summary = selected.join(' ').trim();
 
-    if (summary.length < 110) {
-      summary = '';
-      for (const s of sentences) {
-        if ((summary + ' ' + s).trim().length <= targetMaxChars) {
-          summary = (summary + ' ' + s).trim();
-        } else {
-          break;
-        }
-      }
+    // Guarantee summary ends with proper punctuation
+    if (!summary.endsWith('।') && !summary.endsWith('!')) {
+      summary += '।';
     }
 
     return summary;
@@ -1541,27 +1565,18 @@ const VideoEngine = (function() {
     let curY = y;
 
     for (let n = 0; n < words.length; n++) {
-      if (curY + lineHeight > maxY) {
-        if (line.trim().length > 0) {
-          let lastStr = line.trim();
-          if (!lastStr.endsWith('।') && !lastStr.endsWith('.')) {
-            const lastDanda = lastStr.lastIndexOf('।');
-            if (lastDanda > 0) {
-              lastStr = lastStr.substring(0, lastDanda + 1);
-            }
-          }
-          c.fillText(lastStr, x, curY);
-        }
-        return;
-      }
       const testLine = line + words[n] + ' ';
       const metrics = c.measureText(testLine);
       const testWidth = metrics.width;
 
       if (testWidth > maxWidth && n > 0) {
-        c.fillText(line.trim(), x, curY);
-        line = words[n] + ' ';
-        curY += lineHeight;
+        if (curY + lineHeight <= maxY) {
+          c.fillText(line.trim(), x, curY);
+          line = words[n] + ' ';
+          curY += lineHeight;
+        } else {
+          return;
+        }
       } else {
         line = testLine;
       }
