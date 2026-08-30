@@ -27,7 +27,8 @@ const ContentScraper = (function() {
 
   // Popular Pre-configured Sources
   const POPULAR_SOURCES = [
-    { name: '🚀 AstroSage (अगले सप्ताह)', url: 'https://www.astrosage.com/rashifal/agla-saptahik-rashifal/' },
+    { name: '🌕 AstroSage (अगला माह)', url: 'https://www.astrosage.com/rashifal/agle-mahine-ka-rashifal/default.asp' },
+    { name: '🚀 AstroSage (अगला सप्ताह)', url: 'https://www.astrosage.com/rashifal/agla-saptahik-rashifal/' },
     { name: '🕉️ AstroSage (कल का राशिफल)', url: 'https://www.astrosage.com/rashifal/kal-ka-rashifal.asp' },
     { name: '🌟 AstroSage (आज का राशिफल)', url: 'https://www.astrosage.com/rashifal/aaj-ka-rashifal.asp' },
     { name: '🔴 Aaj Tak Rashifal', url: 'https://www.aajtak.in/astrology/rashifal' },
@@ -320,12 +321,111 @@ const ContentScraper = (function() {
   }
 
   // ══════════════════════════════════════════════════════════════════
+  // Dedicated AstroSage Agle Mahine Ka Rashifal (Next Month) Crawler
+  // ══════════════════════════════════════════════════════════════════
+  const AGLA_MAHINA_SLUGS = {
+    aries: 'mesh',
+    taurus: 'vrishabha',
+    gemini: 'mithun',
+    cancer: 'karka',
+    leo: 'simha',
+    virgo: 'kanya',
+    libra: 'tula',
+    scorpio: 'vrishchika',
+    sagittarius: 'dhanu',
+    capricorn: 'makara',
+    aquarius: 'kumbha',
+    pisces: 'meena'
+  };
+
+  function extractAglaMahinaParagraph(text) {
+    if (!text) return '';
+    const paragraphs = text.split('\n\n').filter(p => {
+      if (p.includes('[दैनिक]') || p.includes('ज्योतिषियों के साथ') || p.includes('Vedic Astrology') || p.includes('ऑनलाइन कुंडली')) return false;
+      const hindiChars = (p.match(/[\u0900-\u097F]/g) || []).length;
+      return hindiChars > 60;
+    });
+    if (paragraphs.length > 0) {
+      return paragraphs[0].replace(/\[[^\]]*\]\([^\)]*\)/g, ' ').replace(/[\*\_]/g, ' ').replace(/\s+/g, ' ').trim();
+    }
+    return '';
+  }
+
+  async function scrapeAstroSageAglaMahina(url) {
+    const results = {};
+
+    for (let i = 0; i < ZODIAC_SIGNS.length; i += 2) {
+      const chunk = ZODIAC_SIGNS.slice(i, i + 2);
+      await Promise.all(chunk.map(async (sign) => {
+        const slug = AGLA_MAHINA_SLUGS[sign.id] || sign.astroSlug;
+        const signUrl = `https://www.astrosage.com/rashifal/agle-mahine-ka-rashifal/${slug}-rashifal.asp`;
+        try {
+          const content = await fetchCleanContent(signUrl);
+          if (content && content.length > 200) {
+            const pred = extractAglaMahinaParagraph(content);
+            if (pred && pred.length > 40) {
+              const daySeed = new Date().getFullYear() * 10000 + (new Date().getMonth() + 1) * 100 + new Date().getDate();
+              const signIndex = ZODIAC_SIGNS.findIndex(s => s.id === sign.id);
+              const luckyColor = LUCKY_COLORS[Math.floor(Math.random() * LUCKY_COLORS.length)];
+              const luckyNumber = Math.floor(Math.random() * 9) + 1;
+              const luckPercent = Math.floor(Math.random() * 22) + 76;
+              const upay = UPAY_BANK[(daySeed + signIndex) % UPAY_BANK.length];
+
+              results[sign.id] = {
+                id: sign.id,
+                signId: sign.id,
+                nameHi: sign.nameHi,
+                signNameHi: sign.nameHi,
+                nameEn: sign.nameEn,
+                signNameEn: sign.nameEn,
+                symbol: sign.symbol,
+                lord: sign.lord,
+                element: sign.element,
+                luckyColor: luckyColor,
+                luckyNumber: luckyNumber,
+                luckPercent: luckPercent,
+                prediction: pred,
+                upay: upay,
+                ratings: { health: 4, wealth: 5, family: 4, love: 4, business: 5, marriage: 4 },
+                isScraped: true
+              };
+            }
+          }
+        } catch (e) {
+          console.warn(`Could not scrape agla-mahina ${sign.id}:`, e);
+        }
+      }));
+      await new Promise(r => setTimeout(r, 200));
+    }
+
+    // Ensure all 12 signs have rich content
+    ZODIAC_SIGNS.forEach(sign => {
+      if (!results[sign.id] || !results[sign.id].prediction || results[sign.id].prediction.length < 25) {
+        results[sign.id] = generateDailySignData(sign, new Date(), 'detailed', 'monthly');
+      }
+    });
+
+    const scrapedCount = Object.values(results).filter(s => s && s.prediction).length;
+    if (scrapedCount === 0) {
+      throw new Error('अगले माह का राशिफल फेच नहीं हो सका। कृपया लिंक जांचें या "📋 पेस्ट टेक्स्ट" का उपयोग करें।');
+    }
+
+    return results;
+  }
+
+  // ══════════════════════════════════════════════════════════════════
   // 3. Multi-Source Scraping Controller
   // ══════════════════════════════════════════════════════════════════
   async function scrapeMultipleUrls(urlsArray) {
     const validUrls = urlsArray.filter(u => u && u.trim().startsWith('http'));
     if (validUrls.length === 0) {
       throw new Error('कृपया कम से कम एक वैध वेबसाइट लिंक (URL) दर्ज करें।');
+    }
+
+    // Check if URL is AstroSage Agle Mahine Ka Rashifal (Next Month) or any Monthly URL
+    const aglaMahinaUrl = validUrls.find(u => u.includes('agle-mahine') || u.includes('masik') || u.includes('monthly'));
+    if (aglaMahinaUrl) {
+      return await scrapeAstroSageAglaMahina(aglaMahinaUrl);
     }
 
     // Check if URL is AstroSage Agla Saptahik (Next Week) or any Weekly URL

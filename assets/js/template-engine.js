@@ -757,7 +757,7 @@ const TemplateEngine = (function() {
         } else if (currentHorizon === 'weekly') {
           firstUrlInp.value = 'https://www.astrosage.com/rashifal/agla-saptahik-rashifal/';
         } else if (currentHorizon === 'monthly') {
-          firstUrlInp.value = 'https://www.astrosage.com/rashifal/mesh-masik-rashifal.asp';
+          firstUrlInp.value = 'https://www.astrosage.com/rashifal/agle-mahine-ka-rashifal/default.asp';
         } else if (currentHorizon === 'yearly') {
           firstUrlInp.value = currentSubPeriod === 'next_year' ? 'https://www.astrosage.com/2027/mesh-rashifal-2027.asp' : 'https://www.astrosage.com/2026/mesh-rashifal-2026.asp';
         }
