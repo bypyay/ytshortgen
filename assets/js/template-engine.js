@@ -726,22 +726,26 @@ const TemplateEngine = (function() {
           targetDateObj = new Date(Date.now() + 7 * 86400000);
         }
       } else if (currentHorizon === 'monthly') {
+        const now = new Date();
         if (currentSubPeriod === 'this_month') {
-          targetDateObj = new Date();
+          targetDateObj = new Date(now.getFullYear(), now.getMonth(), 15, 12, 0, 0);
         } else if (currentSubPeriod === 'next_month') {
-          const now = new Date();
-          targetDateObj = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+          targetDateObj = new Date(now.getFullYear(), now.getMonth() + 1, 15, 12, 0, 0);
         }
       } else if (currentHorizon === 'yearly') {
+        const now = new Date();
         if (currentSubPeriod === 'this_year') {
-          targetDateObj = new Date(2026, 0, 1);
+          targetDateObj = new Date(now.getFullYear(), 5, 15, 12, 0, 0);
         } else if (currentSubPeriod === 'next_year') {
-          targetDateObj = new Date(2027, 0, 1);
+          targetDateObj = new Date(now.getFullYear() + 1, 5, 15, 12, 0, 0);
         }
       }
 
-      // 2. Update Video Engine State
-      const isoDate = targetDateObj.toISOString().slice(0, 10);
+      // 2. Update Video Engine State with local date formatting
+      const isoYear = targetDateObj.getFullYear();
+      const isoMonth = String(targetDateObj.getMonth() + 1).padStart(2, '0');
+      const isoDay = String(targetDateObj.getDate()).padStart(2, '0');
+      const isoDate = `${isoYear}-${isoMonth}-${isoDay}`;
       VideoEngine.setHorizon(currentHorizon, currentSubPeriod, isoDate);
 
       // 3. Update Text Display Badge in Left Panel
