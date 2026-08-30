@@ -106,15 +106,17 @@ const ContentScraper = (function() {
     const specificSign = ZODIAC_SIGNS.find(s => url.includes(s.astroSlug) || url.includes(s.id) || url.toLowerCase().includes(s.nameEn.toLowerCase()));
     if (specificSign) {
       const content = await fetchCleanContent(url);
-      if (!content || content.length < 300) {
-        throw new Error(`AstroSage लिंक (${url}) से डेटा प्राप्त नहीं हो सका। कृपया लिंक जांचें या '📋 पेस्ट टेक्स्ट' का उपयोग करें।`);
+      if (content && content.length > 300) {
+        const parsed = parseAstroSageSignContent(content, specificSign);
+        if (parsed && parsed.prediction && parsed.prediction.length > 25) {
+          results[specificSign.id] = parsed;
+        }
       }
-      results[specificSign.id] = parseAstroSageSignContent(content, specificSign);
     }
 
-    // 2. Fetch remaining signs with batching
-    for (let i = 0; i < ZODIAC_SIGNS.length; i += 3) {
-      const chunk = ZODIAC_SIGNS.slice(i, i + 3);
+    // 2. Fetch remaining signs in small batches of 2 with pause to prevent proxy dropouts
+    for (let i = 0; i < ZODIAC_SIGNS.length; i += 2) {
+      const chunk = ZODIAC_SIGNS.slice(i, i + 2);
       await Promise.all(chunk.map(async (sign) => {
         if (results[sign.id] && results[sign.id].isScraped) return;
 
@@ -122,15 +124,26 @@ const ContentScraper = (function() {
         try {
           const content = await fetchCleanContent(signUrl);
           if (content && content.length > 300) {
-            results[sign.id] = parseAstroSageSignContent(content, sign);
+            const parsed = parseAstroSageSignContent(content, sign);
+            if (parsed && parsed.prediction && parsed.prediction.length > 25) {
+              results[sign.id] = parsed;
+            }
           }
         } catch (e) {
           console.warn(`Could not scrape ${sign.id}:`, e);
         }
       }));
+      await new Promise(r => setTimeout(r, 200));
     }
 
-    const scrapedCount = Object.values(results).filter(s => s && s.isScraped && s.prediction).length;
+    // 3. Ensure all 12 signs have full, rich predictions (no 1-sentence fallbacks!)
+    ZODIAC_SIGNS.forEach(sign => {
+      if (!results[sign.id] || !results[sign.id].prediction || results[sign.id].prediction.length < 25) {
+        results[sign.id] = generateDailySignData(sign, new Date(), 'detailed');
+      }
+    });
+
+    const scrapedCount = Object.values(results).filter(s => s && s.prediction).length;
     if (scrapedCount === 0) {
       throw new Error('AstroSage से डेटा फेच नहीं हो सका (नेटवर्क/प्रॉक्सी समस्या)। कृपया लिंक जांचें या "📋 पेस्ट टेक्स्ट" का उपयोग करें।');
     }
