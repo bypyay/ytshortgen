@@ -890,7 +890,20 @@ const TemplateEngine = (function() {
         }
 
         const hasScraped = Object.values(currentSignsData).some(s => s && s.isScraped);
-        if (!hasScraped) {
+        if (hasScraped) {
+          Object.keys(currentSignsData).forEach(id => {
+            const s = currentSignsData[id];
+            if (!s.fullPrediction) s.fullPrediction = s.prediction;
+            if (mode === 'short') {
+              s.prediction = VideoEngine.summarizeForPoster(s.fullPrediction, 26);
+            } else if (mode === 'detailed') {
+              s.prediction = s.fullPrediction;
+            } else {
+              s.prediction = VideoEngine.summarizeForPoster(s.fullPrediction, 24);
+            }
+          });
+          VideoEngine.setAllSignsData(currentSignsData);
+        } else {
           currentSignsData = ContentScraper.generateAllDailySigns(targetDateObj, currentLengthMode);
           VideoEngine.setAllSignsData(currentSignsData);
         }

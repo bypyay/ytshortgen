@@ -341,14 +341,32 @@ const ContentScraper = (function() {
   function extractAglaMahinaParagraph(text) {
     if (!text) return '';
     const paragraphs = text.split('\n\n').filter(p => {
-      if (p.includes('[दैनिक]') || p.includes('ज्योतिषियों के साथ') || p.includes('Vedic Astrology') || p.includes('ऑनलाइन कुंडली')) return false;
+      if (p.includes('[दैनिक]') || p.includes('ज्योतिषियों के साथ') || p.includes('Vedic Astrology') || p.includes('ऑनलाइन कुंडली') || p.includes('AstroSage')) return false;
       const hindiChars = (p.match(/[\u0900-\u097F]/g) || []).length;
-      return hindiChars > 60;
-    });
-    if (paragraphs.length > 0) {
-      return paragraphs[0].replace(/\[[^\]]*\]\([^\)]*\)/g, ' ').replace(/[\*\_]/g, ' ').replace(/\s+/g, ' ').trim();
-    }
-    return '';
+      return hindiChars > 40;
+    }).map(p => p.replace(/\[[^\]]*\]\([^\)]*\)/g, ' ').replace(/[\*\_]/g, ' ').replace(/\s+/g, ' ').trim());
+
+    if (paragraphs.length === 0) return '';
+
+    // Collect overview, career, finance, personal/family/health
+    let selected = [];
+
+    // 1. First Overview paragraph
+    selected.push(paragraphs[0]);
+
+    // 2. Career / Business paragraph
+    const careerP = paragraphs.find(p => p !== paragraphs[0] && (p.includes('करियर') || p.includes('नौकरी') || p.includes('काम') || p.includes('बिज़नेस') || p.includes('व्यापार')));
+    if (careerP) selected.push(careerP);
+
+    // 3. Finance / Wealth paragraph
+    const financeP = paragraphs.find(p => !selected.includes(p) && (p.includes('धन') || p.includes('आर्थिक') || p.includes('खर्च') || p.includes('मुनाफा') || p.includes('बचत')));
+    if (financeP) selected.push(financeP);
+
+    // 4. Family / Health / Love paragraph
+    const personalP = paragraphs.find(p => !selected.includes(p) && (p.includes('सेहत') || p.includes('स्वास्थ्य') || p.includes('परिवार') || p.includes('प्रेम') || p.includes('वैवाहिक') || p.includes('लव')));
+    if (personalP) selected.push(personalP);
+
+    return selected.join(' ').trim();
   }
 
   async function scrapeAstroSageAglaMahina(url) {
@@ -385,6 +403,7 @@ const ContentScraper = (function() {
                 luckyNumber: luckyNumber,
                 luckPercent: luckPercent,
                 prediction: pred,
+                fullPrediction: pred,
                 upay: upay,
                 ratings: { health: 4, wealth: 5, family: 4, love: 4, business: 5, marriage: 4 },
                 isScraped: true
