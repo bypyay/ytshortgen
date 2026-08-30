@@ -328,8 +328,8 @@ const ContentScraper = (function() {
       throw new Error('कृपया कम से कम एक वैध वेबसाइट लिंक (URL) दर्ज करें।');
     }
 
-    // Check if URL is AstroSage Agla Saptahik (Next Week)
-    const aglaSaptahikUrl = validUrls.find(u => u.includes('agla-saptahik'));
+    // Check if URL is AstroSage Agla Saptahik (Next Week) or any Weekly URL
+    const aglaSaptahikUrl = validUrls.find(u => u.includes('agla-saptahik') || u.includes('saptahik') || u.includes('weekly'));
     if (aglaSaptahikUrl) {
       return await scrapeAstroSageAglaSaptahik(aglaSaptahikUrl);
     }

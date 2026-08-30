@@ -751,7 +751,7 @@ const TemplateEngine = (function() {
 
       // 4. Update default URL row placeholder/value for convenience
       const firstUrlInp = document.querySelector('.source-url-input');
-      if (firstUrlInp && firstUrlInp.value.includes('astrosage.com')) {
+      if (firstUrlInp) {
         if (currentHorizon === 'daily') {
           firstUrlInp.value = currentSubPeriod === 'today' ? 'https://www.astrosage.com/rashifal/aaj-ka-rashifal.asp' : 'https://www.astrosage.com/rashifal/kal-ka-rashifal.asp';
         } else if (currentHorizon === 'weekly') {
@@ -763,12 +763,9 @@ const TemplateEngine = (function() {
         }
       }
 
-      // 5. Update local sign dataset if not scraped
-      const hasScraped = Object.values(currentSignsData).some(s => s && s.isScraped);
-      if (!hasScraped) {
-        currentSignsData = ContentScraper.generateAllDailySigns(targetDateObj, currentLengthMode);
-        VideoEngine.setAllSignsData(currentSignsData);
-      }
+      // 5. Update local sign dataset
+      currentSignsData = ContentScraper.generateAllDailySigns(targetDateObj, currentLengthMode);
+      VideoEngine.setAllSignsData(currentSignsData);
       loadSignIntoStudio(selectedSignId);
     };
 
