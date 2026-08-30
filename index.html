@@ -15,7 +15,7 @@
   <meta property="og:url" content="https://bypyay.github.io/ytshortgen/">
 
   <!-- Stylesheets & Fonts -->
-  <link rel="stylesheet" href="assets/css/studio.css?v=29">
+  <link rel="stylesheet" href="assets/css/studio.css?v=30">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
   <!-- Structured Data JSON-LD (Schema.org) -->
@@ -597,11 +597,31 @@
           </button>
         </div>
 
-        <!-- Poster Real-time Text Size Controller -->
-        <div id="posterTextSizeBar" style="display:none; align-items:center; justify-content:center; gap:10px; margin-bottom:8px; background:rgba(30,41,59,0.7); border:1px solid rgba(251,191,36,0.3); padding:6px 14px; border-radius:30px; max-width:440px; margin-left:auto; margin-right:auto;">
-          <span style="font-size:0.78rem; font-weight:800; color:#fbbf24; white-space:nowrap;"><i class="fa-solid fa-text-height"></i> टेक्स्ट साइज़:</span>
-          <input type="range" id="inpPosterLiveFontSize" min="18" max="36" value="22" style="flex:1; cursor:pointer;">
-          <span id="txtPosterLiveFontSizeVal" style="font-size:0.8rem; font-weight:800; color:#fff; min-width:36px; text-align:right;">22px</span>
+        <!-- Poster Real-time Text Size & Background Theme Controller -->
+        <div id="posterTextSizeBar" style="display:none; flex-direction:column; gap:8px; margin-bottom:10px; background:rgba(15,23,42,0.9); border:1px solid rgba(251,191,36,0.35); padding:10px 14px; border-radius:14px; max-width:540px; margin-left:auto; margin-right:auto; box-shadow:0 4px 16px rgba(0,0,0,0.4);">
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+            <span style="font-size:0.78rem; font-weight:800; color:#fbbf24; white-space:nowrap;"><i class="fa-solid fa-text-height"></i> टेक्स्ट साइज़:</span>
+            <input type="range" id="inpPosterLiveFontSize" min="18" max="36" value="22" style="flex:1; cursor:pointer;">
+            <span id="txtPosterLiveFontSizeVal" style="font-size:0.8rem; font-weight:800; color:#fff; min-width:36px; text-align:right;">22px</span>
+          </div>
+          <!-- 12 Background Themes for Poster -->
+          <div style="display:flex; flex-direction:column; gap:5px; border-top:1px solid rgba(255,255,255,0.08); padding-top:6px;">
+            <span style="font-size:0.74rem; font-weight:800; color:#38bdf8;"><i class="fa-solid fa-palette"></i> 🎨 पोस्टर बैकग्राउंड थीम (12 Themes):</span>
+            <div class="poster-theme-chips" style="display:flex; flex-wrap:wrap; gap:5px;">
+              <button type="button" class="poster-theme-chip active" data-theme="gold" style="background:#582103; color:#fde047; border:1px solid #d97706; padding:3px 9px; border-radius:12px; font-size:0.72rem; font-weight:700; cursor:pointer;">🌟 Gold</button>
+              <button type="button" class="poster-theme-chip" data-theme="bhojpatra" style="background:#78350f; color:#fde68a; border:1px solid #b45309; padding:3px 9px; border-radius:12px; font-size:0.72rem; font-weight:700; cursor:pointer;">📜 भोजपत्र</button>
+              <button type="button" class="poster-theme-chip" data-theme="newspaper" style="background:#292524; color:#f4f0e6; border:1px solid #78716c; padding:3px 9px; border-radius:12px; font-size:0.72rem; font-weight:700; cursor:pointer;">📰 अख़बार</button>
+              <button type="button" class="poster-theme-chip" data-theme="panchang" style="background:#854d0e; color:#fef08a; border:1px solid #f59e0b; padding:3px 9px; border-radius:12px; font-size:0.72rem; font-weight:700; cursor:pointer;">🪔 पंचांग</button>
+              <button type="button" class="poster-theme-chip" data-theme="banarasi" style="background:#881337; color:#fecdd3; border:1px solid #f43f5e; padding:3px 9px; border-radius:12px; font-size:0.72rem; font-weight:700; cursor:pointer;">⚜️ बनारसी</button>
+              <button type="button" class="poster-theme-chip" data-theme="shiva" style="background:#0369a1; color:#e0f2fe; border:1px solid #38bdf8; padding:3px 9px; border-radius:12px; font-size:0.72rem; font-weight:700; cursor:pointer;">🕉️ शिव</button>
+              <button type="button" class="poster-theme-chip" data-theme="nature" style="background:#064e3b; color:#d1fae5; border:1px solid #10b981; padding:3px 9px; border-radius:12px; font-size:0.72rem; font-weight:700; cursor:pointer;">🌿 प्रकृति</button>
+              <button type="button" class="poster-theme-chip" data-theme="copper" style="background:#7c2d12; color:#fed7aa; border:1px solid #fb923c; padding:3px 9px; border-radius:12px; font-size:0.72rem; font-weight:700; cursor:pointer;">🏛️ ताम्रपत्र</button>
+              <button type="button" class="poster-theme-chip" data-theme="obsidian" style="background:#030712; color:#fbbf24; border:1px solid #f59e0b; padding:3px 9px; border-radius:12px; font-size:0.72rem; font-weight:700; cursor:pointer;">🌑 अमावस्या</button>
+              <button type="button" class="poster-theme-chip" data-theme="saffron" style="background:#c2410c; color:#fed7aa; border:1px solid #f97316; padding:3px 9px; border-radius:12px; font-size:0.72rem; font-weight:700; cursor:pointer;">🌅 सूर्योदय</button>
+              <button type="button" class="poster-theme-chip" data-theme="cosmic" style="background:#1e1b4b; color:#f5d0fe; border:1px solid #c084fc; padding:3px 9px; border-radius:12px; font-size:0.72rem; font-weight:700; cursor:pointer;">🌌 गैलेक्सी</button>
+              <button type="button" class="poster-theme-chip" data-theme="cyber" style="background:#022c22; color:#67e8f9; border:1px solid #22d3ee; padding:3px 9px; border-radius:12px; font-size:0.72rem; font-weight:700; cursor:pointer;">⚡ साइबर</button>
+            </div>
+          </div>
         </div>
 
         <div class="video-canvas-stage">
@@ -816,8 +836,8 @@
   </footer>
 
   <!-- Scripts -->
-  <script src="assets/js/content-scraper.js?v=29"></script>
-  <script src="assets/js/video-engine.js?v=29"></script>
-  <script src="assets/js/template-engine.js?v=29"></script>
+  <script src="assets/js/content-scraper.js?v=30"></script>
+  <script src="assets/js/video-engine.js?v=30"></script>
+  <script src="assets/js/template-engine.js?v=30"></script>
 </body>
 </html>

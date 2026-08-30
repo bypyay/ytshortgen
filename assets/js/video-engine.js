@@ -919,6 +919,365 @@ const VideoEngine = (function() {
   // ══════════════════════════════════════════════════════════════════
   // Layer 5: 12-Zodiacs 1-Page All-in-One Poster / Video Mode
   // ══════════════════════════════════════════════════════════════════
+  function getPosterThemeConfig(theme) {
+    switch (theme) {
+      case 'bhojpatra':
+        return {
+          isDark: false,
+          drawBg: (ctx) => {
+            const bgGrad = ctx.createLinearGradient(0, 0, 0, CANVAS_HEIGHT);
+            bgGrad.addColorStop(0, '#fef3c7');
+            bgGrad.addColorStop(0.5, '#fde68a');
+            bgGrad.addColorStop(1, '#f59e0b');
+            ctx.fillStyle = bgGrad;
+            ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+            const rad = ctx.createRadialGradient(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, 200, CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, 1000);
+            rad.addColorStop(0, 'rgba(0,0,0,0)');
+            rad.addColorStop(1, 'rgba(120,53,15,0.18)');
+            ctx.fillStyle = rad;
+            ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+          },
+          outerBorder: '#78350f',
+          titleColor: '#78350f',
+          subColor: '#92400e',
+          brandColor: '#b45309',
+          dividerColor: 'rgba(120, 53, 15, 0.35)',
+          cardBg: '#fffbeb',
+          cardText: '#451a03',
+          pillBg: '#fef3c7',
+          pillBorder: '#b45309',
+          pillStars: '#b91c1c',
+          pillNum: '#78350f',
+          footerBg: '#fffbeb',
+          footerBorder: '#78350f',
+          footerText: '#78350f'
+        };
+      case 'newspaper':
+        return {
+          isDark: false,
+          drawBg: (ctx) => {
+            ctx.fillStyle = '#f8f4e9';
+            ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+          },
+          outerBorder: '#0f172a',
+          titleColor: '#0f172a',
+          subColor: '#334155',
+          brandColor: '#475569',
+          dividerColor: '#0f172a',
+          cardBg: '#ffffff',
+          cardText: '#0f172a',
+          pillBg: '#f1f5f9',
+          pillBorder: '#334155',
+          pillStars: '#dc2626',
+          pillNum: '#0f172a',
+          footerBg: '#ffffff',
+          footerBorder: '#0f172a',
+          footerText: '#0f172a'
+        };
+      case 'panchang':
+        return {
+          isDark: false,
+          drawBg: (ctx) => {
+            const bgGrad = ctx.createLinearGradient(0, 0, 0, CANVAS_HEIGHT);
+            bgGrad.addColorStop(0, '#fffbeb');
+            bgGrad.addColorStop(0.5, '#fef08a');
+            bgGrad.addColorStop(1, '#fde047');
+            ctx.fillStyle = bgGrad;
+            ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+          },
+          outerBorder: '#b45309',
+          titleColor: '#9a3412',
+          subColor: '#b45309',
+          brandColor: '#c2410c',
+          dividerColor: 'rgba(180, 83, 9, 0.35)',
+          cardBg: '#ffffff',
+          cardText: '#1c1917',
+          pillBg: '#fef3c7',
+          pillBorder: '#b45309',
+          pillStars: '#ea580c',
+          pillNum: '#78350f',
+          footerBg: '#ffffff',
+          footerBorder: '#b45309',
+          footerText: '#9a3412'
+        };
+      case 'banarasi':
+        return {
+          isDark: true,
+          drawBg: (ctx) => {
+            const bgGrad = ctx.createLinearGradient(0, 0, 0, CANVAS_HEIGHT);
+            bgGrad.addColorStop(0, '#4c0519');
+            bgGrad.addColorStop(0.5, '#881337');
+            bgGrad.addColorStop(1, '#2e020d');
+            ctx.fillStyle = bgGrad;
+            ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+            const rad = ctx.createRadialGradient(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, 50, CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, 900);
+            rad.addColorStop(0, 'rgba(251, 191, 36, 0.15)');
+            rad.addColorStop(1, 'rgba(0, 0, 0, 0.45)');
+            ctx.fillStyle = rad;
+            ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+          },
+          outerBorder: '#fbbf24',
+          titleColor: '#fef08a',
+          subColor: '#fde047',
+          brandColor: '#fbbf24',
+          dividerColor: 'rgba(251, 191, 36, 0.4)',
+          cardBg: '#2a040e',
+          cardText: '#ffffff',
+          pillBg: 'rgba(0, 0, 0, 0.65)',
+          pillBorder: '#fbbf24',
+          pillStars: '#f43f5e',
+          pillNum: '#fef08a',
+          footerBg: '#2a040e',
+          footerBorder: '#fbbf24',
+          footerText: '#fef08a'
+        };
+      case 'shiva':
+        return {
+          isDark: true,
+          drawBg: (ctx) => {
+            const bgGrad = ctx.createLinearGradient(0, 0, 0, CANVAS_HEIGHT);
+            bgGrad.addColorStop(0, '#082f49');
+            bgGrad.addColorStop(0.5, '#0369a1');
+            bgGrad.addColorStop(1, '#0c4a6e');
+            ctx.fillStyle = bgGrad;
+            ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+            const rad = ctx.createRadialGradient(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, 50, CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, 900);
+            rad.addColorStop(0, 'rgba(56, 189, 248, 0.15)');
+            rad.addColorStop(1, 'rgba(0, 0, 0, 0.45)');
+            ctx.fillStyle = rad;
+            ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+          },
+          outerBorder: '#38bdf8',
+          titleColor: '#e0f2fe',
+          subColor: '#7dd3fc',
+          brandColor: '#38bdf8',
+          dividerColor: 'rgba(56, 189, 248, 0.4)',
+          cardBg: '#081c2d',
+          cardText: '#ffffff',
+          pillBg: 'rgba(0, 0, 0, 0.65)',
+          pillBorder: '#38bdf8',
+          pillStars: '#38bdf8',
+          pillNum: '#e0f2fe',
+          footerBg: '#081c2d',
+          footerBorder: '#38bdf8',
+          footerText: '#e0f2fe'
+        };
+      case 'nature':
+        return {
+          isDark: true,
+          drawBg: (ctx) => {
+            const bgGrad = ctx.createLinearGradient(0, 0, 0, CANVAS_HEIGHT);
+            bgGrad.addColorStop(0, '#022c22');
+            bgGrad.addColorStop(0.5, '#065f46');
+            bgGrad.addColorStop(1, '#042f24');
+            ctx.fillStyle = bgGrad;
+            ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+            const rad = ctx.createRadialGradient(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, 50, CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, 900);
+            rad.addColorStop(0, 'rgba(52, 211, 153, 0.12)');
+            rad.addColorStop(1, 'rgba(0, 0, 0, 0.45)');
+            ctx.fillStyle = rad;
+            ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+          },
+          outerBorder: '#34d399',
+          titleColor: '#d1fae5',
+          subColor: '#a7f3d0',
+          brandColor: '#34d399',
+          dividerColor: 'rgba(52, 211, 153, 0.4)',
+          cardBg: '#03231b',
+          cardText: '#ffffff',
+          pillBg: 'rgba(0, 0, 0, 0.65)',
+          pillBorder: '#34d399',
+          pillStars: '#34d399',
+          pillNum: '#d1fae5',
+          footerBg: '#03231b',
+          footerBorder: '#34d399',
+          footerText: '#d1fae5'
+        };
+      case 'copper':
+        return {
+          isDark: true,
+          drawBg: (ctx) => {
+            const bgGrad = ctx.createLinearGradient(0, 0, 0, CANVAS_HEIGHT);
+            bgGrad.addColorStop(0, '#431407');
+            bgGrad.addColorStop(0.5, '#7c2d12');
+            bgGrad.addColorStop(1, '#2e0d05');
+            ctx.fillStyle = bgGrad;
+            ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+            const rad = ctx.createRadialGradient(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, 50, CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, 900);
+            rad.addColorStop(0, 'rgba(251, 146, 60, 0.12)');
+            rad.addColorStop(1, 'rgba(0, 0, 0, 0.45)');
+            ctx.fillStyle = rad;
+            ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+          },
+          outerBorder: '#fb923c',
+          titleColor: '#ffedd5',
+          subColor: '#fed7aa',
+          brandColor: '#fb923c',
+          dividerColor: 'rgba(251, 146, 60, 0.4)',
+          cardBg: '#210c05',
+          cardText: '#ffffff',
+          pillBg: 'rgba(0, 0, 0, 0.65)',
+          pillBorder: '#fb923c',
+          pillStars: '#fb923c',
+          pillNum: '#ffedd5',
+          footerBg: '#210c05',
+          footerBorder: '#fb923c',
+          footerText: '#ffedd5'
+        };
+      case 'obsidian':
+        return {
+          isDark: true,
+          drawBg: (ctx) => {
+            const bgGrad = ctx.createLinearGradient(0, 0, 0, CANVAS_HEIGHT);
+            bgGrad.addColorStop(0, '#030712');
+            bgGrad.addColorStop(0.5, '#0f172a');
+            bgGrad.addColorStop(1, '#000000');
+            ctx.fillStyle = bgGrad;
+            ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+            const rad = ctx.createRadialGradient(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, 50, CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, 900);
+            rad.addColorStop(0, 'rgba(245, 158, 11, 0.08)');
+            rad.addColorStop(1, 'rgba(0, 0, 0, 0.6)');
+            ctx.fillStyle = rad;
+            ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+          },
+          outerBorder: '#f59e0b',
+          titleColor: '#fef08a',
+          subColor: '#fbbf24',
+          brandColor: '#f59e0b',
+          dividerColor: 'rgba(245, 158, 11, 0.4)',
+          cardBg: '#0d131f',
+          cardText: '#f8fafc',
+          pillBg: 'rgba(0, 0, 0, 0.75)',
+          pillBorder: '#f59e0b',
+          pillStars: '#fbbf24',
+          pillNum: '#fef08a',
+          footerBg: '#0d131f',
+          footerBorder: '#f59e0b',
+          footerText: '#fef08a'
+        };
+      case 'saffron':
+        return {
+          isDark: true,
+          drawBg: (ctx) => {
+            const bgGrad = ctx.createLinearGradient(0, 0, 0, CANVAS_HEIGHT);
+            bgGrad.addColorStop(0, '#431407');
+            bgGrad.addColorStop(0.5, '#9a3412');
+            bgGrad.addColorStop(1, '#ea580c');
+            ctx.fillStyle = bgGrad;
+            ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+            const rad = ctx.createRadialGradient(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, 50, CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, 900);
+            rad.addColorStop(0, 'rgba(253, 224, 71, 0.12)');
+            rad.addColorStop(1, 'rgba(0, 0, 0, 0.45)');
+            ctx.fillStyle = rad;
+            ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+          },
+          outerBorder: '#fde047',
+          titleColor: '#fef08a',
+          subColor: '#fed7aa',
+          brandColor: '#fde047',
+          dividerColor: 'rgba(253, 224, 71, 0.4)',
+          cardBg: '#2d0f04',
+          cardText: '#ffffff',
+          pillBg: 'rgba(0, 0, 0, 0.65)',
+          pillBorder: '#fde047',
+          pillStars: '#fb923c',
+          pillNum: '#fef08a',
+          footerBg: '#2d0f04',
+          footerBorder: '#fde047',
+          footerText: '#fef08a'
+        };
+      case 'cosmic':
+        return {
+          isDark: true,
+          drawBg: (ctx) => {
+            const bgGrad = ctx.createLinearGradient(0, 0, 0, CANVAS_HEIGHT);
+            bgGrad.addColorStop(0, '#1e1b4b');
+            bgGrad.addColorStop(0.5, '#312e81');
+            bgGrad.addColorStop(1, '#0f172a');
+            ctx.fillStyle = bgGrad;
+            ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+            const rad = ctx.createRadialGradient(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, 50, CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, 900);
+            rad.addColorStop(0, 'rgba(192, 132, 252, 0.15)');
+            rad.addColorStop(1, 'rgba(0, 0, 0, 0.5)');
+            ctx.fillStyle = rad;
+            ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+          },
+          outerBorder: '#c084fc',
+          titleColor: '#f5d0fe',
+          subColor: '#e9d5ff',
+          brandColor: '#c084fc',
+          dividerColor: 'rgba(192, 132, 252, 0.4)',
+          cardBg: '#131131',
+          cardText: '#ffffff',
+          pillBg: 'rgba(0, 0, 0, 0.65)',
+          pillBorder: '#c084fc',
+          pillStars: '#e879f9',
+          pillNum: '#f5d0fe',
+          footerBg: '#131131',
+          footerBorder: '#c084fc',
+          footerText: '#f5d0fe'
+        };
+      case 'cyber':
+        return {
+          isDark: true,
+          drawBg: (ctx) => {
+            const bgGrad = ctx.createLinearGradient(0, 0, 0, CANVAS_HEIGHT);
+            bgGrad.addColorStop(0, '#020617');
+            bgGrad.addColorStop(0.5, '#0f172a');
+            bgGrad.addColorStop(1, '#042f2e');
+            ctx.fillStyle = bgGrad;
+            ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+            const rad = ctx.createRadialGradient(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, 50, CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, 900);
+            rad.addColorStop(0, 'rgba(34, 211, 238, 0.12)');
+            rad.addColorStop(1, 'rgba(0, 0, 0, 0.55)');
+            ctx.fillStyle = rad;
+            ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+          },
+          outerBorder: '#22d3ee',
+          titleColor: '#67e8f9',
+          subColor: '#a5f3fc',
+          brandColor: '#22d3ee',
+          dividerColor: 'rgba(34, 211, 238, 0.4)',
+          cardBg: '#050f1a',
+          cardText: '#f1f5f9',
+          pillBg: 'rgba(0, 0, 0, 0.75)',
+          pillBorder: '#22d3ee',
+          pillStars: '#22d3ee',
+          pillNum: '#67e8f9',
+          footerBg: '#050f1a',
+          footerBorder: '#22d3ee',
+          footerText: '#67e8f9'
+        };
+      case 'gold':
+      default:
+        return {
+          isDark: false,
+          drawBg: (ctx) => {
+            const bgGrad = ctx.createLinearGradient(0, 0, 0, CANVAS_HEIGHT);
+            bgGrad.addColorStop(0, '#fffdf5');
+            bgGrad.addColorStop(0.5, '#fef3c7');
+            bgGrad.addColorStop(1, '#fde68a');
+            ctx.fillStyle = bgGrad;
+            ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+          },
+          outerBorder: '#d97706',
+          titleColor: '#991b1b',
+          subColor: '#1e293b',
+          brandColor: '#d97706',
+          dividerColor: 'rgba(217, 119, 6, 0.3)',
+          cardBg: '#ffffff',
+          cardText: '#0f172a',
+          pillBg: '#fff1f2',
+          pillBorder: '#f43f5e',
+          pillStars: '#e11d48',
+          pillNum: '#1e293b',
+          footerBg: '#ffffff',
+          footerBorder: '#dc2626',
+          footerText: '#1e293b'
+        };
+    }
+  }
+
   function drawPosterLayout(time) {
     const signs = (typeof ContentScraper !== 'undefined') ? ContentScraper.ZODIAC_SIGNS : [];
     const targetDate = parseDateSafe(projectData.targetDate);
@@ -926,40 +1285,13 @@ const VideoEngine = (function() {
     const months = ['जनवरी', 'फरवरी', 'मार्च', 'अप्रैल', 'मई', 'जून', 'जुलाई', 'अगस्त', 'सितंबर', 'अक्टूबर', 'नवंबर', 'दिसंबर'];
     const dateStr = `${targetDate.getDate()} ${months[targetDate.getMonth()]} ${targetDate.getFullYear()} ${days[targetDate.getDay()]}`;
 
-    const isNewspaper = projectData.theme === 'newspaper';
-    const isBhojpatra = projectData.theme === 'bhojpatra';
-    const isPanchang = projectData.theme === 'panchang';
+    const conf = getPosterThemeConfig(projectData.theme || 'gold');
 
-    // 1. Poster Canvas Background (Paper/Parchment or Classic White)
-    if (isNewspaper) {
-      ctx.fillStyle = '#f8f4e9';
-      ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-      ctx.strokeStyle = '#1e293b';
-      ctx.lineWidth = 5;
-      ctx.strokeRect(18, 18, CANVAS_WIDTH - 36, CANVAS_HEIGHT - 36);
-    } else if (isBhojpatra) {
-      const bgGrad = ctx.createLinearGradient(0, 0, 0, CANVAS_HEIGHT);
-      bgGrad.addColorStop(0, '#fef3c7');
-      bgGrad.addColorStop(0.5, '#fde68a');
-      bgGrad.addColorStop(1, '#f59e0b');
-      ctx.fillStyle = bgGrad;
-      ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-      ctx.strokeStyle = '#78350f';
-      ctx.lineWidth = 5;
-      ctx.strokeRect(18, 18, CANVAS_WIDTH - 36, CANVAS_HEIGHT - 36);
-    } else if (isPanchang) {
-      ctx.fillStyle = '#fffbeb';
-      ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-      ctx.strokeStyle = '#b45309';
-      ctx.lineWidth = 5;
-      ctx.strokeRect(18, 18, CANVAS_WIDTH - 36, CANVAS_HEIGHT - 36);
-    } else {
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-      ctx.strokeStyle = '#991b1b';
-      ctx.lineWidth = 5;
-      ctx.strokeRect(18, 18, CANVAS_WIDTH - 36, CANVAS_HEIGHT - 36);
-    }
+    // 1. Poster Canvas Background (Dynamic 12 Themes)
+    conf.drawBg(ctx);
+    ctx.strokeStyle = conf.outerBorder;
+    ctx.lineWidth = 5;
+    ctx.strokeRect(18, 18, CANVAS_WIDTH - 36, CANVAS_HEIGHT - 36);
 
     // 2. Top Header Title
     let posterTitle = 'आज का राशिफल';
@@ -974,18 +1306,18 @@ const VideoEngine = (function() {
 
     ctx.save();
     ctx.font = '900 80px "Noto Sans Devanagari", "Yatra One", sans-serif';
-    ctx.fillStyle = isNewspaper ? '#0f172a' : '#111827';
+    ctx.fillStyle = conf.titleColor;
     ctx.textAlign = 'center';
     ctx.fillText(posterTitle, CANVAS_WIDTH / 2, 95);
 
     // Period Subheading
     ctx.font = '800 40px "Noto Sans Devanagari", sans-serif';
-    ctx.fillStyle = '#1e293b';
+    ctx.fillStyle = conf.subColor;
     ctx.fillText(getFormattedPeriodString(false), CANVAS_WIDTH / 2, 165);
 
     // Channel Brand / Watermark Badge (Top Right)
     ctx.font = '800 28px "Plus Jakarta Sans", sans-serif';
-    ctx.fillStyle = '#d97706';
+    ctx.fillStyle = conf.brandColor;
     ctx.textAlign = 'right';
     ctx.fillText(projectData.channelName || '@DailyRashifal', CANVAS_WIDTH - 40, 80);
     ctx.restore();
@@ -994,7 +1326,7 @@ const VideoEngine = (function() {
     ctx.beginPath();
     ctx.moveTo(40, 195);
     ctx.lineTo(CANVAS_WIDTH - 40, 195);
-    ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)';
+    ctx.strokeStyle = conf.dividerColor;
     ctx.lineWidth = 2;
     ctx.stroke();
 
@@ -1007,7 +1339,7 @@ const VideoEngine = (function() {
     const boxW = Math.floor((CANVAS_WIDTH - (startX * 2) - (gapX * (colCount - 1))) / colCount); // ~326px
     const boxH = 372;
 
-    const cardColors = [
+    const lightCardColors = [
       { border: '#dc2626', header: '#b91c1c' }, // Red (Aries)
       { border: '#2563eb', header: '#1d4ed8' }, // Blue (Taurus)
       { border: '#0284c7', header: '#0369a1' }, // Sky (Gemini)
@@ -1022,6 +1354,23 @@ const VideoEngine = (function() {
       { border: '#0284c7', header: '#0369a1' }  // Ocean (Pisces)
     ];
 
+    const darkCardColors = [
+      { border: '#f87171', header: '#fca5a5' }, // Red (Aries)
+      { border: '#60a5fa', header: '#93c5fd' }, // Blue (Taurus)
+      { border: '#38bdf8', header: '#7dd3fc' }, // Sky (Gemini)
+      { border: '#f87171', header: '#fca5a5' }, // Red (Cancer)
+      { border: '#fbbf24', header: '#fde047' }, // Orange (Leo)
+      { border: '#34d399', header: '#6ee7b7' }, // Green (Virgo)
+      { border: '#c084fc', header: '#e9d5ff' }, // Purple (Libra)
+      { border: '#f87171', header: '#fca5a5' }, // Red (Scorpio)
+      { border: '#60a5fa', header: '#93c5fd' }, // Blue (Sagittarius)
+      { border: '#34d399', header: '#6ee7b7' }, // Green (Capricorn)
+      { border: '#f87171', header: '#fca5a5' }, // Maroon (Aquarius)
+      { border: '#38bdf8', header: '#7dd3fc' }  // Ocean (Pisces)
+    ];
+
+    const cardColors = conf.isDark ? darkCardColors : lightCardColors;
+
     for (let i = 0; i < signs.length; i++) {
       const sign = signs[i];
       const col = i % colCount;
@@ -1035,7 +1384,7 @@ const VideoEngine = (function() {
       // Draw Card Base Box
       ctx.save();
       roundRect(ctx, x, y, boxW, boxH, 16);
-      ctx.fillStyle = '#ffffff';
+      ctx.fillStyle = conf.cardBg;
       ctx.fill();
       ctx.strokeStyle = colorScheme.border;
       ctx.lineWidth = 3.5;
@@ -1071,7 +1420,7 @@ const VideoEngine = (function() {
       ctx.beginPath();
       ctx.moveTo(x + 12, y + 66);
       ctx.lineTo(x + boxW - 12, y + 66);
-      ctx.strokeStyle = 'rgba(0, 0, 0, 0.12)';
+      ctx.strokeStyle = conf.isDark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.12)';
       ctx.lineWidth = 1.5;
       ctx.stroke();
 
@@ -1094,7 +1443,7 @@ const VideoEngine = (function() {
       }
 
       ctx.font = `700 ${effectiveFontSize}px "Noto Sans Devanagari", sans-serif`;
-      ctx.fillStyle = '#0f172a'; // Bold deep black-navy for maximum readability
+      ctx.fillStyle = conf.cardText;
       ctx.textAlign = 'left';
       ctx.textBaseline = 'top';
 
@@ -1118,7 +1467,7 @@ const VideoEngine = (function() {
       const pillY = y + boxH - 52;
       const pillH = 40;
       roundRect(ctx, x + 10, pillY, boxW - 20, pillH, 10);
-      ctx.fillStyle = 'rgba(248, 250, 252, 0.95)';
+      ctx.fillStyle = conf.pillBg;
       ctx.fill();
       ctx.strokeStyle = colorScheme.border;
       ctx.lineWidth = 1.2;
@@ -1126,14 +1475,14 @@ const VideoEngine = (function() {
 
       // Love star badge on left
       ctx.font = '800 21px "Noto Sans Devanagari", sans-serif';
-      ctx.fillStyle = '#e11d48';
+      ctx.fillStyle = conf.pillStars;
       ctx.textAlign = 'left';
       ctx.textBaseline = 'middle';
       ctx.fillText(`❤️ प्रेम: ${starStr}`, x + 18, pillY + pillH / 2);
 
       // Lucky Number on right
       ctx.font = '800 20px "Noto Sans Devanagari", sans-serif';
-      ctx.fillStyle = '#1e293b';
+      ctx.fillStyle = conf.pillNum;
       ctx.textAlign = 'right';
       ctx.fillText(`🔢 अंक: ${signData.luckyNumber || 7}`, x + boxW - 18, pillY + pillH / 2);
       ctx.restore();
@@ -1150,15 +1499,15 @@ const VideoEngine = (function() {
 
     // Outer Card Container
     roundRect(ctx, footX, footY, footW, footH, 20);
-    ctx.fillStyle = '#ffffff';
+    ctx.fillStyle = conf.footerBg;
     ctx.fill();
-    ctx.strokeStyle = '#dc2626';
+    ctx.strokeStyle = conf.footerBorder;
     ctx.lineWidth = 3;
     ctx.stroke();
 
     // Left Prompt Text (Fits neatly inside left area)
     ctx.font = '800 30px "Noto Sans Devanagari", sans-serif';
-    ctx.fillStyle = '#1e293b';
+    ctx.fillStyle = conf.footerText;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
     ctx.fillText('🔔 सबसे पहले सटीक राशिफल के लिए', footX + 24, footY + footH / 2);

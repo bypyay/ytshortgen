@@ -587,12 +587,30 @@ const TemplateEngine = (function() {
       });
     }
 
-    // Theme Swatches
+    // Theme Swatches (Right Panel)
     document.querySelectorAll('.theme-swatch').forEach(swatch => {
       swatch.addEventListener('click', () => {
+        const theme = swatch.getAttribute('data-theme');
         document.querySelectorAll('.theme-swatch').forEach(s => s.classList.remove('active'));
         swatch.classList.add('active');
-        const theme = swatch.getAttribute('data-theme');
+        document.querySelectorAll('.poster-theme-chip').forEach(c => {
+          if (c.getAttribute('data-theme') === theme) c.classList.add('active');
+          else c.classList.remove('active');
+        });
+        VideoEngine.setTheme(theme);
+      });
+    });
+
+    // Poster Theme Chips (Center Stage)
+    document.querySelectorAll('.poster-theme-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const theme = chip.getAttribute('data-theme');
+        document.querySelectorAll('.poster-theme-chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        document.querySelectorAll('.theme-swatch').forEach(s => {
+          if (s.getAttribute('data-theme') === theme) s.classList.add('active');
+          else s.classList.remove('active');
+        });
         VideoEngine.setTheme(theme);
       });
     });
