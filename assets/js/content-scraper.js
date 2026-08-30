@@ -27,6 +27,7 @@ const ContentScraper = (function() {
 
   // Popular Pre-configured Sources
   const POPULAR_SOURCES = [
+    { name: '🚀 AstroSage (अगले सप्ताह)', url: 'https://www.astrosage.com/rashifal/agla-saptahik-rashifal/' },
     { name: '🕉️ AstroSage (कल का राशिफल)', url: 'https://www.astrosage.com/rashifal/kal-ka-rashifal.asp' },
     { name: '🌟 AstroSage (आज का राशिफल)', url: 'https://www.astrosage.com/rashifal/aaj-ka-rashifal.asp' },
     { name: '🔴 Aaj Tak Rashifal', url: 'https://www.aajtak.in/astrology/rashifal' },
@@ -226,6 +227,99 @@ const ContentScraper = (function() {
   }
 
   // ══════════════════════════════════════════════════════════════════
+  // Dedicated AstroSage Agla Saptahik (Next Week) Crawler
+  // ══════════════════════════════════════════════════════════════════
+  const AGLA_SAPTAHIK_SLUGS = {
+    aries: 'mesh',
+    taurus: 'vrishabha',
+    gemini: 'mithun',
+    cancer: 'kark',
+    leo: 'singh',
+    virgo: 'kanya',
+    libra: 'tula',
+    scorpio: 'vrishchik',
+    sagittarius: 'dhanu',
+    capricorn: 'makar',
+    aquarius: 'kumbha',
+    pisces: 'meen'
+  };
+
+  function extractAglaSaptahikParagraph(text) {
+    if (!text) return '';
+    const paragraphs = text.split('\n\n').filter(p => {
+      if (p.includes('[दैनिक]') || p.includes('ज्योतिषियों के साथ') || p.includes('टैरो साप्ताहिक') || p.includes('Vedic Astrology')) return false;
+      const hindiChars = (p.match(/[\u0900-\u097F]/g) || []).length;
+      return hindiChars > 60;
+    });
+    if (paragraphs.length > 0) {
+      return paragraphs[0].replace(/\[[^\]]*\]\([^\)]*\)/g, ' ').replace(/[\*\_]/g, ' ').replace(/\s+/g, ' ').trim();
+    }
+    return '';
+  }
+
+  async function scrapeAstroSageAglaSaptahik(url) {
+    const results = {};
+
+    for (let i = 0; i < ZODIAC_SIGNS.length; i += 2) {
+      const chunk = ZODIAC_SIGNS.slice(i, i + 2);
+      await Promise.all(chunk.map(async (sign) => {
+        const slug = AGLA_SAPTAHIK_SLUGS[sign.id] || sign.astroSlug;
+        const signUrl = `https://www.astrosage.com/rashifal/agla-saptahik-rashifal/agla-saptahik-${slug}-rashifal.asp`;
+        try {
+          const content = await fetchCleanContent(signUrl);
+          if (content && content.length > 300) {
+            const pred = extractAglaSaptahikParagraph(content);
+            if (pred && pred.length > 50) {
+              const daySeed = new Date().getFullYear() * 10000 + (new Date().getMonth() + 1) * 100 + new Date().getDate();
+              const signIndex = ZODIAC_SIGNS.findIndex(s => s.id === sign.id);
+              const luckyColor = LUCKY_COLORS[Math.floor(Math.random() * LUCKY_COLORS.length)];
+              const luckyNumber = Math.floor(Math.random() * 9) + 1;
+              const luckPercent = Math.floor(Math.random() * 22) + 76;
+              const upay = UPAY_BANK[(daySeed + signIndex) % UPAY_BANK.length];
+
+              results[sign.id] = {
+                id: sign.id,
+                signId: sign.id,
+                nameHi: sign.nameHi,
+                signNameHi: sign.nameHi,
+                nameEn: sign.nameEn,
+                signNameEn: sign.nameEn,
+                symbol: sign.symbol,
+                lord: sign.lord,
+                element: sign.element,
+                luckyColor: luckyColor,
+                luckyNumber: luckyNumber,
+                luckPercent: luckPercent,
+                prediction: pred,
+                upay: upay,
+                ratings: { health: 4, wealth: 5, family: 4, love: 4, business: 5, marriage: 4 },
+                isScraped: true
+              };
+            }
+          }
+        } catch (e) {
+          console.warn(`Could not scrape agla-saptahik ${sign.id}:`, e);
+        }
+      }));
+      await new Promise(r => setTimeout(r, 200));
+    }
+
+    // Ensure all 12 signs have rich content
+    ZODIAC_SIGNS.forEach(sign => {
+      if (!results[sign.id] || !results[sign.id].prediction || results[sign.id].prediction.length < 25) {
+        results[sign.id] = generateDailySignData(sign, new Date(), 'detailed', 'weekly');
+      }
+    });
+
+    const scrapedCount = Object.values(results).filter(s => s && s.prediction).length;
+    if (scrapedCount === 0) {
+      throw new Error('अगले सप्ताह का राशिफल फेच नहीं हो सका। कृपया लिंक जांचें या "📋 पेस्ट टेक्स्ट" का उपयोग करें।');
+    }
+
+    return results;
+  }
+
+  // ══════════════════════════════════════════════════════════════════
   // 3. Multi-Source Scraping Controller
   // ══════════════════════════════════════════════════════════════════
   async function scrapeMultipleUrls(urlsArray) {
@@ -234,7 +328,13 @@ const ContentScraper = (function() {
       throw new Error('कृपया कम से कम एक वैध वेबसाइट लिंक (URL) दर्ज करें।');
     }
 
-    // Check if any URL is AstroSage
+    // Check if URL is AstroSage Agla Saptahik (Next Week)
+    const aglaSaptahikUrl = validUrls.find(u => u.includes('agla-saptahik'));
+    if (aglaSaptahikUrl) {
+      return await scrapeAstroSageAglaSaptahik(aglaSaptahikUrl);
+    }
+
+    // Check if any URL is AstroSage Daily / General
     const astroSageUrl = validUrls.find(u => u.includes('astrosage.com'));
     if (astroSageUrl) {
       return await scrapeAstroSage(astroSageUrl);

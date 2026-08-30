@@ -755,7 +755,7 @@ const TemplateEngine = (function() {
         if (currentHorizon === 'daily') {
           firstUrlInp.value = currentSubPeriod === 'today' ? 'https://www.astrosage.com/rashifal/aaj-ka-rashifal.asp' : 'https://www.astrosage.com/rashifal/kal-ka-rashifal.asp';
         } else if (currentHorizon === 'weekly') {
-          firstUrlInp.value = 'https://www.astrosage.com/rashifal/saptahik/mesh-rashifal.asp';
+          firstUrlInp.value = 'https://www.astrosage.com/rashifal/agla-saptahik-rashifal/';
         } else if (currentHorizon === 'monthly') {
           firstUrlInp.value = 'https://www.astrosage.com/rashifal/mesh-masik-rashifal.asp';
         } else if (currentHorizon === 'yearly') {
