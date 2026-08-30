@@ -695,68 +695,151 @@ const TemplateEngine = (function() {
     setupMobileTabs();
   }
 
+  let currentHorizon = 'daily'; // 'daily' | 'weekly' | 'monthly' | 'yearly'
+  let currentSubPeriod = 'tomorrow'; // 'today' | 'tomorrow' | 'this_week' | 'next_week' | 'this_month' | 'next_month' | 'this_year' | 'next_year'
+
   function setupDateControls() {
-    const radioTomorrow = document.getElementById('dateModeTomorrow');
-    const radioToday = document.getElementById('dateModeToday');
-    const radioCustom = document.getElementById('dateModeCustom');
+    const horizonButtons = document.querySelectorAll('.horizon-btn');
+    const horizonBadge = document.getElementById('currentHorizonBadge');
+    const txtActiveDisplay = document.getElementById('txtActivePeriodDisplay');
     const inpCustomDate = document.getElementById('inpCustomDate');
 
-    const updateDate = () => {
-      if (radioTomorrow && radioTomorrow.checked) {
-        selectedDateMode = 'tomorrow';
-        targetDateObj = new Date(Date.now() + 86400000);
-        if (inpCustomDate) inpCustomDate.style.display = 'none';
-
-        // Update default URL to kal-ka-rashifal
-        const firstUrlInp = document.querySelector('.source-url-input');
-        if (firstUrlInp && firstUrlInp.value.includes('astrosage.com')) {
-          firstUrlInp.value = 'https://www.astrosage.com/rashifal/kal-ka-rashifal.asp';
-        }
-      } else if (radioToday && radioToday.checked) {
-        selectedDateMode = 'today';
-        targetDateObj = new Date();
-        if (inpCustomDate) inpCustomDate.style.display = 'none';
-
-        // Update default URL to aaj-ka-rashifal
-        const firstUrlInp = document.querySelector('.source-url-input');
-        if (firstUrlInp && firstUrlInp.value.includes('astrosage.com')) {
-          firstUrlInp.value = 'https://www.astrosage.com/rashifal/aaj-ka-rashifal.asp';
-        }
-      } else if (radioCustom && radioCustom.checked) {
-        selectedDateMode = 'custom';
-        if (inpCustomDate) {
-          inpCustomDate.style.display = 'block';
-          if (inpCustomDate.value) {
-            targetDateObj = new Date(inpCustomDate.value);
+    const updateHorizonAndPeriod = () => {
+      // 1. Calculate targetDateObj based on currentHorizon & currentSubPeriod
+      if (currentHorizon === 'daily') {
+        if (currentSubPeriod === 'tomorrow') {
+          targetDateObj = new Date(Date.now() + 86400000);
+          if (inpCustomDate) inpCustomDate.style.display = 'none';
+        } else if (currentSubPeriod === 'today') {
+          targetDateObj = new Date();
+          if (inpCustomDate) inpCustomDate.style.display = 'none';
+        } else if (currentSubPeriod === 'custom') {
+          if (inpCustomDate) {
+            inpCustomDate.style.display = 'block';
+            if (inpCustomDate.value) targetDateObj = new Date(inpCustomDate.value);
           }
+        }
+      } else if (currentHorizon === 'weekly') {
+        if (currentSubPeriod === 'this_week') {
+          targetDateObj = new Date();
+        } else if (currentSubPeriod === 'next_week') {
+          targetDateObj = new Date(Date.now() + 7 * 86400000);
+        }
+      } else if (currentHorizon === 'monthly') {
+        if (currentSubPeriod === 'this_month') {
+          targetDateObj = new Date();
+        } else if (currentSubPeriod === 'next_month') {
+          const now = new Date();
+          targetDateObj = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+        }
+      } else if (currentHorizon === 'yearly') {
+        if (currentSubPeriod === 'this_year') {
+          targetDateObj = new Date(2026, 0, 1);
+        } else if (currentSubPeriod === 'next_year') {
+          targetDateObj = new Date(2027, 0, 1);
         }
       }
 
+      // 2. Update Video Engine State
       const isoDate = targetDateObj.toISOString().slice(0, 10);
-      VideoEngine.setTargetDate(isoDate);
-      currentSignsData = ContentScraper.generateAllDailySigns(targetDateObj, currentLengthMode);
-      VideoEngine.setAllSignsData(currentSignsData);
+      VideoEngine.setHorizon(currentHorizon, currentSubPeriod, isoDate);
+
+      // 3. Update Text Display Badge in Left Panel
+      if (txtActiveDisplay) {
+        txtActiveDisplay.textContent = VideoEngine.getFormattedPeriodString(false);
+      }
+
+      // 4. Update default URL row placeholder/value for convenience
+      const firstUrlInp = document.querySelector('.source-url-input');
+      if (firstUrlInp && firstUrlInp.value.includes('astrosage.com')) {
+        if (currentHorizon === 'daily') {
+          firstUrlInp.value = currentSubPeriod === 'today' ? 'https://www.astrosage.com/rashifal/aaj-ka-rashifal.asp' : 'https://www.astrosage.com/rashifal/kal-ka-rashifal.asp';
+        } else if (currentHorizon === 'weekly') {
+          firstUrlInp.value = 'https://www.astrosage.com/rashifal/saptahik/mesh-rashifal.asp';
+        } else if (currentHorizon === 'monthly') {
+          firstUrlInp.value = 'https://www.astrosage.com/rashifal/mesh-masik-rashifal.asp';
+        } else if (currentHorizon === 'yearly') {
+          firstUrlInp.value = currentSubPeriod === 'next_year' ? 'https://www.astrosage.com/2027/mesh-rashifal-2027.asp' : 'https://www.astrosage.com/2026/mesh-rashifal-2026.asp';
+        }
+      }
+
+      // 5. Update local sign dataset if not scraped
+      const hasScraped = Object.values(currentSignsData).some(s => s && s.isScraped);
+      if (!hasScraped) {
+        currentSignsData = ContentScraper.generateAllDailySigns(targetDateObj, currentLengthMode);
+        VideoEngine.setAllSignsData(currentSignsData);
+      }
       loadSignIntoStudio(selectedSignId);
     };
 
-    [radioTomorrow, radioToday, radioCustom].forEach(r => {
-      if (r) r.addEventListener('change', updateDate);
+    // Horizon Button Click Handlers
+    horizonButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        horizonButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentHorizon = btn.getAttribute('data-horizon');
+
+        // Update Horizon Badge
+        const horizonLabels = {
+          daily: 'दैनिक',
+          weekly: 'साप्ताहिक',
+          monthly: 'मासिक',
+          yearly: 'वार्षिक'
+        };
+        if (horizonBadge) horizonBadge.textContent = horizonLabels[currentHorizon] || 'दैनिक';
+
+        // Toggle subperiod panels
+        const pnlDaily = document.getElementById('subperiodDaily');
+        const pnlWeekly = document.getElementById('subperiodWeekly');
+        const pnlMonthly = document.getElementById('subperiodMonthly');
+        const pnlYearly = document.getElementById('subperiodYearly');
+
+        if (pnlDaily) pnlDaily.style.display = currentHorizon === 'daily' ? 'block' : 'none';
+        if (pnlWeekly) pnlWeekly.style.display = currentHorizon === 'weekly' ? 'block' : 'none';
+        if (pnlMonthly) pnlMonthly.style.display = currentHorizon === 'monthly' ? 'block' : 'none';
+        if (pnlYearly) pnlYearly.style.display = currentHorizon === 'yearly' ? 'block' : 'none';
+
+        // Set default subperiod for selected horizon
+        if (currentHorizon === 'daily') currentSubPeriod = 'tomorrow';
+        else if (currentHorizon === 'weekly') currentSubPeriod = 'this_week';
+        else if (currentHorizon === 'monthly') currentSubPeriod = 'this_month';
+        else if (currentHorizon === 'yearly') currentSubPeriod = 'this_year';
+
+        updateHorizonAndPeriod();
+      });
     });
 
+    // Subperiod Radio Change Listeners
+    ['dailySubMode', 'weeklySubMode', 'monthlySubMode', 'yearlySubMode'].forEach(groupName => {
+      document.querySelectorAll(`input[name="${groupName}"]`).forEach(radio => {
+        radio.addEventListener('change', (e) => {
+          if (e.target.checked) {
+            currentSubPeriod = e.target.value;
+            updateHorizonAndPeriod();
+          }
+        });
+      });
+    });
+
+    // Date radio pill click delegates
     document.querySelectorAll('.date-radio-pill').forEach(pill => {
       pill.addEventListener('click', () => {
         const radio = pill.querySelector('input[type="radio"]');
         if (radio) {
           radio.checked = true;
-          updateDate();
+          currentSubPeriod = radio.value;
+          updateHorizonAndPeriod();
         }
       });
     });
 
     if (inpCustomDate) {
       inpCustomDate.value = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
-      inpCustomDate.addEventListener('change', updateDate);
+      inpCustomDate.addEventListener('change', updateHorizonAndPeriod);
     }
+
+    // Initial run
+    updateHorizonAndPeriod();
 
     // BGM Volume Slider
     const volSlider = document.getElementById('bgmVolumeSlider');

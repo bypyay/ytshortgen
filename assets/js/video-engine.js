@@ -38,6 +38,8 @@ const VideoEngine = (function() {
     theme: 'gold', // 'gold', 'cosmic', 'devotional', 'cyber', 'royal', 'minimal'
     fontFamily: 'Noto Sans Devanagari',
     targetDate: new Date(Date.now() + 86400000).toISOString().slice(0, 10), // Tomorrow by default
+    horizonType: 'daily', // 'daily' | 'weekly' | 'monthly' | 'yearly'
+    subPeriod: 'tomorrow', // 'today' | 'tomorrow' | 'this_week' | 'next_week' | 'this_month' | 'next_month' | 'this_year' | 'next_year'
     bgmVolume: 0.85, // rich spiritual sound
     sign: {
       id: 'aries',
@@ -358,47 +360,94 @@ const VideoEngine = (function() {
     ctx.restore();
   }
 
+  // Helper to format period string based on horizon type
+  function getFormattedPeriodString(withOm = true) {
+    const targetDate = parseDateSafe(projectData.targetDate);
+    const days = ['रविवार', 'सोमवार', 'मंगलवार', 'बुधवार', 'गुरुवार', 'शुक्रवार', 'शनिवार'];
+    const months = ['जनवरी', 'फरवरी', 'मार्च', 'अप्रैल', 'मई', 'जून', 'जुलाई', 'अगस्त', 'सितंबर', 'अक्टूबर', 'नवंबर', 'दिसंबर'];
+
+    let str = '';
+    const horizon = projectData.horizonType || 'daily';
+
+    if (horizon === 'weekly') {
+      const start = new Date(targetDate);
+      const dayOfWeek = start.getDay() === 0 ? 6 : start.getDay() - 1; // Mon = 0
+      start.setDate(start.getDate() - dayOfWeek);
+      const end = new Date(start);
+      end.setDate(end.getDate() + 6);
+
+      const startPad = String(start.getDate()).padStart(2, '0');
+      const endPad = String(end.getDate()).padStart(2, '0');
+      str = `${startPad} ${months[start.getMonth()]} – ${endPad} ${months[end.getMonth()]} ${end.getFullYear()}`;
+    } else if (horizon === 'monthly') {
+      str = `${months[targetDate.getMonth()]} ${targetDate.getFullYear()}`;
+    } else if (horizon === 'yearly') {
+      str = `वर्ष ${targetDate.getFullYear()}`;
+    } else {
+      str = `${days[targetDate.getDay()]}, ${targetDate.getDate()} ${months[targetDate.getMonth()]} ${targetDate.getFullYear()}`;
+    }
+
+    return withOm ? `🕉️ ${str} 🪔` : str;
+  }
+
   // Layer 2: Ornate Top Header Banner
   function drawOrnateHeader(time) {
     const sign = projectData.sign;
 
-    // Top Date Bar
+    // Top Header Container Box
     ctx.save();
     ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
-    roundRect(ctx, 80, 70, CANVAS_WIDTH - 160, 90, 24);
+    roundRect(ctx, 60, 42, CANVAS_WIDTH - 120, 144, 26);
     ctx.fill();
-    ctx.strokeStyle = 'rgba(245, 158, 11, 0.4)';
+    ctx.strokeStyle = 'rgba(245, 158, 11, 0.45)';
     ctx.lineWidth = 2.5;
     ctx.stroke();
 
-    // Date & Day Text
-    const targetDate = parseDateSafe(projectData.targetDate);
-    const days = ['रविवार', 'सोमवार', 'मंगलवार', 'बुधवार', 'गुरुवार', 'शुक्रवार', 'शनिवार'];
-    const months = ['जनवरी', 'फरवरी', 'मार्च', 'अप्रैल', 'मई', 'जून', 'जुलाई', 'अगस्त', 'सितंबर', 'अक्टूबर', 'नवंबर', 'दिसंबर'];
-    const dateStr = `🕉️ ${days[targetDate.getDay()]}, ${targetDate.getDate()} ${months[targetDate.getMonth()]} ${targetDate.getFullYear()} 🪔`;
+    // 1. Main Header Title (Prominently displays "आज का राशिफल" / "साप्ताहिक राशिफल" / etc.)
+    let headerTitle = '✨ आज का राशिफल ✨';
+    const horizon = projectData.horizonType || 'daily';
+    if (horizon === 'weekly') {
+      headerTitle = '✨ साप्ताहिक राशिफल ✨';
+    } else if (horizon === 'monthly') {
+      headerTitle = '✨ मासिक राशिफल ✨';
+    } else if (horizon === 'yearly') {
+      headerTitle = '✨ वार्षिक राशिफल ✨';
+    }
 
-    ctx.font = '800 36px "Noto Sans Devanagari", sans-serif';
-    ctx.fillStyle = '#fbbf24';
+    ctx.font = '900 52px "Noto Sans Devanagari", "Yatra One", sans-serif';
+    const grad = ctx.createLinearGradient(CANVAS_WIDTH / 2 - 200, 0, CANVAS_WIDTH / 2 + 200, 0);
+    grad.addColorStop(0, '#fef08a');
+    grad.addColorStop(0.5, '#fbbf24');
+    grad.addColorStop(1, '#f59e0b');
+    ctx.fillStyle = grad;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(dateStr, CANVAS_WIDTH / 2, 115);
+    ctx.shadowColor = 'rgba(245, 158, 11, 0.6)';
+    ctx.shadowBlur = 12;
+    ctx.fillText(headerTitle, CANVAS_WIDTH / 2, 88);
+
+    // 2. Subheading Period / Date string
+    ctx.font = '700 32px "Noto Sans Devanagari", sans-serif';
+    ctx.fillStyle = '#fef08a';
+    ctx.shadowBlur = 0;
+    ctx.fillText(getFormattedPeriodString(true), CANVAS_WIDTH / 2, 146);
     ctx.restore();
 
     // Zodiac Circular Glowing Badge
     ctx.save();
-    const badgeY = 280;
+    const badgeY = 305;
     const pulse = 1 + 0.03 * Math.sin(time * 4);
 
     // Glowing Circles
     ctx.beginPath();
-    ctx.arc(CANVAS_WIDTH / 2, badgeY, 110 * pulse, 0, Math.PI * 2);
+    ctx.arc(CANVAS_WIDTH / 2, badgeY, 105 * pulse, 0, Math.PI * 2);
     ctx.fillStyle = 'rgba(245, 158, 11, 0.15)';
     ctx.shadowColor = '#f59e0b';
     ctx.shadowBlur = 30;
     ctx.fill();
 
     ctx.beginPath();
-    ctx.arc(CANVAS_WIDTH / 2, badgeY, 95, 0, Math.PI * 2);
+    ctx.arc(CANVAS_WIDTH / 2, badgeY, 90, 0, Math.PI * 2);
     ctx.fillStyle = '#1e0a02';
     ctx.strokeStyle = '#fbbf24';
     ctx.lineWidth = 4;
@@ -409,30 +458,30 @@ const VideoEngine = (function() {
     if (sign.customImage && (sign.customImage.complete || sign.customImage instanceof HTMLImageElement)) {
       ctx.save();
       ctx.beginPath();
-      ctx.arc(CANVAS_WIDTH / 2, badgeY, 80, 0, Math.PI * 2);
+      ctx.arc(CANVAS_WIDTH / 2, badgeY, 76, 0, Math.PI * 2);
       ctx.clip();
-      ctx.drawImage(sign.customImage, CANVAS_WIDTH / 2 - 80, badgeY - 80, 160, 160);
+      ctx.drawImage(sign.customImage, CANVAS_WIDTH / 2 - 76, badgeY - 76, 152, 152);
       ctx.restore();
     } else {
-      ctx.font = '90px "Plus Jakarta Sans", sans-serif';
+      ctx.font = '84px "Plus Jakarta Sans", sans-serif';
       ctx.fillStyle = '#fef08a';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(sign.symbol || '♈', CANVAS_WIDTH / 2, badgeY - 5);
     }
 
-    // Sign Name Label below badge (Fixed undefined bug!)
-    ctx.font = '900 68px "Noto Sans Devanagari", "Yatra One", sans-serif';
-    const grad = ctx.createLinearGradient(CANVAS_WIDTH / 2 - 200, 0, CANVAS_WIDTH / 2 + 200, 0);
-    grad.addColorStop(0, '#fef08a');
-    grad.addColorStop(0.5, '#fbbf24');
-    grad.addColorStop(1, '#f59e0b');
-    ctx.fillStyle = grad;
+    // Sign Name Label below badge
+    ctx.font = '900 64px "Noto Sans Devanagari", "Yatra One", sans-serif';
+    const signGrad = ctx.createLinearGradient(CANVAS_WIDTH / 2 - 200, 0, CANVAS_WIDTH / 2 + 200, 0);
+    signGrad.addColorStop(0, '#fef08a');
+    signGrad.addColorStop(0.5, '#fbbf24');
+    signGrad.addColorStop(1, '#f59e0b');
+    ctx.fillStyle = signGrad;
     ctx.shadowColor = 'rgba(245, 158, 11, 0.6)';
     ctx.shadowBlur = 18;
     const signNameHi = sign.nameHi || sign.signNameHi || 'मेष';
     const signNameEn = sign.nameEn || sign.signNameEn || 'Aries';
-    ctx.fillText(`${signNameHi} राशि (${signNameEn})`, CANVAS_WIDTH / 2, badgeY + 140);
+    ctx.fillText(`${signNameHi} राशि (${signNameEn})`, CANVAS_WIDTH / 2, badgeY + 130);
     ctx.restore();
   }
 
@@ -483,10 +532,20 @@ const VideoEngine = (function() {
     ctx.stroke();
 
     // Hook Heading
+    let hookTitle = '🌟 आज का दैनिक राशिफल 🌟';
+    const horizon = projectData.horizonType || 'daily';
+    if (horizon === 'weekly') {
+      hookTitle = '🌟 इस सप्ताह का राशिफल 🌟';
+    } else if (horizon === 'monthly') {
+      hookTitle = '🌟 इस माह का संपूर्ण राशिफल 🌟';
+    } else if (horizon === 'yearly') {
+      hookTitle = '🌟 इस वर्ष का महा-राशिफल 🌟';
+    }
+
     ctx.font = '900 56px "Noto Sans Devanagari", sans-serif';
     ctx.fillStyle = '#38bdf8';
     ctx.textAlign = 'center';
-    ctx.fillText('🌟 आज का दैनिक राशिफल 🌟', CANVAS_WIDTH / 2, 730);
+    ctx.fillText(hookTitle, CANVAS_WIDTH / 2, 730);
 
     // Lord & Element Info Pill
     ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
@@ -664,10 +723,20 @@ const VideoEngine = (function() {
     ctx.stroke();
 
     // Card Header Title
+    let predTitle = '📖 दैनिक भविष्यफल (Prediction)';
+    const horizon = projectData.horizonType || 'daily';
+    if (horizon === 'weekly') {
+      predTitle = '📖 साप्ताहिक भविष्यफल (Weekly Forecast)';
+    } else if (horizon === 'monthly') {
+      predTitle = '📖 मासिक भविष्यफल (Monthly Forecast)';
+    } else if (horizon === 'yearly') {
+      predTitle = '📖 वार्षिक भविष्यफल (Yearly Forecast)';
+    }
+
     ctx.font = '900 48px "Noto Sans Devanagari", sans-serif';
     ctx.fillStyle = '#fbbf24';
     ctx.textAlign = 'center';
-    ctx.fillText('📖 दैनिक भविष्यफल (Prediction)', CANVAS_WIDTH / 2, cardY + 75);
+    ctx.fillText(predTitle, CANVAS_WIDTH / 2, cardY + 75);
 
     // Inner Text Box with subtle glass border & dynamic height
     ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
@@ -918,17 +987,27 @@ const VideoEngine = (function() {
       ctx.strokeRect(18, 18, CANVAS_WIDTH - 36, CANVAS_HEIGHT - 36);
     }
 
-    // 2. Top Header Title (Always "आज का राशिफल" so next morning viewers see today title)
+    // 2. Top Header Title
+    let posterTitle = 'आज का राशिफल';
+    const horizon = projectData.horizonType || 'daily';
+    if (horizon === 'weekly') {
+      posterTitle = 'साप्ताहिक राशिफल';
+    } else if (horizon === 'monthly') {
+      posterTitle = 'मासिक राशिफल';
+    } else if (horizon === 'yearly') {
+      posterTitle = 'वार्षिक राशिफल';
+    }
+
     ctx.save();
     ctx.font = '900 80px "Noto Sans Devanagari", "Yatra One", sans-serif';
     ctx.fillStyle = isNewspaper ? '#0f172a' : '#111827';
     ctx.textAlign = 'center';
-    ctx.fillText('आज का राशिफल', CANVAS_WIDTH / 2, 95);
+    ctx.fillText(posterTitle, CANVAS_WIDTH / 2, 95);
 
-    // Date Subheading (Target date e.g. 30 अगस्त 2026 रविवार)
-    ctx.font = '800 42px "Noto Sans Devanagari", sans-serif';
+    // Period Subheading
+    ctx.font = '800 40px "Noto Sans Devanagari", sans-serif';
     ctx.fillStyle = '#1e293b';
-    ctx.fillText(dateStr, CANVAS_WIDTH / 2, 165);
+    ctx.fillText(getFormattedPeriodString(false), CANVAS_WIDTH / 2, 165);
 
     // Channel Brand / Watermark Badge (Top Right)
     ctx.font = '800 28px "Plus Jakarta Sans", sans-serif';
@@ -1553,6 +1632,15 @@ const VideoEngine = (function() {
     return new Date(dateInput);
   }
 
+  function setHorizon(horizonType, subPeriod, dateValue) {
+    projectData.horizonType = horizonType || 'daily';
+    projectData.subPeriod = subPeriod || 'today';
+    if (dateValue) {
+      projectData.targetDate = dateValue;
+    }
+    renderFrame(currentTime);
+  }
+
   function setLayoutMode(mode) {
     projectData.layoutMode = mode; // 'single' (4 scenes animation) or 'poster' (12-in-1 static video/image)
     renderFrame(currentTime);
@@ -1575,6 +1663,8 @@ const VideoEngine = (function() {
     setBgmType: setBgmType,
     setBgmVolume: setBgmVolume,
     setTargetDate: setTargetDate,
+    setHorizon: setHorizon,
+    getFormattedPeriodString: getFormattedPeriodString,
     setPredictionFontSize: setPredictionFontSize,
     setPosterFontSize: setPosterFontSize,
     setLayoutMode: setLayoutMode,
